@@ -22,7 +22,7 @@ Can be found at System Administration -> D365FO Admin Toolkit.
 - Firefighter functionality and reporting for SysAdmin users
 
 # Contact
-Feel free to reach out to alex.itguy@outlook.com for any questions or feature suggestions.
+Feel free to reach out to d365fotoolkit@outlook.com for any questions or feature suggestions.
 
 # Legal
 This code and deployable package are delivered 'as is' with no additional support.
