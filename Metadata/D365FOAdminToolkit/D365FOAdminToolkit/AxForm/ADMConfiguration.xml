@@ -147,6 +147,7 @@ public class ADMConfiguration extends FormRun
 	</SourceCode>
 	<DataSources />
 	<Design>
+		<Caption xmlns="">Configuration Setup</Caption>
 		<Pattern xmlns="">Dialog</Pattern>
 		<PatternVersion xmlns="">1.2</PatternVersion>
 		<Style xmlns="">Dialog</Style>
