@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMSysAdminReport_EventHandlers</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+internal final class ADMSysAdminReport_EventHandlers
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>StartDateControl_OnModified</Name>
+				<Source><![CDATA[
+    [FormControlEventHandler(formControlStr(ADMSysAdminReport, StartDateControl), FormControlEventType::Modified)]
+    public static void StartDateControl_OnModified(FormControl sender, FormControlEventArgs e)
+    {
+        FormDataSource ds = sender.formRun().dataSource("ADMSysAdminLog") as FormDataSource;
+        if(ds)
+        {
+            ds.executeQuery();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>EndDateControl_OnModified</Name>
+				<Source><![CDATA[
+    [FormControlEventHandler(formControlStr(ADMSysAdminReport, EndDateControl), FormControlEventType::Modified)]
+    public static void EndDateControl_OnModified(FormControl sender, FormControlEventArgs e)
+    {
+        FormDataSource ds = sender.formRun().dataSource("ADMSysAdminLog") as FormDataSource;
+        if(ds)
+        {
+            ds.executeQuery();
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

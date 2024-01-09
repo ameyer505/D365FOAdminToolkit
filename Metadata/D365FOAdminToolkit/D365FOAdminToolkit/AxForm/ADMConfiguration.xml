@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxForm xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>ADMConfiguration</Name>
+	<SourceCode>
+		<Methods xmlns="">
+			<Method>
+				<Name>classDeclaration</Name>
+				<Source><![CDATA[
+[Form]
+public class ADMConfiguration extends FormRun
+{
+    ADMConfigs config;
+
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    public void init()
+    {
+        super();
+
+        int reportOffset = 30;
+        int reasonDialog = 0;
+
+        select firstonly Value from config where config.Name == "DefaultNumDaysForReports";
+        if(config)
+        {
+            if(str2NumOK(config.Value))
+            {
+                reportOffset = str2Num(config.Value);
+            }
+        }
+
+        select firstonly Value from config where config.Name == "ShowReasonDialog";
+        if(config)
+        {
+            if(str2NumOK(config.Value))
+            {
+                reasonDialog = str2Num(config.Value);
+            }
+        }
+
+        ReportNumDays.value(reportOffset);
+        ShowReasonDialog.value(reasonDialog);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+		<DataSources xmlns="" />
+		<DataControls xmlns="">
+			<Control>
+				<Name>Cancel</Name>
+				<Type>Button</Type>
+				<Methods>
+					<Method>
+						<Name>clicked</Name>
+						<Source><![CDATA[
+        public void clicked()
+        {
+            element.close();
+            super();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+			<Control>
+				<Name>Save</Name>
+				<Type>Button</Type>
+				<Methods>
+					<Method>
+						<Name>clicked</Name>
+						<Source><![CDATA[
+        public void clicked()
+        {
+            select forupdate config where config.Name == "DefaultNumDaysForReports";
+            if(config)
+            {
+                str reportOffset = ReportNumDays.valueStr();
+                ttsbegin;
+                config.Value = reportOffset;
+                config.update();
+                ttscommit;
+            }
+            else
+            {
+                config.clear();
+                config.Name = "DefaultNumDaysForReports";
+                str reportOffset = ReportNumDays.valueStr();
+                ttsbegin;
+                config.Value = reportOffset;
+                config.insert();
+                ttscommit;
+            }
+
+            select forupdate config where config.Name == "ShowReasonDialog";
+            if(config)
+            {
+                int reasonDialog = ShowReasonDialog.value();
+                ttsbegin;
+                if(reasonDialog == 1)
+                {
+                    config.Value = "1";
+                }
+                else
+                {
+                    config.Value = "0";
+                }
+                
+                config.update();
+                ttscommit;
+            }
+            else
+            {
+                config.clear();
+                config.Name = "ShowReasonDialog";
+                int reasonDialog = ShowReasonDialog.value();
+                ttsbegin;
+                if(reasonDialog == 1)
+                {
+                    config.Value = "1";
+                }
+                else
+                {
+                    config.Value = "0";
+                }
+                config.insert();
+                ttscommit;
+            }
+
+            Box::info("D365FO Admin Toolkit Configuration Saved Successfully", "", "");
+            
+            element.close();
+            super();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+		</DataControls>
+		<Members xmlns="" />
+	</SourceCode>
+	<DataSources />
+	<Design>
+		<Pattern xmlns="">Dialog</Pattern>
+		<PatternVersion xmlns="">1.2</PatternVersion>
+		<Style xmlns="">Dialog</Style>
+		<Controls xmlns="">
+			<AxFormControl xmlns=""
+				i:type="AxFormGroupControl">
+				<Name>FormGroupControl1</Name>
+				<HeightMode>SizeToAvailable</HeightMode>
+				<Type>Group</Type>
+				<WidthMode>SizeToAvailable</WidthMode>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormIntegerControl">
+						<Name>ReportNumDays</Name>
+						<AutoDeclaration>Yes</AutoDeclaration>
+						<Type>Integer</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<AllowNegative>No</AllowNegative>
+						<Label>Default Number of Days for Reports</Label>
+						<Value>30</Value>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormCheckBoxControl">
+						<Name>ShowReasonDialog</Name>
+						<AutoDeclaration>Yes</AutoDeclaration>
+						<Type>CheckBox</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Label>Show Reason Dialog for SysAdmin</Label>
+					</AxFormControl>
+				</Controls>
+				<Style>DialogContent</Style>
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormButtonGroupControl">
+				<Name>FormButtonGroupControl1</Name>
+				<Type>ButtonGroup</Type>
+				<WidthMode>SizeToAvailable</WidthMode>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormButtonControl">
+						<Name>Cancel</Name>
+						<AutoDeclaration>Yes</AutoDeclaration>
+						<Type>Button</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Text>Cancel</Text>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormButtonControl">
+						<Name>Save</Name>
+						<AutoDeclaration>Yes</AutoDeclaration>
+						<Type>Button</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Text>Submit</Text>
+					</AxFormControl>
+				</Controls>
+				<ArrangeMethod>HorizontalRight</ArrangeMethod>
+				<Style>DialogCommitContainer</Style>
+			</AxFormControl>
+		</Controls>
+	</Design>
+	<Parts />
+</AxForm>

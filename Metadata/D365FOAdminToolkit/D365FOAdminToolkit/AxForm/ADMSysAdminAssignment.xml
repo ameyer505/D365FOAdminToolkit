@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxForm xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>ADMSysAdminAssignment</Name>
+	<SourceCode>
+		<Methods xmlns="">
+			<Method>
+				<Name>classDeclaration</Name>
+				<Source><![CDATA[
+[Form]
+public class ADMSysAdminAssignment extends FormRun
+{
+}
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    public void init()
+    {
+        super();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+		<DataSources xmlns="" />
+		<DataControls xmlns="">
+			<Control>
+				<Name>btnAssignSysAdmin</Name>
+				<Type>Button</Type>
+				<Methods>
+					<Method>
+						<Name>clicked</Name>
+						<Source><![CDATA[
+        public void clicked()
+        {
+            str userId = curUserId();
+            SecurityRole sr;
+            SecurityUserRole sur;
+
+            select AotName, RecId from sr where sr.AotName == "-SYSADMIN-";
+            if(sr)
+            {
+                select firstonly forupdate User, SecurityRole, AssignmentStatus from sur
+                    where sur.User == userId && sur.SecurityRole == sr.RecId;
+                if(sur)
+                {
+                    ttsbegin;
+                    sur.AssignmentStatus = RoleAssignmentStatus::Enabled;
+                    sur.update();
+                    ttscommit;
+                }
+                else
+                {
+                    ttsbegin;
+                    sur.clear();
+                    sur.User = userId;
+                    sur.SecurityRole = sr.RecId;
+                    sur.AssignmentStatus = RoleAssignmentStatus::Enabled;
+                    sur.AssignmentMode = RoleAssignmentMode::Manual;
+                    sur.insert();
+                    ttscommit;
+                }
+                Box::info(strFmt("Assigned SYSADMIN role to %1", userId), "", "");
+            }
+            element.close();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+			<Control>
+				<Name>btnRevokeSysAdmin</Name>
+				<Type>Button</Type>
+				<Methods>
+					<Method>
+						<Name>clicked</Name>
+						<Source><![CDATA[
+        public void clicked()
+        {
+            str userId = curUserId();
+            SecurityRole sr;
+            SecurityUserRole sur;
+
+            select AotName, RecId from sr where sr.AotName == "-SYSADMIN-";
+            if(sr)
+            {
+                select firstonly forupdate User, SecurityRole, AssignmentStatus from sur
+                    where sur.User == userId && sur.SecurityRole == sr.RecId;
+                if(sur)
+                {
+                    ttsbegin;
+                    sur.AssignmentStatus = RoleAssignmentStatus::Disabled;
+                    sur.update();
+                    ttscommit;
+
+                    Box::info(strFmt("Removed SYSADMIN role from %1", userId), "", "");
+                }
+                else
+                {
+                    Box::info(strFmt("SYSADMIN role not assigned to %1", userId), "", "");
+                }
+            }
+            element.close();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+			<Control>
+				<Name>btnCancel</Name>
+				<Type>Button</Type>
+				<Methods>
+					<Method>
+						<Name>clicked</Name>
+						<Source><![CDATA[
+        public void clicked()
+        {
+            element.close();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+		</DataControls>
+		<Members xmlns="" />
+	</SourceCode>
+	<DataSources />
+	<Design>
+		<Caption xmlns="">Assign / Revoke SysAdmin</Caption>
+		<Pattern xmlns="">Dialog</Pattern>
+		<PatternVersion xmlns="">1.2</PatternVersion>
+		<Style xmlns="">Dialog</Style>
+		<Controls xmlns="">
+			<AxFormControl xmlns=""
+				i:type="AxFormGroupControl">
+				<Name>FormGroupControl1</Name>
+				<HeightMode>SizeToAvailable</HeightMode>
+				<Type>Group</Type>
+				<WidthMode>SizeToAvailable</WidthMode>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormButtonControl">
+						<Name>btnAssignSysAdmin</Name>
+						<AutoDeclaration>Yes</AutoDeclaration>
+						<Type>Button</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Text>Assign SysAdmin</Text>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormButtonControl">
+						<Name>btnRevokeSysAdmin</Name>
+						<AutoDeclaration>Yes</AutoDeclaration>
+						<Type>Button</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Text>Revoke SysAdmin</Text>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormButtonControl">
+						<Name>btnCancel</Name>
+						<AutoDeclaration>Yes</AutoDeclaration>
+						<Type>Button</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Text>Cancel</Text>
+					</AxFormControl>
+				</Controls>
+				<Style>DialogContent</Style>
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormButtonGroupControl">
+				<Name>FormButtonGroupControl1</Name>
+				<Type>ButtonGroup</Type>
+				<WidthMode>SizeToAvailable</WidthMode>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormButtonControl">
+						<Name>FormButtonControl1</Name>
+						<Type>Button</Type>
+						<Visible>No</Visible>
+						<FormControlExtension
+							i:nil="true" />
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormButtonControl">
+						<Name>FormButtonControl2</Name>
+						<Type>Button</Type>
+						<Visible>No</Visible>
+						<FormControlExtension
+							i:nil="true" />
+					</AxFormControl>
+				</Controls>
+				<ArrangeMethod>HorizontalRight</ArrangeMethod>
+				<Style>DialogCommitContainer</Style>
+			</AxFormControl>
+		</Controls>
+	</Design>
+	<Parts />
+</AxForm>

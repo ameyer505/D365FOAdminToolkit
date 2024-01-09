@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxModelInfo xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<AppliedUpdates xmlns:d2p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+	<Customization>Allow</Customization>
+	<Description>Custom tools/functionality to help with security and administration tasks within D365FO.&#xD;
+&#xD;
+Created by Alex Meyer&#xD;
+Email: alex.itguy@outlook.com&#xD;
+Website: http://d365foblog.com&#xD;
+&#xD;
+Last Updated: 1/5/2023</Description>
+	<DisplayName>D365FOAdminToolkit</DisplayName>
+	<Id>896000769</Id>
+	<InternalsVisibleTo xmlns:d2p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+	<Layer>14</Layer>
+	<Locked>false</Locked>
+	<ModelModule>D365FOAdminToolkit</ModelModule>
+	<ModelReferences xmlns:d2p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays"
+		i:nil="true" />
+	<ModuleReferences xmlns:d2p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+		<d2p1:string>ApplicationCommon</d2p1:string>
+		<d2p1:string>ApplicationFoundation</d2p1:string>
+		<d2p1:string>ApplicationPlatform</d2p1:string>
+		<d2p1:string>ApplicationSuite</d2p1:string>
+		<d2p1:string>ApplicationWorkspaces</d2p1:string>
+	</ModuleReferences>
+	<Name>D365FOAdminToolkit</Name>
+	<Publisher>D365FO Admin Toolkit</Publisher>
+	<SolutionId>00000000-0000-0000-0000-000000000000</SolutionId>
+	<VersionBuild>0</VersionBuild>
+	<VersionMajor>1</VersionMajor>
+	<VersionMinor>0</VersionMinor>
+	<VersionRevision>0</VersionRevision>
+</AxModelInfo>

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMTableEvents</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+internal final class ADMTableEvents
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>SecurityUserRole_onInserted</Name>
+				<Source><![CDATA[
+    [DataEventHandler(tableStr(SecurityUserRole), DataEventType::Inserted)]
+    public static void SecurityUserRole_onInserted(Common sender, DataEventArgs e)
+    {        
+        SecurityRole sr;
+
+        SecurityUserRole sur = sender as SecurityUserRole;
+        ADMConfigs config;
+        ADMSysAdminLog sal;
+        int reasonDialog = 0;
+
+        AdmSysAdminLogHelper salh = new AdmSysAdminLogHelper();
+        reasonDialog = salh.CheckReasonDialogConfig();
+
+        select RecId from sr where sr.AotName == "-SYSADMIN-";
+        if(sr)
+        {
+            if(sur.SecurityRole == sr.RecID)
+            {
+                if(reasonDialog == 1)
+                {
+                    FormRun fr;
+                    Args args;
+                    sal.Action = ADMSysAdminAction::Assigned;
+                    sal.UserId_ = sur.User;
+
+                    args = new Args(formStr(ADMSysAdminReason));
+                    args.record(sal);
+                    fr = new FormRun(args);
+                    fr.init();
+                    fr.run();
+                    fr.wait();
+                }
+                else if(reasonDialog == 0)
+                {
+                    sal.Action = ADMSysAdminAction::Assigned;
+                    sal.UserId_ = sur.User;
+                    sal.Reason = "";
+                    sal.insert();
+                }
+
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>SecurityUserRole_onUpdating</Name>
+				<Source><![CDATA[
+    [DataEventHandler(tableStr(SecurityUserRole), DataEventType::Updating)]
+    public static void SecurityUserRole_onUpdating(Common sender, DataEventArgs e)
+    {
+        SecurityRole sr;
+        FormDataSource fds = sender.dataSource();
+        SecurityUserRole sur = sender as SecurityUserRole;
+        ADMConfigs config;
+        ADMSysAdminLog sal;
+        int reasonDialog = 0;
+
+        AdmSysAdminLogHelper salh = new AdmSysAdminLogHelper();
+        reasonDialog = salh.CheckReasonDialogConfig();
+
+        select RecId from sr where sr.AotName == "-SYSADMIN-";
+        if(sr)
+        {
+            if(sur)
+            {
+                if(sur.SecurityRole == sr.RecID)
+                {
+                    if(sur.AssignmentStatus == RoleAssignmentStatus::Enabled)
+                    {
+                        if(reasonDialog == 1)
+                        {
+                            FormRun fr;
+                            Args args;
+                            sal.Action = ADMSysAdminAction::Assigned;
+                            sal.UserId_ = sur.User;
+
+                            args = new Args(formStr(ADMSysAdminReason));
+                            args.record(sal);
+                            fr = new FormRun(args);
+                            fr.init();
+                            fr.run();
+                            fr.wait();
+                        }
+                        else if(reasonDialog == 0)
+                        {
+                            sal.Action = ADMSysAdminAction::Assigned;
+                            sal.UserId_ = sur.User;
+                            sal.Reason = "";
+                            sal.insert();
+                        }
+                        
+                    }
+                    if(sur.AssignmentStatus == RoleAssignmentStatus::Disabled)
+                    {
+                        if(reasonDialog == 1)
+                        {
+                            FormRun fr;
+                            Args args;
+                            sal.Action = ADMSysAdminAction::Revoked;
+                            sal.UserId_ = sur.User;
+
+                            args = new Args(formStr(ADMSysAdminReason));
+                            args.record(sal);
+                            fr = new FormRun(args);
+                            fr.init();
+                            fr.run();
+                            fr.wait();
+                        }
+                        else if(reasonDialog == 0)
+                        {
+                            sal.Action = ADMSysAdminAction::Revoked;
+                            sal.UserId_ = sur.User;
+                            sal.Reason = "";
+                            sal.insert();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>SecurityUserRole_onDeleted</Name>
+				<Source><![CDATA[
+    [DataEventHandler(tableStr(SecurityUserRole), DataEventType::Deleted)]
+    public static void SecurityUserRole_onDeleted(Common sender, DataEventArgs e)
+    {
+        SecurityRole sr;
+        FormDataSource fds = sender.orig().dataSource();
+        SecurityUserRole sur = sender as SecurityUserRole;
+        ADMConfigs config;
+        ADMSysAdminLog sal;
+        int reasonDialog = 0;
+        
+        AdmSysAdminLogHelper salh = new AdmSysAdminLogHelper();
+        reasonDialog = salh.CheckReasonDialogConfig();
+
+        select RecId from sr where sr.AotName == "-SYSADMIN-";
+        if(sr)
+        {
+            if(sur)
+            {
+                if(sur.SecurityRole == sr.RecID)
+                {
+                    if(reasonDialog == 1)
+                    {
+                        FormRun fr;
+                        Args args;
+                        sal.Action = ADMSysAdminAction::Revoked;
+                        sal.UserId_ = sur.User;
+
+                        args = new Args(formStr(ADMSysAdminReason));
+                        args.record(sal);
+                        fr = new FormRun(args);
+                        fr.init();
+                        fr.run();
+                        fr.wait();
+                    }
+                    else if(reasonDialog == 0)
+                    {
+                        sal.Action = ADMSysAdminAction::Revoked;
+                        sal.UserId_ = sur.User;
+                        sal.Reason = "";
+                        sal.insert();
+                    }
+                }
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

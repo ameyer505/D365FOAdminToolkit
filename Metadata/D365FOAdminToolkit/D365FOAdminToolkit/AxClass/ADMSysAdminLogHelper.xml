@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMSysAdminLogHelper</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class ADMSysAdminLogHelper
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>CheckReasonDialogConfig</Name>
+				<Source><![CDATA[
+    public int CheckReasonDialogConfig()
+    {
+        ADMConfigs config;
+        int reasonDialog = 0;
+        select firstonly Value from config where config.Name == "ShowReasonDialog";
+        if(config)
+        {
+            if(str2NumOK(config.Value))
+            {
+                reasonDialog = str2Num(config.Value);
+            }
+        }
+        return reasonDialog;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>GetDefaultNumDaysForReports</Name>
+				<Source><![CDATA[
+    public int GetDefaultNumDaysForReports()
+    {
+        AdmConfigs config;
+        int reportOffset = -30;
+        select firstonly Value from config where config.Name == "DefaultNumDaysForReports";
+        if(config)
+        {
+            if(str2NumOK(config.Value))
+            {
+                reportOffset = str2Num(config.Value) * -1;
+            }
+        }
+        return reportOffset;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>
