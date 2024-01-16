@@ -7,14 +7,17 @@ Can be installed via deployable package or by code.
 # Usage
 Can be found at System Administration -> D365FO Admin Toolkit.
 
+# Documentation
+Please review the provided D365FO Admin Toolkit Overview PDF documentation located in the base repository folder.
+
 # Current Features
 - Assign / Revoke SysAdmin Access without needing elevated permissions
 - (Optional) Require a reason be provided for assigning / revoking SysAdmin
 - SysAdmin role assignment / revoke reporting
 - Configuration page
-
-# Features in Development
 - Export all role access to CSV
+  
+# Features in Development
 - Auto disable D365FO users when AAD/Entra user is disabled
 
 # Future Features
