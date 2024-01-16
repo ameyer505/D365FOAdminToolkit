@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMSysAdminLogHelperTest</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[SysTestTarget(classStr(ADMSysAdminLogHelper), UtilElementType::Class)]
+public class ADMSysAdminLogHelperTest extends SysTestCase
+{
+    const str ShowReasonDialogConfigName = 'ShowReasonDialog';
+
+    ADMSysAdminLogHelper admSysAdminLogHelper;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>setup</Name>
+				<Source><![CDATA[
+    public void setup()
+    {
+        super();
+        admSysAdminLogHelper = new ADMSysAdminLogHelper();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>ADMConfigs_NoReasonDialogConfig_Zero</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Verifies that the reason dialog configuration is set to 0 if there is no record for it
+    /// in the configurations table.
+    /// </summary>
+    [SysTestMethod]
+    public void ADMConfigs_NoReasonDialogConfig_Zero()
+    {
+        // Arrange
+        str assertFailedMessage = 
+            'If there is no configuration for the reason dialog, 0 is expected as configuration value.';
+        int expected = 0;
+        int actual;
+
+        // Act
+        actual = admSysAdminLogHelper.CheckReasonDialogConfig();
+    
+        // Assert
+        this.assertEquals(expected, actual, assertFailedMessage);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>ADMConfigs_ReasonDialogConfigValueOne_One</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Verifies that the reason dialog configuration is set to 1 if there is a record for it
+    /// in the configurations table with value 1.
+    /// </summary>
+    [SysTestMethod]
+    public void ADMConfigs_ReasonDialogConfigValueOne_One()
+    {
+        // Arrange
+        str assertFailedMessage = 
+            'If there is a configuration for the reason dialog with value 1, 1 is expected as configuration value.';
+        int expected = 1;
+        int actual;
+
+        this.createADMConfigsRecord(ShowReasonDialogConfigName, '1');
+
+        // Act
+        actual = admSysAdminLogHelper.CheckReasonDialogConfig();
+
+        // Assert
+        this.assertEquals(expected, actual, assertFailedMessage);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>ADMConfigs_ReasonDialogConfigValueZero_Zero</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Verifies that the reason dialog configuration is set to 0 if there is a record for it
+    /// in the configurations table with value 0.
+    /// </summary>
+    [SysTestMethod]
+    public void ADMConfigs_ReasonDialogConfigValueZero_Zero()
+    {
+        // Arrange
+        str assertFailedMessage = 
+            'If there is a configuration for the reason dialog with value 0, 0 is expected as configuration value.';
+        int expected = 0;
+        int actual;
+
+        this.createADMConfigsRecord(ShowReasonDialogConfigName, '0');
+
+        // Act
+        actual = admSysAdminLogHelper.CheckReasonDialogConfig();
+
+        // Assert
+        this.assertEquals(expected, actual, assertFailedMessage);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>ADMConfigs_ReasonDialogConfigValueOtherThanOneOrZero_Zero</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Verifies that the reason dialog configuration is set to 0 if there is a record for it
+    /// in the configurations table with a value other than 1 or 0.
+    /// </summary>
+    [
+        SysTestMethod,
+        SysTestRow(''),
+        SysTestRow('2'),
+        SysTestRow('a'),
+        SysTestRow('-1'),
+        SysTestRow('1.0')
+    ]
+    public void ADMConfigs_ReasonDialogConfigValueOtherThanOneOrZero_Zero(str _value)
+    {
+        // Arrange
+        str assertFailedMessage = strFmt(
+            'If there is a configuration for the reason dialog with a value of %1, 0 is expected as configuration value.', 
+            _value);
+        int expected = 0;
+        int actual;
+        
+        this.createADMConfigsRecord(ShowReasonDialogConfigName, _value);
+
+        // Act
+        actual = admSysAdminLogHelper.CheckReasonDialogConfig();
+
+        // Assert
+        this.assertEquals(expected, actual, assertFailedMessage);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createADMConfigsRecord</Name>
+				<Source><![CDATA[
+    private void createADMConfigsRecord(str _configName, str _value)
+    {
+        ADMConfigs admConfigs;
+        admConfigs.Name = _configName;
+        admConfigs.Value = _value;
+        admConfigs.insert();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

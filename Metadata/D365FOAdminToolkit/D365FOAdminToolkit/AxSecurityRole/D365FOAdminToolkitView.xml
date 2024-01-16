@@ -8,6 +8,9 @@
 		<AxSecurityPrivilegeReference>
 			<Name>D365FOAdminToolkitViewSysAdminReport</Name>
 		</AxSecurityPrivilegeReference>
+		<AxSecurityPrivilegeReference>
+			<Name>D365FOAdminToolkitExportRoleAccess</Name>
+		</AxSecurityPrivilegeReference>
 	</Privileges>
 	<SubRoles />
 </AxSecurityRole>
