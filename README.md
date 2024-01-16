@@ -12,13 +12,15 @@ Please review the provided D365FO Admin Toolkit Overview PDF documentation locat
 
 # Current Features
 - Assign / Revoke SysAdmin Access without needing elevated permissions
-- (Optional) Require a reason be provided for assigning / revoking SysAdmin
+- (Optional) Require a reason be provided for assigning SysAdmin
 - SysAdmin role assignment / revoke reporting
 - Configuration page
 - Export all role access to CSV
+- Unit tests
   
 # Features in Development
 - Auto disable D365FO users when AAD/Entra user is disabled
+- Ability to add time constraint on SysAdmin assignment
 
 # Future Features
 - Compare role access between D365FO environments
