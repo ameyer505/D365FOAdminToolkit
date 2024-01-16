@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMExportRoleAccess</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+using D365FOAdminToolkitNET;
+
+public class ADMExportRoleAccess
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        Microsoft.Dynamics.Ax.Xpp.ErrorException xppEx;
+        System.IO.MemoryStream stream;
+        try
+        {
+            Microsoft.Dynamics.AX.Security.Management.SecurityRepository sr = SysSecurity::GetSecurityRepository();
+            stream = D365FOAdminToolkitNET.AdminToolkitNET::GenerateRoleAccessCSV(sr);
+            File::SendFileToUser(stream, "RoleAccess.csv");
+            stream.Close();
+
+            Box::info("Role Access File Generated Successfully.", "", "");
+        }
+        catch (xppEx)
+        {
+            throw Error(strFmt("%1 - %2", xppEx.Message, xppEx.StackTrace));
+        }
+        finally
+        {
+            if (stream != null)
+            {
+                stream.Dispose();
+                stream = null;
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

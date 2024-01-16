@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <BuildTasksDirectory Condition=" '$(BuildTasksDirectory)' == ''">$(MSBuildProgramFiles32)\MSBuild\Microsoft\Dynamics\AX</BuildTasksDirectory>
     <Model>D365FOAdminToolkit</Model>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <OutputPath>bin</OutputPath>
     <SchemaVersion>2.0</SchemaVersion>
     <GenerateCrossReferences>True</GenerateCrossReferences>
@@ -34,6 +34,11 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="AxClass\ADMExportRoleAccess">
+      <SubType>Content</SubType>
+      <Name>ADMExportRoleAccess</Name>
+      <Link>Classes\ADMExportRoleAccess</Link>
+    </Content>
     <Content Include="AxClass\ADMSysAdminLogHelper">
       <SubType>Content</SubType>
       <Name>ADMSysAdminLogHelper</Name>
@@ -58,6 +63,11 @@
       <SubType>Content</SubType>
       <Name>ADMSysAdminAction</Name>
       <Link>Enums\ADMSysAdminAction</Link>
+    </Content>
+    <Content Include="AxFormExtension\SysSecConfiguration.D365FOAdminToolkit">
+      <SubType>Content</SubType>
+      <Name>SysSecConfiguration.D365FOAdminToolkit</Name>
+      <Link>FormExt\SysSecConfiguration.D365FOAdminToolkit</Link>
     </Content>
     <Content Include="AxForm\ADMConfiguration">
       <SubType>Content</SubType>
@@ -84,6 +94,11 @@
       <Name>SystemAdministration.D365FOAdminToolkit</Name>
       <Link>MenuExt\SystemAdministration.D365FOAdminToolkit</Link>
     </Content>
+    <Content Include="AxMenuItemAction\ADMExportRoleAccess">
+      <SubType>Content</SubType>
+      <Name>ADMExportRoleAccess</Name>
+      <Link>MenuItems\ADMExportRoleAccess</Link>
+    </Content>
     <Content Include="AxMenuItemDisplay\ADMConfiguration">
       <SubType>Content</SubType>
       <Name>ADMConfiguration</Name>
@@ -104,10 +119,15 @@
       <Name>D365FOAdminToolkitConfiguration</Name>
       <Link>Security\D365FOAdminToolkitConfiguration</Link>
     </Content>
+    <Content Include="AxSecurityPrivilege\D365FOAdminToolkitExportRoleAccess">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkitExportRoleAccess</Name>
+      <Link>Security\D365FOAdminToolkitExportRoleAccess</Link>
+    </Content>
     <Content Include="AxSecurityPrivilege\D365FOAdminToolkitSysAdminAssignment">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkitSysAdminAssignment</Name>
-      <Link>D365FOAdminToolkitSysAdminAssignment</Link>
+      <Link>Security\D365FOAdminToolkitSysAdminAssignment</Link>
     </Content>
     <Content Include="AxSecurityPrivilege\D365FOAdminToolkitViewSysAdminReport">
       <SubType>Content</SubType>
@@ -127,7 +147,7 @@
     <Content Include="AxTable\ADMConfigs">
       <SubType>Content</SubType>
       <Name>ADMConfigs</Name>
-      <Link>ADMConfigs</Link>
+      <Link>Tables\ADMConfigs</Link>
     </Content>
     <Content Include="AxTable\ADMSysAdminLog">
       <SubType>Content</SubType>
@@ -142,9 +162,17 @@
     <Folder Include="Enums" />
     <Folder Include="EventHandlers" />
     <Folder Include="Classes" />
+    <Folder Include="FormExt" />
     <Folder Include="Security" />
     <Folder Include="TableEvents" />
     <Folder Include="Tables" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\D365FOAdminToolkitNET\D365FOAdminToolkitNET.csproj">
+      <Name>D365FOAdminToolkitNET</Name>
+      <Project>{fbae26b1-8c74-4f17-8d75-e14afb8d00c5}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.Common.targets" />
   <Import Project="$(BuildTasksDirectory)\Microsoft.Dynamics.Framework.Tools.BuildTasks.targets" />

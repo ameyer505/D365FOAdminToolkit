@@ -22,7 +22,6 @@ public class ADMSysAdminReason extends FormRun
         super();
         if(element.args())
         {
-            sal.clear();
             Common cmn = element.args().record();
             if(cmn.TableId == tableNum(ADMSysAdminLog))
             {
@@ -46,9 +45,10 @@ public class ADMSysAdminReason extends FormRun
 						<Source><![CDATA[
         public void clicked()
         {
-            sal.Reason = strSysAdminReason.text();
-            sal.insert();
-
+            str reason = strSysAdminReason.text();
+            sal.Reason = reason;
+            sal.update();
+            
             element.close();
             super();
         }

@@ -21,6 +21,11 @@ internal final class ADMTableEvents
         ADMSysAdminLog sal;
         int reasonDialog = 0;
 
+        sal.Action = ADMSysAdminAction::Assigned;
+        sal.UserId_ = sur.User;
+        sal.Reason = "";
+        sal.insert();
+
         AdmSysAdminLogHelper salh = new AdmSysAdminLogHelper();
         reasonDialog = salh.CheckReasonDialogConfig();
 
@@ -33,8 +38,6 @@ internal final class ADMTableEvents
                 {
                     FormRun fr;
                     Args args;
-                    sal.Action = ADMSysAdminAction::Assigned;
-                    sal.UserId_ = sur.User;
 
                     args = new Args(formStr(ADMSysAdminReason));
                     args.record(sal);
@@ -43,14 +46,6 @@ internal final class ADMTableEvents
                     fr.run();
                     fr.wait();
                 }
-                else if(reasonDialog == 0)
-                {
-                    sal.Action = ADMSysAdminAction::Assigned;
-                    sal.UserId_ = sur.User;
-                    sal.Reason = "";
-                    sal.insert();
-                }
-
             }
         }
     }
@@ -82,12 +77,16 @@ internal final class ADMTableEvents
                 {
                     if(sur.AssignmentStatus == RoleAssignmentStatus::Enabled)
                     {
+                        sal.Reason = "";
+                        sal.Action = ADMSysAdminAction::Assigned;
+                        sal.UserId_ = sur.User;
+                        sal.insert();
+
                         if(reasonDialog == 1)
                         {
                             FormRun fr;
                             Args args;
-                            sal.Action = ADMSysAdminAction::Assigned;
-                            sal.UserId_ = sur.User;
+
 
                             args = new Args(formStr(ADMSysAdminReason));
                             args.record(sal);
@@ -96,38 +95,13 @@ internal final class ADMTableEvents
                             fr.run();
                             fr.wait();
                         }
-                        else if(reasonDialog == 0)
-                        {
-                            sal.Action = ADMSysAdminAction::Assigned;
-                            sal.UserId_ = sur.User;
-                            sal.Reason = "";
-                            sal.insert();
-                        }
-                        
                     }
                     if(sur.AssignmentStatus == RoleAssignmentStatus::Disabled)
                     {
-                        if(reasonDialog == 1)
-                        {
-                            FormRun fr;
-                            Args args;
-                            sal.Action = ADMSysAdminAction::Revoked;
-                            sal.UserId_ = sur.User;
-
-                            args = new Args(formStr(ADMSysAdminReason));
-                            args.record(sal);
-                            fr = new FormRun(args);
-                            fr.init();
-                            fr.run();
-                            fr.wait();
-                        }
-                        else if(reasonDialog == 0)
-                        {
-                            sal.Action = ADMSysAdminAction::Revoked;
-                            sal.UserId_ = sur.User;
-                            sal.Reason = "";
-                            sal.insert();
-                        }
+                        sal.Action = ADMSysAdminAction::Revoked;
+                        sal.UserId_ = sur.User;
+                        sal.Reason = "";
+                        sal.insert();
                     }
                 }
             }
@@ -159,27 +133,10 @@ internal final class ADMTableEvents
             {
                 if(sur.SecurityRole == sr.RecID)
                 {
-                    if(reasonDialog == 1)
-                    {
-                        FormRun fr;
-                        Args args;
-                        sal.Action = ADMSysAdminAction::Revoked;
-                        sal.UserId_ = sur.User;
-
-                        args = new Args(formStr(ADMSysAdminReason));
-                        args.record(sal);
-                        fr = new FormRun(args);
-                        fr.init();
-                        fr.run();
-                        fr.wait();
-                    }
-                    else if(reasonDialog == 0)
-                    {
-                        sal.Action = ADMSysAdminAction::Revoked;
-                        sal.UserId_ = sur.User;
-                        sal.Reason = "";
-                        sal.insert();
-                    }
+                    sal.Action = ADMSysAdminAction::Revoked;
+                    sal.UserId_ = sur.User;
+                    sal.Reason = "";
+                    sal.insert();
                 }
             }
         }
