@@ -13,7 +13,7 @@
 					i:nil="true" />
 				<MenuItemName>ADMExportRoleAccess</MenuItemName>
 				<MenuItemType>Action</MenuItemType>
-				<Text>Export Role Access</Text>
+				<Text>@D365FOAdminToolkit:ExportRoleAccess</Text>
 			</FormControl>
 			<Parent>DataGroup</Parent>
 		</AxFormExtensionControl>

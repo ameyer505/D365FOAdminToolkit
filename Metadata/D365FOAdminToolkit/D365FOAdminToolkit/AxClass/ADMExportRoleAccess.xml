@@ -24,7 +24,7 @@ public class ADMExportRoleAccess
             File::SendFileToUser(stream, "RoleAccess.csv");
             stream.Close();
 
-            Box::info("Role Access File Generated Successfully.", "", "");
+            Box::info("@D365FOAdminToolkit:RoleAccessFileGenerated", "", "");
         }
         catch (xppEx)
         {

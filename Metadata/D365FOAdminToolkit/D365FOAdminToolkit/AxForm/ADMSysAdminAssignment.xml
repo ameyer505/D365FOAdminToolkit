@@ -131,7 +131,7 @@ public class ADMSysAdminAssignment extends FormRun
 	</SourceCode>
 	<DataSources />
 	<Design>
-		<Caption xmlns="">Assign / Revoke SysAdmin</Caption>
+		<Caption xmlns="">@D365FOAdminToolkit:AddRvokeSysAdmin</Caption>
 		<Pattern xmlns="">Dialog</Pattern>
 		<PatternVersion xmlns="">1.2</PatternVersion>
 		<Style xmlns="">Dialog</Style>
@@ -152,7 +152,7 @@ public class ADMSysAdminAssignment extends FormRun
 						<Type>Button</Type>
 						<FormControlExtension
 							i:nil="true" />
-						<Text>Assign SysAdmin</Text>
+						<Text>@D365FOAdminToolkit:AssingSysAdmin</Text>
 					</AxFormControl>
 					<AxFormControl xmlns=""
 						i:type="AxFormButtonControl">
@@ -161,7 +161,7 @@ public class ADMSysAdminAssignment extends FormRun
 						<Type>Button</Type>
 						<FormControlExtension
 							i:nil="true" />
-						<Text>Revoke SysAdmin</Text>
+						<Text>@D365FOAdminToolkit:RevokeSysAdmin</Text>
 					</AxFormControl>
 					<AxFormControl xmlns=""
 						i:type="AxFormButtonControl">
@@ -170,7 +170,7 @@ public class ADMSysAdminAssignment extends FormRun
 						<Type>Button</Type>
 						<FormControlExtension
 							i:nil="true" />
-						<Text>Cancel</Text>
+						<Text>@D365FOAdminToolkit:Cancel</Text>
 					</AxFormControl>
 				</Controls>
 				<Style>DialogContent</Style>
