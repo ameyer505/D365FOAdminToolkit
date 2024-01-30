@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxLabelFile xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>D365FOAdminToolkit_en-US</Name>
+	<LabelContentFileName>D365FOAdminToolkit.en-US.label.txt</LabelContentFileName>
+	<LabelFileId>D365FOAdminToolkit</LabelFileId>
+	<RelativeUriInModelStore>D365FOAdminToolkit\D365FOAdminToolkit\AxLabelFile\LabelResources\en-US\D365FOAdminToolkit.en-US.label.txt</RelativeUriInModelStore>
+</AxLabelFile>

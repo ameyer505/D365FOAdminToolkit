@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AxSecurityPrivilege xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
 	<Name>D365FOAdminToolkitSysAdminAssignment</Name>
-	<Label>D365FO Admin Toolkit SysAdmin Assignment</Label>
+	<Label>@D365FOAdminToolkit:ADMSysAdmAssignment</Label>
 	<DataEntityPermissions />
 	<DirectAccessPermissions>
 		<AxSecurityDataEntityReference>

@@ -43,13 +43,13 @@ public class ADMSysAdminLog extends common
 		<AxTableField xmlns=""
 			i:type="AxTableFieldString">
 			<Name>Reason</Name>
-			<Label>Assignment Reason</Label>
+			<Label>@D365FOAdminToolkit:AssignmentReason</Label>
 			<StringSize>250</StringSize>
 		</AxTableField>
 		<AxTableField xmlns=""
 			i:type="AxTableFieldEnum">
 			<Name>Action</Name>
-			<Label>Action</Label>
+			<Label>@D365FOAdminToolkit:Action</Label>
 			<EnumType>ADMSysAdminAction</EnumType>
 		</AxTableField>
 		<AxTableField xmlns=""
