@@ -147,7 +147,7 @@ public class ADMConfiguration extends FormRun
 	</SourceCode>
 	<DataSources />
 	<Design>
-		<Caption xmlns="">Configuration Setup</Caption>
+		<Caption xmlns="">@D365FOAdminToolkit:ConfigurationSetup</Caption>
 		<Pattern xmlns="">Dialog</Pattern>
 		<PatternVersion xmlns="">1.2</PatternVersion>
 		<Style xmlns="">Dialog</Style>
@@ -169,7 +169,7 @@ public class ADMConfiguration extends FormRun
 						<FormControlExtension
 							i:nil="true" />
 						<AllowNegative>No</AllowNegative>
-						<Label>Default Number of Days for Reports</Label>
+						<Label>@D365FOAdminToolkit:DefaultNumDaysReport</Label>
 						<Value>30</Value>
 					</AxFormControl>
 					<AxFormControl xmlns=""
@@ -179,7 +179,7 @@ public class ADMConfiguration extends FormRun
 						<Type>CheckBox</Type>
 						<FormControlExtension
 							i:nil="true" />
-						<Label>Show Reason Dialog for SysAdmin</Label>
+						<Label>@D365FOAdminToolkit:ShowReasonDialog</Label>
 					</AxFormControl>
 				</Controls>
 				<Style>DialogContent</Style>
@@ -199,7 +199,7 @@ public class ADMConfiguration extends FormRun
 						<Type>Button</Type>
 						<FormControlExtension
 							i:nil="true" />
-						<Text>Cancel</Text>
+						<Text>@D365FOAdminToolkit:Cancel</Text>
 					</AxFormControl>
 					<AxFormControl xmlns=""
 						i:type="AxFormButtonControl">
@@ -208,7 +208,7 @@ public class ADMConfiguration extends FormRun
 						<Type>Button</Type>
 						<FormControlExtension
 							i:nil="true" />
-						<Text>Submit</Text>
+						<Text>@D365FOAdminToolkit:Submit</Text>
 					</AxFormControl>
 				</Controls>
 				<ArrangeMethod>HorizontalRight</ArrangeMethod>

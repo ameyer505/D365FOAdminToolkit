@@ -5,11 +5,11 @@
 	<EnumValues>
 		<AxEnumValue>
 			<Name>Assigned</Name>
-			<Label>Assigned</Label>
+			<Label>@D365FOAdminToolkit:Assigned</Label>
 		</AxEnumValue>
 		<AxEnumValue>
 			<Name>Revoked</Name>
-			<Label>Revoked</Label>
+			<Label>@D365FOAdminToolkit:Revoked</Label>
 			<Value>1</Value>
 		</AxEnumValue>
 	</EnumValues>

@@ -115,7 +115,7 @@ public class ADMSysAdminReport extends FormRun
 		</AxFormDataSource>
 	</DataSources>
 	<Design>
-		<Caption xmlns="">SysAdmin Report</Caption>
+		<Caption xmlns="">@D365FOAdminToolkit:SysAdminReport</Caption>
 		<Pattern xmlns="">ListPage</Pattern>
 		<PatternVersion xmlns="">UX7 1.0</PatternVersion>
 		<ShowDeleteButton xmlns="">No</ShowDeleteButton>
@@ -170,7 +170,7 @@ public class ADMSysAdminReport extends FormRun
 						<Type>Date</Type>
 						<FormControlExtension
 							i:nil="true" />
-						<Label>Start Date :</Label>
+						<Label>@D365FOAdminToolkit:StartDate</Label>
 					</AxFormControl>
 					<AxFormControl xmlns=""
 						i:type="AxFormDateControl">
@@ -179,7 +179,7 @@ public class ADMSysAdminReport extends FormRun
 						<Type>Date</Type>
 						<FormControlExtension
 							i:nil="true" />
-						<Label>End Date :</Label>
+						<Label>@D365FOAdminToolkit:EndDate</Label>
 					</AxFormControl>
 				</Controls>
 				<ArrangeMethod>HorizontalLeft</ArrangeMethod>
@@ -204,7 +204,7 @@ public class ADMSysAdminReport extends FormRun
 							i:nil="true" />
 						<DataField>CreatedDateTime</DataField>
 						<DataSource>ADMSysAdminLog</DataSource>
-						<Label>Date Time</Label>
+						<Label>@D365FOAdminToolkit:DateTime</Label>
 					</AxFormControl>
 					<AxFormControl xmlns=""
 						i:type="AxFormStringControl">
@@ -214,7 +214,7 @@ public class ADMSysAdminReport extends FormRun
 							i:nil="true" />
 						<DataField>UserId_</DataField>
 						<DataSource>ADMSysAdminLog</DataSource>
-						<Label>User</Label>
+						<Label>@D365FOAdminToolkit:User</Label>
 					</AxFormControl>
 					<AxFormControl xmlns=""
 						i:type="AxFormStringControl">
@@ -224,7 +224,7 @@ public class ADMSysAdminReport extends FormRun
 							i:nil="true" />
 						<DataField>Reason</DataField>
 						<DataSource>ADMSysAdminLog</DataSource>
-						<Label>Reason</Label>
+						<Label>@D365FOAdminToolkit:Reason</Label>
 					</AxFormControl>
 					<AxFormControl xmlns=""
 						i:type="AxFormComboBoxControl">
@@ -234,7 +234,7 @@ public class ADMSysAdminReport extends FormRun
 							i:nil="true" />
 						<DataField>Action</DataField>
 						<DataSource>ADMSysAdminLog</DataSource>
-						<Label>Action</Label>
+						<Label>@D365FOAdminToolkit:Action</Label>
 						<Items />
 					</AxFormControl>
 					<AxFormControl xmlns=""
@@ -245,7 +245,7 @@ public class ADMSysAdminReport extends FormRun
 							i:nil="true" />
 						<DataField>CreatedBy</DataField>
 						<DataSource>ADMSysAdminLog</DataSource>
-						<Label>Modified By</Label>
+						<Label>@D365FOAdminToolkit:ModifiedBy</Label>
 					</AxFormControl>
 				</Controls>
 				<DataSource>ADMSysAdminLog</DataSource>

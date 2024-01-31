@@ -13,6 +13,7 @@
 					i:nil="true" />
 				<DataField>LastLogin</DataField>
 				<DataSource>ADMSysUserLog</DataSource>
+				<Label>@D365FOAdminToolkit:LastLogin</Label>
 			</FormControl>
 			<Parent>Grid</Parent>
 			<PositionType>AfterItem</PositionType>
