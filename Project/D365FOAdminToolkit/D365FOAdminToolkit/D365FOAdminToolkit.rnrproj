@@ -69,6 +69,11 @@
       <Name>SysSecConfiguration.D365FOAdminToolkit</Name>
       <Link>FormExt\SysSecConfiguration.D365FOAdminToolkit</Link>
     </Content>
+    <Content Include="AxFormExtension\SysUserManagement.D365FOAdminToolkit">
+      <SubType>Content</SubType>
+      <Name>SysUserManagement.D365FOAdminToolkit</Name>
+      <Link>Forms\SysUserManagement.D365FOAdminToolkit</Link>
+    </Content>
     <Content Include="AxForm\ADMConfiguration">
       <SubType>Content</SubType>
       <Name>ADMConfiguration</Name>
@@ -88,6 +93,16 @@
       <SubType>Content</SubType>
       <Name>ADMSysAdminReport</Name>
       <Link>Forms\ADMSysAdminReport</Link>
+    </Content>
+    <Content Include="AxLabelFile\D365FOAdminToolkit_en-US">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkit_en-US</Name>
+      <Link>LabelFiles\D365FOAdminToolkit_en-US</Link>
+    </Content>
+    <Content Include="AxLabelFile\D365FOAdminToolkit_es">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkit_es</Name>
+      <Link>LabelFiles\D365FOAdminToolkit_es</Link>
     </Content>
     <Content Include="AxMenuExtension\SystemAdministration.D365FOAdminToolkit">
       <SubType>Content</SubType>
@@ -154,6 +169,21 @@
       <Name>ADMSysAdminLog</Name>
       <Link>Tables\ADMSysAdminLog</Link>
     </Content>
+    <Content Include="D365FOAdminToolkit.en-US.label.txt">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkit.en-US.label.txt</Name>
+      <DependentUpon>AxLabelFile\D365FOAdminToolkit_en-US</DependentUpon>
+    </Content>
+    <Content Include="D365FOAdminToolkit.es.label.txt">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkit.es.label.txt</Name>
+      <DependentUpon>AxLabelFile\D365FOAdminToolkit_es</DependentUpon>
+    </Content>
+    <Content Include="AxView\ADMSysUserLog">
+      <SubType>Content</SubType>
+      <Name>ADMSysUserLog</Name>
+      <Link>Views\ADMSysUserLog</Link>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MenuExt" />
@@ -163,6 +193,8 @@
     <Folder Include="EventHandlers" />
     <Folder Include="Classes" />
     <Folder Include="FormExt" />
+    <Folder Include="LabelFiles" />
+    <Folder Include="Views" />
     <Folder Include="Security" />
     <Folder Include="TableEvents" />
     <Folder Include="Tables" />
@@ -174,6 +206,6 @@
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
-   <Import Project="$(MSBuildBinPath)\Microsoft.Common.targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.Common.targets" />
   <Import Project="$(BuildTasksDirectory)\Microsoft.Dynamics.Framework.Tools.BuildTasks.targets" />
 </Project>

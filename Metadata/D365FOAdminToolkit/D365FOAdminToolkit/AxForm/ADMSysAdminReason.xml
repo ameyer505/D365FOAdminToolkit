@@ -62,7 +62,7 @@ public class ADMSysAdminReason extends FormRun
 	</SourceCode>
 	<DataSources />
 	<Design>
-		<Caption xmlns="">Admin Security Toolkit - SysAdmin Change</Caption>
+		<Caption xmlns="">@D365FOAdminToolkit:ASTSysAdminChange</Caption>
 		<Pattern xmlns="">Dialog</Pattern>
 		<PatternVersion xmlns="">1.2</PatternVersion>
 		<Style xmlns="">Dialog</Style>
@@ -75,7 +75,7 @@ public class ADMSysAdminReason extends FormRun
 				<WidthMode>SizeToAvailable</WidthMode>
 				<FormControlExtension
 					i:nil="true" />
-				<Text>SysAdmin Assignment Change Reason :</Text>
+				<Text>@D365FOAdminToolkit:ChangeReason</Text>
 			</AxFormControl>
 			<AxFormControl xmlns=""
 				i:type="AxFormGroupControl">
@@ -114,7 +114,7 @@ public class ADMSysAdminReason extends FormRun
 						<Type>Button</Type>
 						<FormControlExtension
 							i:nil="true" />
-						<Text>Submit</Text>
+						<Text>@D365FOAdminToolkit:Submit</Text>
 					</AxFormControl>
 					<AxFormControl xmlns=""
 						i:type="AxFormButtonControl">
