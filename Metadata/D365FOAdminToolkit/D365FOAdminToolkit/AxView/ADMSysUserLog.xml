@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxView xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMSysUserLog</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class ADMSysUserLog extends common
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>LoginDateTime</Name>
+				<Source><![CDATA[
+    private static str LoginDateTime()
+    {
+        #define.DS(SysUserLog)
+        #define.Field(CreatedDateTime)
+        #define.View(ADMSysUserLog)
+
+        str colSql = SysComputedColumn::returnField(tableStr(#View), identifierStr(#DS), fieldStr(#DS, #Field));
+        return "MAX(ISNULL("+colSql+", '1900-01-01T00:00:00'))";
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<SubscriberAccessLevel>
+		<Read>Allow</Read>
+	</SubscriberAccessLevel>
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields />
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxViewField xmlns=""
+			i:type="AxViewFieldBound">
+			<Name>UserId</Name>
+			<DataField>UserId</DataField>
+			<DataSource>SysUserLog</DataSource>
+		</AxViewField>
+		<AxViewField xmlns=""
+			i:type="AxViewFieldComputedUtcDateTime">
+			<Name>LastLogin</Name>
+			<Label>Last Login</Label>
+			<ViewMethod>LoginDateTime</ViewMethod>
+		</AxViewField>
+	</Fields>
+	<Indexes />
+	<Mappings />
+	<Relations />
+	<StateMachines />
+	<ViewMetadata>
+		<Name>Metadata</Name>
+		<SourceCode>
+			<Methods />
+		</SourceCode>
+		<DataSources>
+			<AxQuerySimpleRootDataSource>
+				<Name>SysUserLog</Name>
+				<DynamicFields>Yes</DynamicFields>
+				<Table>SysUserLog</Table>
+				<DataSources />
+				<DerivedDataSources />
+				<Fields />
+				<Ranges />
+				<GroupBy>
+					<AxQuerySimpleGroupByField>
+						<Name>QueryGroupByField1</Name>
+						<DataSource>SysUserLog</DataSource>
+						<Field>UserId</Field>
+					</AxQuerySimpleGroupByField>
+				</GroupBy>
+				<Having />
+				<OrderBy />
+			</AxQuerySimpleRootDataSource>
+		</DataSources>
+	</ViewMetadata>
+</AxView>

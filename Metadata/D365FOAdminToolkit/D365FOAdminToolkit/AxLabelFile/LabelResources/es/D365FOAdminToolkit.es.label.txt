@@ -17,6 +17,7 @@ DateTime=Fecha y hora
 DefaultNumDaysReport=Número predeterminado de días para informes
 EndDate=Fecha de fin:
 ExportRoleAccess=Exportar acceso a roles
+LastLogin=Último Acceso
 ModifiedBy=Modificado por
 NewLabel0=Label files created on 01/26/2024 18:04:13 for label file Id D365FOAdminToolkit and language en-US
  ;Label file comment - see above label

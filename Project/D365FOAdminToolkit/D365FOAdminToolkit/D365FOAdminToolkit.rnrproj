@@ -69,6 +69,11 @@
       <Name>SysSecConfiguration.D365FOAdminToolkit</Name>
       <Link>FormExt\SysSecConfiguration.D365FOAdminToolkit</Link>
     </Content>
+    <Content Include="AxFormExtension\SysUserManagement.D365FOAdminToolkit">
+      <SubType>Content</SubType>
+      <Name>SysUserManagement.D365FOAdminToolkit</Name>
+      <Link>Forms\SysUserManagement.D365FOAdminToolkit</Link>
+    </Content>
     <Content Include="AxForm\ADMConfiguration">
       <SubType>Content</SubType>
       <Name>ADMConfiguration</Name>
@@ -174,6 +179,11 @@
       <Name>D365FOAdminToolkit.es.label.txt</Name>
       <DependentUpon>AxLabelFile\D365FOAdminToolkit_es</DependentUpon>
     </Content>
+    <Content Include="AxView\ADMSysUserLog">
+      <SubType>Content</SubType>
+      <Name>ADMSysUserLog</Name>
+      <Link>Views\ADMSysUserLog</Link>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MenuExt" />
@@ -184,6 +194,7 @@
     <Folder Include="Classes" />
     <Folder Include="FormExt" />
     <Folder Include="LabelFiles" />
+    <Folder Include="Views" />
     <Folder Include="Security" />
     <Folder Include="TableEvents" />
     <Folder Include="Tables" />
