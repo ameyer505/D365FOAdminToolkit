@@ -47,11 +47,11 @@
     </Reference>
     <Reference Include="Microsoft.Dynamics.AX.Metadata.Core">
       <HintPath Condition="Exists('..\..\..\..\AOSService\PackagesLocalDirectory\bin')">..\..\..\..\AOSService\PackagesLocalDirectory\bin\Microsoft.Dynamics.AX.Metadata.Core.dll</HintPath>
-      <HintPath Condition="Exists('..\packages')">..\packages\Microsoft.Dynamics.AX.Platform.CompilerPackage.*\Microsoft.Dynamics.AX.Metadata.Core.dll</HintPath>
+      <HintPath Condition="Exists('..\packages')">..\packages\**\Microsoft.Dynamics.AX.Metadata.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Dynamics.AX.Security.Management">
       <HintPath Condition="Exists('..\..\..\..\AOSService\PackagesLocalDirectory\bin')">..\..\..\..\AOSService\PackagesLocalDirectory\bin\Microsoft.Dynamics.AX.Security.Management.dll</HintPath>
-      <HintPath Condition="Exists('..\packages')">..\packages\Microsoft.Dynamics.AX.Platform.DevALM.BuildXpp.*\ref\net40\ApplicationFoundation\bin\Microsoft.Dynamics.AX.Security.Management.dll</HintPath>
+      <HintPath Condition="Exists('..\packages')">..\packages\**\ref\net40\ApplicationFoundation\bin\Microsoft.Dynamics.AX.Security.Management.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Graph, Version=5.41.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Graph.5.41.0\lib\netstandard2.0\Microsoft.Graph.dll</HintPath>
