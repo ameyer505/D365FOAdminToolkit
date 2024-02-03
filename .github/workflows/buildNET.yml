@@ -22,6 +22,9 @@ jobs:
           version: '10.0.38'
           packagesDirectory: '${{ github.workspace }}/Project/D365FOAdminToolkit/packages'
 
+      - name: Show files
+        run: tree /F
+
       - name: Restore NuGet packages
         run: nuget restore Project/D365FOAdminToolkit/D365FOAdminToolkitNET/D365FOAdminToolkitNET.csproj -PackagesDirectory Project\D365FOAdminToolkit\packages
 
