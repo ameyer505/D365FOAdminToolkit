@@ -1,0 +1,136 @@
+name: (BUILD)
+
+on:
+  workflow_dispatch:
+   inputs:
+      version:
+        description: 'Select FSCM Version'
+        required: false
+        default: ''
+        type: choice
+        options:
+        - "*"
+
+      includeTestModels:
+        type: boolean
+        default: false
+        description: Include test models
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: pwsh
+    
+env:
+  FORCE_COLOR: 3
+
+jobs:
+   Initialization:
+    runs-on: [ windows-latest ]
+    outputs:
+      type: ${{ steps.ReadSettings.outputs.type }}
+      source_branch: ${{ steps.ReadSettings.outputs.source_branch }}
+      versions: ${{ steps.ReadSettings.outputs.VersionsJson }}
+      environments: ${{ steps.ReadSettings.outputs.EnvironmentsJson }}
+      githubRunner: ${{ steps.ReadSettings.outputs.GitHubRunnerJson }}
+    steps:
+      - name: Support longpaths
+        run: git config --system core.longpaths true
+        
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      - name: Initialize the workflow
+        uses: ciellosinc/FSC-PS-Actions/WorkflowInitialize@v1.3
+        id: init
+        env:
+          secrets: ${{ toJson(secrets) }}    
+
+      - name: Read settings
+        id: ReadSettings
+        uses: ciellosinc/FSC-PS-Actions/ReadSettings@v1.3
+        with:
+          version: ${{ inputs.version }}
+          
+      - name: Check for updates to FSC-PS system files
+        uses: ciellosinc/FSC-PS-Actions/CheckForUpdates@v1.3
+        continue-on-error: true
+        with:
+          type: ${{ steps.ReadSettings.outputs.type }}
+          settingsJson: ${{ env.Settings }}
+          secretsJson: ${{ env.RepoSecrets }}
+
+   Build:
+    needs: [ Initialization ]
+    runs-on: ${{ fromJson(needs.Initialization.outputs.githubRunner) }}
+    strategy:
+      matrix:
+        version: ${{ fromJson(needs.Initialization.outputs.versions) }}
+      fail-fast: false
+    name: Build ${{ matrix.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+      
+      - name: Read settings
+        uses: ciellosinc/FSC-PS-Actions/ReadSettings@v1.3
+        with:
+          version: ${{ matrix.version }}
+          
+      - name: Read secrets
+        uses: ciellosinc/FSC-PS-Actions/ReadSecrets@v1.3
+        env:
+          secrets: ${{ toJson(secrets) }}       
+        with:
+          settingsJson: ${{ env.Settings }}
+          
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.3
+
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v1.1.1
+        with:
+          nuget-version: 5.10.x    
+          
+      - name: Run pipeline
+        uses: ciellosinc/FSC-PS-Actions/RunPipeline@v1.3
+        id: runpipeline
+        with:
+          type: ${{ needs.Initialization.outputs.type}}
+          version: ${{ matrix.version }}
+          settingsJson: ${{ env.Settings }}
+          secretsJson: ${{ env.RepoSecrets }}
+      
+      - name: Publish artifacts  
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: ${{ env.PACKAGE_NAME }}
+          path: ${{ env.ARTIFACTS_PATH }}
+          
+   PostProcess: 
+    if: ${{ !cancelled() }}
+    runs-on: ${{ fromJson(needs.Initialization.outputs.githubRunner) }}
+    needs: [ Initialization,  Build ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      - name: Read settings
+        uses: ciellosinc/FSC-PS-Actions/ReadSettings@v1.3
+
+      - name: Read secrets
+        uses: ciellosinc/FSC-PS-Actions/ReadSecrets@v1.3
+        env:
+          secrets: ${{ toJson(secrets) }}
+        with:
+          settingsJson: ${{ env.Settings }}
+          
+      - name: Finalize the workflow
+        id: PostProcess
+        uses: ciellosinc/FSC-PS-Actions/WorkflowPostProcess@v1.3
+        with:
+          remove_current: ${{ needs.Initialization.outputs.environments == '' }}
+          settingsJson: ${{ env.Settings }}
+          secretsJson: ${{ env.RepoSecrets }}
