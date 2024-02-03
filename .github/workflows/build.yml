@@ -61,9 +61,33 @@ jobs:
           type: ${{ steps.ReadSettings.outputs.type }}
           settingsJson: ${{ env.Settings }}
           secretsJson: ${{ env.RepoSecrets }}
+    
+   BuildDotNet:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.3  
+
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v1
+
+      - name: Restore NuGet packages
+        run: nuget restore Project/D365FOAdminToolkit/D365FOAdminToolkitNET/D365FOAdminToolkitNET.csproj
+
+      - name: Build
+        run: msbuild Project/D365FOAdminToolkit/D365FOAdminToolkitNET/D365FOAdminToolkitNET.csproj /p:VersionSuffix=pr /p:Configuration=Release /p:Version=0.0.0.${{ github.event.pull_request.number }} /p:InformationalVersion=0.0.0.${{ github.event.pull_request.number }}-pr
+
+      - name: Upload D365FOAdminToolkitNET
+        uses: actions/upload-artifact@v3
+        with:
+          name: D365FOAdminToolkitNET
+          path: Project/D365FOAdminToolkit/D365FOAdminToolkitNET/bin/Release 
 
    Build:
-    needs: [ Initialization ]
+    needs: [ Initialization, BuildDotNet ]
     runs-on: ${{ fromJson(needs.Initialization.outputs.githubRunner) }}
     strategy:
       matrix:
