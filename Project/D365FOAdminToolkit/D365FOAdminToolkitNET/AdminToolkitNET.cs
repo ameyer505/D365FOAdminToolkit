@@ -1,7 +1,9 @@
 ﻿using CsvHelper;
+using D365FOAdminToolkitNET.Clients;
 using D365FOAdminToolkitNET.Models;
 using Microsoft.Dynamics.AX.Security.Management;
 using Microsoft.Dynamics.AX.Security.Management.Querying;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -55,6 +57,44 @@ namespace D365FOAdminToolkitNET
                 MemoryStream roleAccessStream = new MemoryStream(ms.ToArray());
                 return roleAccessStream;
             }
+        }
+
+        public static IEnumerable<EntUser> GetEntraIdUsers(string tenantId, string clientId, string clientSecret)
+        {
+            MsftGraphClient graphClient = new MsftGraphClient(new MsftGraphCredentials(clientId, clientSecret, tenantId));
+            IEnumerable<EntUser> userList = new List<EntUser>();
+            userList = graphClient.ListUsers();
+            return userList;
+        }
+
+        public static IEnumerable<EntGroup> GetEntraIdGroups(string tenantId, string clientId, string clientSecret)
+        {
+            IEnumerable<EntGroup> groupList = new List<EntGroup>();
+            MsftGraphClient graphClient = new MsftGraphClient(new MsftGraphCredentials(clientId, clientSecret, tenantId));
+            groupList = graphClient.ListGroups();
+            return groupList;
+        }
+
+        public static IEnumerable<EntUserGroup> GetEntraIdUserGroups(string tenantId, string clientId, string clientSecret, ArrayList d365foUsers)
+        {
+            IEnumerable<EntUser> userList = new List<EntUser>();
+            IEnumerable<EntGroup> groupList = new List<EntGroup>();
+            IEnumerable<EntUserGroup> userGroupList = new List<EntUserGroup>();
+            MsftGraphClient graphClient = new MsftGraphClient(new MsftGraphCredentials(clientId, clientSecret, tenantId));
+
+            userList = GetEntraIdUsers(tenantId, clientId, clientSecret);
+            groupList = GetEntraIdGroups(tenantId, clientId, clientSecret);
+
+            List<D365FOUser> d365FOUserList = new List<D365FOUser>();
+            foreach(var u in d365foUsers)
+            {
+                D365FOUser usr = (D365FOUser)u;
+                d365FOUserList.Add(usr);
+            }
+
+            var userSIDs = d365FOUserList.Where(u => u.AccountType == Models.UserAccountType.ClaimsGroup).Select(usr => usr.SID);
+            userGroupList = graphClient.ListUserGroup(userSIDs, userList, groupList);
+            return userGroupList;
         }
     }
 }
