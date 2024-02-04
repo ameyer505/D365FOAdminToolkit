@@ -98,16 +98,6 @@ jobs:
           name: D365FOAdminToolkitNET
           path: Project/D365FOAdminToolkit/D365FOAdminToolkitNET/bin/Release 
 
-      - name: Add MSBuild log to job summary
-        run: |
-          $msbuildLog = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -Filter msbuild.log
-          if ($msbuildLog) {
-              $content = Get-Content -Path $msbuildLog
-              "MSBuild log: $content" >> $env:GITHUB_STEP_SUMMARY
-          }
-        shell: pwsh
-
-
    Build:
     needs: [ Initialization, BuildDotNet ]
     runs-on: ${{ fromJson(needs.Initialization.outputs.githubRunner) }}
