@@ -90,13 +90,23 @@ jobs:
         run: nuget restore Project/D365FOAdminToolkit/D365FOAdminToolkitNET/D365FOAdminToolkitNET.csproj -PackagesDirectory Project/D365FOAdminToolkit/packages
 
       - name: Build
-        run: msbuild Project/D365FOAdminToolkit/D365FOAdminToolkitNET/D365FOAdminToolkitNET.csproj /p:VersionSuffix=pr /p:Configuration=Release /p:Version=0.0.0.${{ github.event.pull_request.number }} /p:InformationalVersion=0.0.0.${{ github.event.pull_request.number }}-pr
+        run: msbuild Project/D365FOAdminToolkit/D365FOAdminToolkitNET/D365FOAdminToolkitNET.csproj /p:VersionSuffix=pr /p:Configuration=Release /p:Version=0.0.0.${{ github.event.pull_request.number }} /p:InformationalVersion=0.0.0.${{ github.event.pull_request.number }}-pr -fileLogger
 
       - name: Upload D365FOAdminToolkitNET
         uses: actions/upload-artifact@v4
         with:
           name: D365FOAdminToolkitNET
           path: Project/D365FOAdminToolkit/D365FOAdminToolkitNET/bin/Release 
+
+      - name: Add MSBuild log to job summary
+        run: |
+          $msbuildLog = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -Filter msbuild.log
+          if ($msbuildLog) {
+              $content = Get-Content -Path $msbuildLog
+              $ENV:GITHUB_STEP_SUMMARY = "MSBuild log: $content"
+          }
+        shell: pwsh
+
 
    Build:
     needs: [ Initialization, BuildDotNet ]
@@ -150,6 +160,17 @@ jobs:
         with:
           name: ${{ env.PACKAGE_NAME }}
           path: ${{ env.ARTIFACTS_PATH }}
+
+      - name: Add logs to job summary
+        run: |
+          $logFiles = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -Filter *.log
+          if ($logFiles) {
+              foreach ($logFile in $logFiles) {
+                  $content = Get-Content -Path $logFile
+                  $ENV:GITHUB_STEP_SUMMARY = $ENV:GITHUB_STEP_SUMMARY + "Log file: $logFile`n$content"
+              }
+          }
+        shell: pwsh
           
    PostProcess: 
     if: ${{ !cancelled() }}
