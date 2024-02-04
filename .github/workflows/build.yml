@@ -104,6 +104,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.1.1
+
+      - name: Download D365FOAdminToolkitNET
+        uses: actions/download-artifact@v3
+        with:
+          name: D365FOAdminToolkitNET
+          path: Metadata/D365FOAdminToolkit/bin
+
+      - name: Show files
+        run: |
+          Get-ChildItem -Path Metadata/D365FOAdminToolkit/bin -Recurse
       
       - name: Read settings
         uses: ciellosinc/FSC-PS-Actions/ReadSettings@v1.3
