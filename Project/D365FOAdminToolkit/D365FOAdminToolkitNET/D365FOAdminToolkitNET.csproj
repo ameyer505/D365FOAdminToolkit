@@ -32,6 +32,18 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <ItemGroup Condition="Exists('..\..\..\..\AOSService')">
+    <Reference Include="Microsoft.Dynamics.AX.Metadata.Core">
+      <HintPath>..\..\..\..\AOSService\PackagesLocalDirectory\bin\Microsoft.Dynamics.AX.Metadata.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamics.AX.Security.Management">
+      <HintPath>..\..\..\..\AOSService\PackagesLocalDirectory\bin\Microsoft.Dynamics.AX.Security.Management.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="Exists('..\packages\Microsoft.Dynamics.AX.Platform*')">
+    <Reference Include="..\packages\Microsoft.Dynamics.AX.Platform.CompilerPackage.*\Microsoft.Dynamics.AX.Metadata.Core.dll" />
+    <Reference Include="..\packages\Microsoft.Dynamics.AX.Platform.DevALM.BuildXpp.*\ref\net40\ApplicationFoundation\bin\Microsoft.Dynamics.AX.Security.Management.dll" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="Azure.Core, Version=1.36.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
       <HintPath>..\packages\Azure.Core.1.36.0\lib\net472\Azure.Core.dll</HintPath>
