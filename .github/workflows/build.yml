@@ -122,13 +122,6 @@ jobs:
         with:
           version: ${{ matrix.version }}
           
-      - name: Read secrets
-        uses: ciellosinc/FSC-PS-Actions/ReadSecrets@v1.3
-        env:
-          secrets: ${{ toJson(secrets) }}       
-        with:
-          settingsJson: ${{ env.Settings }}
-          
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
@@ -187,13 +180,6 @@ jobs:
       - name: Read settings
         uses: ciellosinc/FSC-PS-Actions/ReadSettings@v1.3
 
-      - name: Read secrets
-        uses: ciellosinc/FSC-PS-Actions/ReadSecrets@v1.3
-        env:
-          secrets: ${{ toJson(secrets) }}
-        with:
-          settingsJson: ${{ env.Settings }}
-          
       - name: Finalize the workflow
         id: PostProcess
         uses: ciellosinc/FSC-PS-Actions/WorkflowPostProcess@v1.3
