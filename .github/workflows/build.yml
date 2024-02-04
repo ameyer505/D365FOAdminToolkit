@@ -167,7 +167,6 @@ jobs:
               }
           }
           $summary >> $env:GITHUB_STEP_SUMMARY
-        shell: pwsh
           
    PostProcess: 
     if: ${{ !cancelled() }}
