@@ -40,3 +40,6 @@ This code and deployable package are delivered 'as is' with no additional suppor
 
 # Build Action
 The GitHub build action is based on [FSC-PS for GitHub](https://github.com/ciellosinc/FSC-PS).
+
+# Build Status
+[![(BUILD)](https://github.com/ameyer505/D365FOAdminToolkit/actions/workflows/build.yml/badge.svg)](https://github.com/ameyer505/D365FOAdminToolkit/actions/workflows/build.yml)
