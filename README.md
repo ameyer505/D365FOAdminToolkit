@@ -37,3 +37,6 @@ Feel free to reach out to d365fotoolkit@outlook.com for any questions or feature
 
 # Legal
 This code and deployable package are delivered 'as is' with no additional support.
+
+# Build Action
+The GitHub build action is based on [FSC-PS for GitHub](https://github.com/ciellosinc/FSC-PS).
