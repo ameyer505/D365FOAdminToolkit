@@ -1,0 +1,27 @@
+name: Job summary
+
+on:
+  workflow_dispatch
+
+jobs:
+  jobsummary1:
+    runs-on: windows-latest
+    steps:
+      - name: Add job summary
+        run: |
+          $ENV:GITHUB_STEP_SUMMARY = "Test1"
+        shell: pwsh
+  jobsummary2:
+    runs-on: windows-latest
+    steps:
+      - name: Add job summary
+        run: |
+          $env:GITHUB_STEP_SUMMARY = "Test2"
+        shell: pwsh
+  jobsummary3:
+    runs-on: windows-latest
+    steps:
+      - name: Add job summary
+        run: |
+          "Test3" >> $env:GITHUB_STEP_SUMMARY
+        shell: pwsh
