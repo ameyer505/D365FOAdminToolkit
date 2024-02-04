@@ -116,10 +116,6 @@ jobs:
           name: D365FOAdminToolkitNET
           path: Metadata/D365FOAdminToolkit/bin
 
-      - name: Show files
-        run: |
-          Get-ChildItem -Path Metadata/D365FOAdminToolkit/bin -Recurse
-      
       - name: Read settings
         uses: ciellosinc/FSC-PS-Actions/ReadSettings@v1.3
         with:
