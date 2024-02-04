@@ -159,6 +159,7 @@ jobs:
           if ($logFiles) {
               foreach ($logFile in $logFiles) {
                   $content = Get-Content -Path $logFile
+                  $summary += "## $logFile `n"
                   foreach ($line in $content) {
                       $summary = $summary + $line + "`n"
                   }
