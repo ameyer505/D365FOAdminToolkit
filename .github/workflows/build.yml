@@ -75,7 +75,7 @@ jobs:
         uses: nuget/setup-nuget@v1
 
       - name: Restore NuGet packages
-        run: nuget restore Project/D365FOAdminToolkit/D365FOAdminToolkitNET/D365FOAdminToolkitNET.csproj
+        run: nuget restore Project/D365FOAdminToolkit/D365FOAdminToolkitNET/D365FOAdminToolkitNET.csproj -PackagesDirectory Project/D365FOAdminToolkit/packages
 
       - name: Build
         run: msbuild Project/D365FOAdminToolkit/D365FOAdminToolkitNET/D365FOAdminToolkitNET.csproj /p:VersionSuffix=pr /p:Configuration=Release /p:Version=0.0.0.${{ github.event.pull_request.number }} /p:InformationalVersion=0.0.0.${{ github.event.pull_request.number }}-pr
