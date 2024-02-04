@@ -153,11 +153,12 @@ jobs:
 
       - name: Add logs to job summary
         run: |
-          $logFiles = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -Filter *.log
+          $logFiles = Get-ChildItem -Path "C:\Temp\_bld" -Recurse -Filter *.log
+          $summary = "#Logs`n"
           if ($logFiles) {
               foreach ($logFile in $logFiles) {
                   $content = Get-Content -Path $logFile
-                  $summary = "Log file: $logFile`n$content`n"
+                  $summary = $summary + "Log file: $logFile`n$content`n"
               }
           }
           $summary >> $env:GITHUB_STEP_SUMMARY
