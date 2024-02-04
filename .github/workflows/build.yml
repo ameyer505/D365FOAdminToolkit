@@ -103,7 +103,7 @@ jobs:
           $msbuildLog = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -Filter msbuild.log
           if ($msbuildLog) {
               $content = Get-Content -Path $msbuildLog
-              $ENV:GITHUB_STEP_SUMMARY = "MSBuild log: $content"
+              "MSBuild log: $content" >> $env:GITHUB_STEP_SUMMARY
           }
         shell: pwsh
 
@@ -167,9 +167,10 @@ jobs:
           if ($logFiles) {
               foreach ($logFile in $logFiles) {
                   $content = Get-Content -Path $logFile
-                  $ENV:GITHUB_STEP_SUMMARY = $ENV:GITHUB_STEP_SUMMARY + "Log file: $logFile`n$content"
+                  $summary = "Log file: $logFile`n$content`n"
               }
           }
+          $summary >> $env:GITHUB_STEP_SUMMARY
         shell: pwsh
           
    PostProcess: 
