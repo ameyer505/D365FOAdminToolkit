@@ -159,7 +159,7 @@ jobs:
                       # (https://github.github.com/gfm/#setext-headings)), 
                       # add a new line before it
                       if ($line -match "^[=-]+$") {
-                          $summary += "`n$line"
+                          $summary += "`n$line`n"
                       } else {
                         $summary += $line + "`n"
                       } 
