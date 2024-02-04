@@ -2,6 +2,5 @@
   "templateUrl":  "https://github.com/ciellosinc/FSC-PS.FSC",
   "templateBranch":  "main",
   "runs-on":  "windows-latest",
-  "metadataPath": "Metadata",
-  "repoTokenSecretName": "DUMMY_REPO_TOKEN"
+  "metadataPath": "Metadata"
 }
