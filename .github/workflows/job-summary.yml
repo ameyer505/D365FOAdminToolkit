@@ -9,8 +9,8 @@ jobs:
     steps:
       - name: Add job summary
         run: |
-          $summary = "# Logs \n\n"
-          $summary += "## Job `n`n3 \n\n"
-          $summary += "Test3 \n\n"
+          $summary = "# Logs `n`n"
+          $summary += "## Job 3 `n`n"
+          $summary += "Test3 `n`n"
           $summary >> $env:GITHUB_STEP_SUMMARY
         shell: pwsh
