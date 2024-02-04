@@ -75,10 +75,10 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.3  
+        uses: microsoft/setup-msbuild@v2
 
       - name: Setup NuGet
-        uses: nuget/setup-nuget@v1
+        uses: nuget/setup-nuget@v2
 
       - name: Restore FSC Nugets
         uses: FH-Inway/FSC-PS-Actions/RestoreFSCNuget@restore-fsc-nugets
@@ -93,7 +93,7 @@ jobs:
         run: msbuild Project/D365FOAdminToolkit/D365FOAdminToolkitNET/D365FOAdminToolkitNET.csproj /p:VersionSuffix=pr /p:Configuration=Release /p:Version=0.0.0.${{ github.event.pull_request.number }} /p:InformationalVersion=0.0.0.${{ github.event.pull_request.number }}-pr
 
       - name: Upload D365FOAdminToolkitNET
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: D365FOAdminToolkitNET
           path: Project/D365FOAdminToolkit/D365FOAdminToolkitNET/bin/Release 
@@ -111,7 +111,7 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: Download D365FOAdminToolkitNET
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: D365FOAdminToolkitNET
           path: Metadata/D365FOAdminToolkit/bin
@@ -129,10 +129,10 @@ jobs:
           settingsJson: ${{ env.Settings }}
           
       - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.3
+        uses: microsoft/setup-msbuild@v2
 
       - name: Setup NuGet
-        uses: nuget/setup-nuget@v1.1.1
+        uses: nuget/setup-nuget@v2
         with:
           nuget-version: 5.10.x    
           
@@ -146,7 +146,7 @@ jobs:
           secretsJson: ${{ env.RepoSecrets }}
       
       - name: Publish artifacts  
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PACKAGE_NAME }}
           path: ${{ env.ARTIFACTS_PATH }}
