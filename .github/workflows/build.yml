@@ -161,7 +161,15 @@ jobs:
                   $content = Get-Content -Path $logFile
                   $summary += "## $logFile `n"
                   foreach ($line in $content) {
-                      $summary = $summary + $line + "`n"
+                      # if the line is consists only of = or - characters 
+                      # (which would be interpreted as a setext heading 
+                      # (https://github.github.com/gfm/#setext-headings)), 
+                      # add a new line before it
+                      if ($line -match "^[=-]+$") {
+                          $summary += "`n$line"
+                      } else {
+                        $summary += $line + "`n"
+                      } 
                   }
               }
           }
