@@ -40,7 +40,7 @@
       <HintPath>..\..\..\..\AOSService\PackagesLocalDirectory\bin\Microsoft.Dynamics.AX.Security.Management.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup Condition="Exists('..\packages\Microsoft.Dynamics.AX.Platform*')">
+  <ItemGroup Condition="Exists('..\packages')">
     <Reference Include="..\packages\Microsoft.Dynamics.AX.Platform.CompilerPackage.*\Microsoft.Dynamics.AX.Metadata.Core.dll" />
     <Reference Include="..\packages\Microsoft.Dynamics.AX.Platform.DevALM.BuildXpp.*\ref\net40\ApplicationFoundation\bin\Microsoft.Dynamics.AX.Security.Management.dll" />
   </ItemGroup>
