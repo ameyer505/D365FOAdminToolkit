@@ -42,4 +42,4 @@ This code and deployable package are delivered 'as is' with no additional suppor
 The GitHub build action is based on [FSC-PS for GitHub](https://github.com/ciellosinc/FSC-PS).
 
 # Build Status
-[![(BUILD)](../../workflows/build.yml/badge.svg)](../../workflows/build.yml)
+[![(BUILD)](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)
