@@ -1,6 +1,7 @@
 name: (BUILD)
 
 on:
+  pull_request:
   workflow_dispatch:
    inputs:
       version:
