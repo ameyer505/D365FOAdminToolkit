@@ -159,7 +159,9 @@ jobs:
           if ($logFiles) {
               foreach ($logFile in $logFiles) {
                   $content = Get-Content -Path $logFile
-                  $summary = $summary + "## Log file: $logFile `n`n$content`n`n"
+                  foreach ($line in $content) {
+                      $summary = $summary + $line + "`n"
+                  }
               }
           }
           $summary >> $env:GITHUB_STEP_SUMMARY
