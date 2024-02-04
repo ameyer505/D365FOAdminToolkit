@@ -63,6 +63,7 @@ jobs:
           secretsJson: ${{ env.RepoSecrets }}
     
    BuildDotNet:
+    needs: [ Initialization ]
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -73,6 +74,12 @@ jobs:
 
       - name: Setup NuGet
         uses: nuget/setup-nuget@v1
+
+      - name: Restore FSC Nugets
+        uses: FH-Inway/FSC-PS-Actions/RestoreFSCNuget@restore-fsc-nugets
+        with:
+          version: ${{ fromJson(needs.Initialization.outputs.versions) }}
+          packagesDirectory: '${{ github.workspace }}/Project/D365FOAdminToolkit/packages'
 
       - name: Restore NuGet packages
         run: nuget restore Project/D365FOAdminToolkit/D365FOAdminToolkitNET/D365FOAdminToolkitNET.csproj -PackagesDirectory Project/D365FOAdminToolkit/packages
