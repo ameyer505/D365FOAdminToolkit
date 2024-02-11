@@ -194,13 +194,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdminToolkitNET.cs" />
-    <Compile Include="Clients\MsftGraphClient.cs" />
-    <Compile Include="Models\D365FOUser.cs" />
-    <Compile Include="Models\EntGroup.cs" />
-    <Compile Include="Models\EntUser.cs" />
-    <Compile Include="Models\EntUserGroup.cs" />
-    <Compile Include="Clients\MsftGraphCredentials.cs" />
-    <Compile Include="Models\MsftGraphResponse.cs" />
     <Compile Include="Models\RoleAccess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -23,9 +23,6 @@ public class ADMConfiguration extends FormRun
 
         int reportOffset = 30;
         int reasonDialog = 0;
-        str tenantId = "";
-        str clientId = "";
-        str clientSecret = "";
 
         select firstonly Value from config where config.Name == "DefaultNumDaysForReports";
         if(config)
@@ -44,28 +41,6 @@ public class ADMConfiguration extends FormRun
                 reasonDialog = str2Num(config.Value);
             }
         }
-
-        select firstonly Value from config where config.Name == "EntTenantId";
-        if(config)
-        {
-            tenantId = config.Value;
-        }
-
-        select firstonly Value from config where config.Name == "EntClientId";
-        if(config)
-        {
-            clientId = config.Value;
-        }
-
-        select firstonly Value from config where config.Name == "EntClientSecret";
-        if(config)
-        {
-            clientSecret = config.Value;
-        }
-
-        ent_tenantid.text(tenantId);
-        ent_clientid.text(clientId);
-        ent_clientsecret.text(clientSecret);
 
         ReportNumDays.value(reportOffset);
         ShowReasonDialog.value(reasonDialog);
@@ -157,66 +132,6 @@ public class ADMConfiguration extends FormRun
                 ttscommit;
             }
 
-            select forupdate config where config.Name == "EntTenantId";
-            if(config)
-            {
-                str tenantId = ent_tenantid.valueStr();
-                ttsbegin;
-                config.Value = tenantId;
-                config.update();
-                ttscommit;
-            }
-            else
-            {
-                config.clear();
-                config.Name = "EntTenantId";
-                str tenantId = ent_tenantid.valueStr();
-                ttsbegin;
-                config.Value = tenantId;
-                config.insert();
-                ttscommit;
-            }
-
-            select forupdate config where config.Name == "EntClientId";
-            if(config)
-            {
-                str clientId = ent_clientId.valueStr();
-                ttsbegin;
-                config.Value = clientId;
-                config.update();
-                ttscommit;
-            }
-            else
-            {
-                config.clear();
-                config.Name = "EntClientId";
-                str clientId = ent_clientId.valueStr();
-                ttsbegin;
-                config.Value = clientId;
-                config.insert();
-                ttscommit;
-            }
-
-            select forupdate config where config.Name == "EntClientSecret";
-            if(config)
-            {
-                str clientSecret = ent_clientSecret.valueStr();
-                ttsbegin;
-                config.Value = clientSecret;
-                config.update();
-                ttscommit;
-            }
-            else
-            {
-                config.clear();
-                config.Name = "EntClientSecret";
-                str clientSecret = ent_clientSecret.valueStr();
-                ttsbegin;
-                config.Value = clientSecret;
-                config.insert();
-                ttscommit;
-            }
-
             Box::info("D365FO Admin Toolkit Configuration Saved Successfully", "", "");
             
             element.close();
@@ -265,42 +180,6 @@ public class ADMConfiguration extends FormRun
 						<FormControlExtension
 							i:nil="true" />
 						<Label>@D365FOAdminToolkit:ShowReasonDialog</Label>
-					</AxFormControl>
-					<AxFormControl xmlns=""
-						i:type="AxFormStaticTextControl">
-						<Name>FormStaticTextControl1</Name>
-						<Type>StaticText</Type>
-						<FormControlExtension
-							i:nil="true" />
-						<Text>Microsoft Entra ID Connection</Text>
-					</AxFormControl>
-					<AxFormControl xmlns=""
-						i:type="AxFormStringControl">
-						<Name>ent_tenantid</Name>
-						<AutoDeclaration>Yes</AutoDeclaration>
-						<Type>String</Type>
-						<FormControlExtension
-							i:nil="true" />
-						<Label>Entra Tenant ID</Label>
-					</AxFormControl>
-					<AxFormControl xmlns=""
-						i:type="AxFormStringControl">
-						<Name>ent_clientid</Name>
-						<AutoDeclaration>Yes</AutoDeclaration>
-						<Type>String</Type>
-						<FormControlExtension
-							i:nil="true" />
-						<Label>Entra Client ID</Label>
-					</AxFormControl>
-					<AxFormControl xmlns=""
-						i:type="AxFormStringControl">
-						<Name>ent_clientsecret</Name>
-						<AutoDeclaration>Yes</AutoDeclaration>
-						<Type>String</Type>
-						<FormControlExtension
-							i:nil="true" />
-						<Label>Entra Client Secret</Label>
-						<PasswordStyle>Yes</PasswordStyle>
 					</AxFormControl>
 				</Controls>
 				<Style>DialogContent</Style>
