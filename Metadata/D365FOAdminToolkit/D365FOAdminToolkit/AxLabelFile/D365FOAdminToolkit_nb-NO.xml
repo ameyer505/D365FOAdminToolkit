@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxLabelFile xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>D365FOAdminToolkit_nb-NO</Name>
+	<LabelContentFileName>D365FOAdminToolkit.nb-NO.label.txt</LabelContentFileName>
+	<LabelFileId>D365FOAdminToolkit</LabelFileId>
+	<Language>nb-NO</Language>
+	<RelativeUriInModelStore>D365FOAdminToolkit\D365FOAdminToolkit\AxLabelFile\LabelResources\nb-NO\D365FOAdminToolkit.nb-NO.label.txt</RelativeUriInModelStore>
+</AxLabelFile>
