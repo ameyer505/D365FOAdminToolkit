@@ -16,9 +16,13 @@ Please review the provided D365FO Admin Toolkit Overview PDF documentation locat
 - SysAdmin role assignment / revoke reporting
 - Configuration page
 - Export all role access to CSV
-- Support for both English and Spanish languages
+- Support for the following languages:
+  - English
+  - Spanish
+  - Norwegian
 - Adding last login to user info form
 - Unit tests
+- Export environment configuration
   
 # Features in Development
 - Auto disable D365FO users when AAD/Entra user is disabled
@@ -32,8 +36,16 @@ https://github.com/FH-Inway
 
 https://github.com/jatomas
 
+https://github.com/Alireza-Eshaghzadeh
+
 # Contact
 Feel free to reach out to d365fotoolkit@outlook.com for any questions or feature suggestions.
 
 # Legal
 This code and deployable package are delivered 'as is' with no additional support.
+
+# Build Action
+The GitHub build action is based on [FSC-PS for GitHub](https://github.com/ciellosinc/FSC-PS).
+
+# Build Status
+[![(BUILD)](../../actions/workflows/build.yml/badge.svg)](../../actions/workflows/build.yml)

@@ -34,6 +34,11 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="AxClass\ADMExportEnvConfig">
+      <SubType>Content</SubType>
+      <Name>ADMExportEnvConfig</Name>
+      <Link>Classes\ADMExportEnvConfig</Link>
+    </Content>
     <Content Include="AxClass\ADMExportRoleAccess">
       <SubType>Content</SubType>
       <Name>ADMExportRoleAccess</Name>
@@ -104,10 +109,20 @@
       <Name>D365FOAdminToolkit_es</Name>
       <Link>LabelFiles\D365FOAdminToolkit_es</Link>
     </Content>
+    <Content Include="AxLabelFile\D365FOAdminToolkit_nb-NO">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkit_nb-NO</Name>
+      <Link>LabelFiles\D365FOAdminToolkit_nb-NO</Link>
+    </Content>
     <Content Include="AxMenuExtension\SystemAdministration.D365FOAdminToolkit">
       <SubType>Content</SubType>
       <Name>SystemAdministration.D365FOAdminToolkit</Name>
       <Link>MenuExt\SystemAdministration.D365FOAdminToolkit</Link>
+    </Content>
+    <Content Include="AxMenuItemAction\ADMExportEnvConfig">
+      <SubType>Content</SubType>
+      <Name>ADMExportEnvConfig</Name>
+      <Link>MenuItems\ADMExportEnvConfig</Link>
     </Content>
     <Content Include="AxMenuItemAction\ADMExportRoleAccess">
       <SubType>Content</SubType>
@@ -183,6 +198,11 @@
       <SubType>Content</SubType>
       <Name>ADMSysUserLog</Name>
       <Link>Views\ADMSysUserLog</Link>
+    </Content>
+    <Content Include="D365FOAdminToolkit.nb-NO.label.txt">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkit.nb-NO.label.txt</Name>
+      <DependentUpon>AxLabelFile\D365FOAdminToolkit_nb-NO</DependentUpon>
     </Content>
   </ItemGroup>
   <ItemGroup>

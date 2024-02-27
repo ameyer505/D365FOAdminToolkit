@@ -23,12 +23,13 @@ Last Updated: 1/31/2023</Description>
 		<d2p1:string>ApplicationPlatform</d2p1:string>
 		<d2p1:string>ApplicationSuite</d2p1:string>
 		<d2p1:string>ApplicationWorkspaces</d2p1:string>
+		<d2p1:string>Directory</d2p1:string>
 	</ModuleReferences>
 	<Name>D365FOAdminToolkit</Name>
 	<Publisher>D365FO Admin Toolkit</Publisher>
 	<SolutionId>00000000-0000-0000-0000-000000000000</SolutionId>
 	<VersionBuild>0</VersionBuild>
 	<VersionMajor>1</VersionMajor>
-	<VersionMinor>2</VersionMinor>
+	<VersionMinor>3</VersionMinor>
 	<VersionRevision>0</VersionRevision>
 </AxModelInfo>

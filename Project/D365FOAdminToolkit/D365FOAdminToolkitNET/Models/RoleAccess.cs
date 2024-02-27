@@ -6,9 +6,9 @@
         public string RoleName { get; set; }
         public string SubRoleIdentifer { get; set; }
         public string SubRoleName { get; set; }
-        public string DutySystemName { get; set; }
+        public string DutyIdentifier { get; set; }
         public string DutyName { get; set; }
-        public string PrivilegeSystemName { get; set; }
+        public string PrivilegeIdentifier { get; set; }
         public string PrivilegeName { get; set; }
         public string SecurableObject { get; set; }
         public string SecurableType { get; set; }
