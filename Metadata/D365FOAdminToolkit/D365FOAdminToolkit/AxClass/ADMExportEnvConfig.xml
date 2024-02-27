@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMExportEnvConfig</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+using Microsoft.Dynamics.AX.Security.Management;
+using Microsoft.Dynamics.AX.Security.Management.Domain;
+using Microsoft.Dynamics.AX.Security.Management.Interfaces;
+using Microsoft.Dynamics.AX.Security.Management.Querying;
+using Microsoft.Dynamics.AX.Security.Management.UI;
+using D365FOAdminToolkitNET;
+using D365FOAdminToolkitNET.Models;
+using System.Collections;
+using System.Collections.Generic;
+
+public class ADMExportEnvConfig
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    public static void main(Args _args)
+    {
+        UserInfo ui;
+        DirPersonUser dpu;
+        DirPartyTable dpt;
+        SystemSecurityUserRoleAssociationEntity ur;
+        SystemSecurityUserRoleOrganizationEntity uro;
+
+        ArrayList users = new ArrayList();
+        ArrayList userRoles = new ArrayList();
+        ArrayList userRoleOrgs = new ArrayList();
+
+        Microsoft.Dynamics.Ax.Xpp.ErrorException xppEx;
+        System.IO.MemoryStream stream;
+        try
+        {
+
+            while select
+                AccountType,
+                NetworkAlias,
+                Company,
+                Enable,
+                ExternalUser,
+                Language,
+                NetworkDomain,
+                Id,
+                Name,
+                HelpLanguage,
+                Sid
+            from ui
+                where ui.enable == true
+                outer join dpu where ui.id == dpu.User && ui.Partition == dpu.Partition
+                outer join Name from dpt where dpu.PersonParty == dpt.RecId && dpu.Partition == dpt.Partition
+            {
+                D365FOAdminToolkitNET.Models.User user = new D365FOAdminToolkitNET.Models.User();
+                user.AccountType = ui.AccountType;
+                user.Alias = ui.networkAlias;
+                user.Company = ui.Company;
+                user.Email = ui.networkAlias;
+                user.Enabled = ui.enable;
+                user.ExternalUser = ui.ExternalUser;
+                user.Language = ui.Language;
+                user.NetworkDomain = ui.NetworkDomain;
+                user.UserId = ui.id;
+                user.UserName = ui.name;
+                user.UserInfo_language = ui.language;
+                user.Helplanguage = ui.helplanguage;
+                user.SID = ui.Sid;
+
+                if(dpt.Name)
+                user.PersonName = dpt.Name;
+                else
+                User.PersonName = "";
+
+                users.Add(user);
+            }
+
+            //Security User Roles
+            while select
+                AssignmentMode,
+                AssignmentStatus,
+                UserId,
+                SecurityRoleIdentifier,
+                SecurityRoleName
+            from ur
+            {
+                D365FOAdminToolkitNET.Models.SecurityUserRoleAssociation userRole = new D365FOAdminToolkitNET.Models.SecurityUserRoleAssociation();
+                userRole.AssignmentMode = ur.AssignmentMode;
+                userRole.AssignmentStatus = ur.AssignmentStatus;
+                userRole.UserId = ur.UserId;
+                userRole.SecurityRoleIdentifier = ur.SecurityRoleIdentifier;
+                userRole.SecurityRoleName = ur.SecurityRoleName;
+                userRoles.Add(userRole);
+            }
+
+            //Security User Role Orgs
+            while select
+                HierarchyType,
+                OperatingUnitType,
+                OrganizationId,
+                OrganizationType,
+                SecurityRoleIdentifier,
+                UserId
+            from uro
+            {
+                D365FOAdminToolkitNET.Models.SecurityUserRoleOrganization userRoleOrg = new D365FOAdminToolkitNET.Models.SecurityUserRoleOrganization();
+                userRoleOrg.HierarchyType = uro.HierarchyType;
+                userRoleOrg.OperatingUnitType = uro.OperatingUnitType;
+                userRoleOrg.OrganizationId = uro.OrganizationId;
+                userRoleOrg.OrganizationType = uro.OrganizationType;
+                userRoleOrg.SecurityRoleIdentifier = uro.SecurityRoleIdentifier;
+                userRoleOrg.UserId = uro.UserId;
+                userRoleOrgs.Add(userRoleOrg);
+            }
+
+            SecurityRepository sr = SysSecurity::GetSecurityRepository();
+            Microsoft.Dynamics.ApplicationPlatform.Environment.IApplicationEnvironment env = Microsoft.Dynamics.ApplicationPlatform.Environment.EnvironmentFactory::GetApplicationEnvironment();
+            str host = env.Infrastructure.HostedServiceName;
+            str dateTimeStr = date2Str(systemDateGet(),123,DateDay::Digits2,DateSeparator::Hyphen,DateMonth::Digits2,DateSeparator::Hyphen,DateYear::Digits4);
+            stream = D365FOAdminToolkitNET.AdminToolkitNET::GenerateEnvironmentExport(sr, users, userRoles, userRoleOrgs);
+            File::SendFileToUser(stream, strFmt("%1-%2-Export.zip", host, dateTimeStr));
+            stream.Close();
+
+            Box::info("@D365FOAdminToolkit:EnvConfigFileGenerated", "", "");
+        }
+        catch (xppEx)
+        {
+            throw Error(strFmt("%1 - %2", xppEx.Message, xppEx.StackTrace));
+        }
+        finally
+        {
+            if (stream != null)
+            {
+                stream.Dispose();
+                stream = null;
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

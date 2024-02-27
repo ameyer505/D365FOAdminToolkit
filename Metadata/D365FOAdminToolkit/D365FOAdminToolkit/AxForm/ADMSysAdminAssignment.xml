@@ -10,7 +10,6 @@
 public class ADMSysAdminAssignment extends FormRun
 {
 }
-
 ]]></Source>
 			</Method>
 			<Method>
@@ -62,7 +61,7 @@ public class ADMSysAdminAssignment extends FormRun
                     sur.insert();
                     ttscommit;
                 }
-                Box::info(strFmt("Assigned SYSADMIN role to %1", userId), "", "");
+                Box::info(strFmt("@D365FOToolkit:SysAdminAssigned", userId), "", "");
             }
             element.close();
         }
@@ -96,11 +95,11 @@ public class ADMSysAdminAssignment extends FormRun
                     sur.update();
                     ttscommit;
 
-                    Box::info(strFmt("Removed SYSADMIN role from %1", userId), "", "");
+                    Box::info(strFmt("@D365FOToolkit:SysAdminRevoked", userId), "", "");
                 }
                 else
                 {
-                    Box::info(strFmt("SYSADMIN role not assigned to %1", userId), "", "");
+                    Box::info(strFmt("@D365FOToolkit:SysAdminNotAssigned", userId), "", "");
                 }
             }
             element.close();
