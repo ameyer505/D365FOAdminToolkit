@@ -3,6 +3,8 @@
 	<Name>DATMain</Name>
 	<SourceCode>
 		<Declaration><![CDATA[
+using Microsoft.Dynamics.AX.Security.GraphAPIHelper;
+
 public class DATMain
 {
 }
@@ -13,6 +15,7 @@ public class DATMain
 				<Source><![CDATA[
     public static void main(Args _args)
     {
+
     }
 
 ]]></Source>

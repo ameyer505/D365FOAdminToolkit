@@ -34,6 +34,11 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="AxClass\ADMExportEnvConfig">
+      <SubType>Content</SubType>
+      <Name>ADMExportEnvConfig</Name>
+      <Link>Classes\ADMExportEnvConfig</Link>
+    </Content>
     <Content Include="AxClass\ADMExportRoleAccess">
       <SubType>Content</SubType>
       <Name>ADMExportRoleAccess</Name>
@@ -113,6 +118,11 @@
       <SubType>Content</SubType>
       <Name>SystemAdministration.D365FOAdminToolkit</Name>
       <Link>MenuExt\SystemAdministration.D365FOAdminToolkit</Link>
+    </Content>
+    <Content Include="AxMenuItemAction\ADMExportEnvConfig">
+      <SubType>Content</SubType>
+      <Name>ADMExportEnvConfig</Name>
+      <Link>MenuItems\ADMExportEnvConfig</Link>
     </Content>
     <Content Include="AxMenuItemAction\ADMExportRoleAccess">
       <SubType>Content</SubType>

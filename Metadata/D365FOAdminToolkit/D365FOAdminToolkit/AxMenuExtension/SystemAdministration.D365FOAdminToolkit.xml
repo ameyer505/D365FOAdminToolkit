@@ -7,22 +7,56 @@
 			<MenuElement xmlns=""
 				i:type="AxMenuElementSubMenu">
 				<Name>D365FOAdminToolkit</Name>
-				<Label>D365FO Admin Toolkit</Label>
+				<Label>@D365FOAdminToolkit:D365FOAdminToolkit</Label>
 				<Elements>
 					<AxMenuElement xmlns=""
-						i:type="AxMenuElementMenuItem">
-						<Name>ADMSysAdminAssignment</Name>
-						<MenuItemName>ADMSysAdminAssignment</MenuItemName>
+						i:type="AxMenuElementSubMenu">
+						<Name>ADMSysAdmin</Name>
+						<Label>@D365FOAdminToolkit:SysAdmin</Label>
+						<Elements>
+							<AxMenuElement xmlns=""
+								i:type="AxMenuElementMenuItem">
+								<Name>ADMSysAdminAssignment</Name>
+								<MenuItemName>ADMSysAdminAssignment</MenuItemName>
+							</AxMenuElement>
+						</Elements>
 					</AxMenuElement>
 					<AxMenuElement xmlns=""
-						i:type="AxMenuElementMenuItem">
-						<Name>ADMSysAdminReport</Name>
-						<MenuItemName>ADMSysAdminReport</MenuItemName>
+						i:type="AxMenuElementSubMenu">
+						<Name>ADMEnvironment</Name>
+						<Label>@D365FOAdminToolkit:Environment</Label>
+						<Elements>
+							<AxMenuElement xmlns=""
+								i:type="AxMenuElementMenuItem">
+								<Name>ADMExportEnvConfig</Name>
+								<MenuItemName>ADMExportEnvConfig</MenuItemName>
+								<MenuItemType>Action</MenuItemType>
+							</AxMenuElement>
+						</Elements>
 					</AxMenuElement>
 					<AxMenuElement xmlns=""
-						i:type="AxMenuElementMenuItem">
-						<Name>ADMConfiguration</Name>
-						<MenuItemName>ADMConfiguration</MenuItemName>
+						i:type="AxMenuElementSubMenu">
+						<Name>ADMInquiriesReports</Name>
+						<Label>@D365FOAdminToolkit:InquiriesReports</Label>
+						<Elements>
+							<AxMenuElement xmlns=""
+								i:type="AxMenuElementMenuItem">
+								<Name>ADMSysAdminReport</Name>
+								<MenuItemName>ADMSysAdminReport</MenuItemName>
+							</AxMenuElement>
+						</Elements>
+					</AxMenuElement>
+					<AxMenuElement xmlns=""
+						i:type="AxMenuElementSubMenu">
+						<Name>ADMSetup</Name>
+						<Label>@D365FOAdminToolkit:Setup</Label>
+						<Elements>
+							<AxMenuElement xmlns=""
+								i:type="AxMenuElementMenuItem">
+								<Name>ADMConfiguration</Name>
+								<MenuItemName>ADMConfiguration</MenuItemName>
+							</AxMenuElement>
+						</Elements>
 					</AxMenuElement>
 				</Elements>
 			</MenuElement>

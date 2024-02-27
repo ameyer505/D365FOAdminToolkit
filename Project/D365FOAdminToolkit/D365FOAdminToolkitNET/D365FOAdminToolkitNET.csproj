@@ -129,6 +129,7 @@
       <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
     </Reference>
@@ -194,7 +195,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdminToolkitNET.cs" />
+    <Compile Include="Models\CsvFile.cs" />
     <Compile Include="Models\RoleAccess.cs" />
+    <Compile Include="Models\SecurityUserRoleAssociation.cs" />
+    <Compile Include="Models\SecurityUserRoleOrganization.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

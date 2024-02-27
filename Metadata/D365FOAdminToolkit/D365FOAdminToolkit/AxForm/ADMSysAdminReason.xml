@@ -46,11 +46,18 @@ public class ADMSysAdminReason extends FormRun
         public void clicked()
         {
             str reason = strSysAdminReason.text();
-            sal.Reason = reason;
-            sal.update();
+            if(reason == "")
+            {
+                Box::info("@D365FOToolkit:EmptyReason", "", "");
+            }
+            else
+            {
+                sal.Reason = reason;
+                sal.update();
             
-            element.close();
-            super();
+                element.close();
+                super();
+            }
         }
 
 ]]></Source>
