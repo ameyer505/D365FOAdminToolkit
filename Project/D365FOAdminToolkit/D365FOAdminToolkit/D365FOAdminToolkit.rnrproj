@@ -114,6 +114,16 @@
       <Name>D365FOAdminToolkit_nb-NO</Name>
       <Link>LabelFiles\D365FOAdminToolkit_nb-NO</Link>
     </Content>
+    <Content Include="AxLabelFile\D365FOAdminToolkit_nl">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkit_nl</Name>
+      <Link>LabelFiles\D365FOAdminToolkit_nl</Link>
+    </Content>
+    <Content Include="AxLabelFile\D365FOAdminToolkit_nl-BE">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkit_nl-BE</Name>
+      <Link>LabelFiles\D365FOAdminToolkit_nl-BE</Link>
+    </Content>
     <Content Include="AxMenuExtension\SystemAdministration.D365FOAdminToolkit">
       <SubType>Content</SubType>
       <Name>SystemAdministration.D365FOAdminToolkit</Name>
@@ -204,6 +214,16 @@
       <Name>D365FOAdminToolkit.nb-NO.label.txt</Name>
       <DependentUpon>AxLabelFile\D365FOAdminToolkit_nb-NO</DependentUpon>
     </Content>
+    <Content Include="D365FOAdminToolkit.nl-BE.label.txt">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkit.nl-BE.label.txt</Name>
+      <DependentUpon>AxLabelFile\D365FOAdminToolkit_nl-BE</DependentUpon>
+    </Content>
+    <Content Include="D365FOAdminToolkit.nl.label.txt">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkit.nl.label.txt</Name>
+      <DependentUpon>AxLabelFile\D365FOAdminToolkit_nl</DependentUpon>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MenuExt" />
@@ -227,5 +247,5 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.Common.targets" />
-  <Import Project="$(BuildTasksDirectory)\Microsoft.Dynamics.Framework.Tools.BuildTasks.targets" />
+  <Import Project="$(BuildTasksDirectory)\Microsoft.Dynamics.Framework.Tools.BuildTasks.17.0.targets" />
 </Project>
