@@ -204,6 +204,11 @@
       <Name>D365FOAdminToolkitConfiguration</Name>
       <Link>Security\D365FOAdminToolkitConfiguration</Link>
     </Content>
+    <Content Include="AxSecurityPrivilege\D365FOAdminToolkitDisableUsersJob">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkitDisableUsersJob</Name>
+      <Link>Security\D365FOAdminToolkitDisableUsersJob</Link>
+    </Content>
     <Content Include="AxSecurityPrivilege\D365FOAdminToolkitExportRoleAccess">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkitExportRoleAccess</Name>
@@ -213,6 +218,11 @@
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkitSysAdminAssignment</Name>
       <Link>Security\D365FOAdminToolkitSysAdminAssignment</Link>
+    </Content>
+    <Content Include="AxSecurityPrivilege\D365FOAdminToolkitViewDisabledUsersReport">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkitViewDisabledUsersReport</Name>
+      <Link>Security\D365FOAdminToolkitViewDisabledUsersReport</Link>
     </Content>
     <Content Include="AxSecurityPrivilege\D365FOAdminToolkitViewSysAdminReport">
       <SubType>Content</SubType>
@@ -297,5 +307,5 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.Common.targets" />
-  <Import Project="$(BuildTasksDirectory)\Microsoft.Dynamics.Framework.Tools.BuildTasks.17.0.targets" />
+  <Import Project="$(BuildTasksDirectory)\Microsoft.Dynamics.Framework.Tools.BuildTasks.targets" />
 </Project>

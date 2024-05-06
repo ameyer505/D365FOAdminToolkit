@@ -1,10 +1,12 @@
 ﻿Action=Action
 AddRevokeSysAdmin=Assign / Revoke SysAdmin
 ADMConfig=D365FO Admin Toolkit Configuration
+ADMDisableUsersJob=D365FO Admin Toolkit Execute Disable Users Job
 ADMExportRoleAccess=D365FO Admin Toolkit Export Role Access
 ADMMaintain=D365FO Admin Toolkit Maintain
 ADMSysAdmAssignment=D365FO Admin Toolkit SysAdmin Assignment
 ADMView=D365FO Admin Toolkit View
+ADMViewDisabledUsersReport=D365FO Admin Toolkit View Disabled Users Report
 ADMViewReport=D365FO Admin Toolkit View SysAdmin Report
 Assigned=Assigned
 AssignmentReason=Assignment Reason
