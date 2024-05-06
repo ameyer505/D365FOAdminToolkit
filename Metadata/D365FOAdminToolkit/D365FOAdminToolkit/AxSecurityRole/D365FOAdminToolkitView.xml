@@ -11,6 +11,9 @@
 		<AxSecurityPrivilegeReference>
 			<Name>D365FOAdminToolkitExportRoleAccess</Name>
 		</AxSecurityPrivilegeReference>
+		<AxSecurityPrivilegeReference>
+			<Name>D365FOAdminToolkitViewDisabledUsersReport</Name>
+		</AxSecurityPrivilegeReference>
 	</Privileges>
 	<SubRoles />
 </AxSecurityRole>

@@ -34,6 +34,21 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="AxClass\ADMDisabledUsersReport_EventHandlers">
+      <SubType>Content</SubType>
+      <Name>ADMDisabledUsersReport_EventHandlers</Name>
+      <Link>EventHandlers\ADMDisabledUsersReport_EventHandlers</Link>
+    </Content>
+    <Content Include="AxClass\ADMDisableUserLastLogin">
+      <SubType>Content</SubType>
+      <Name>ADMDisableUserLastLogin</Name>
+      <Link>Classes\ADMDisableUserLastLogin</Link>
+    </Content>
+    <Content Include="AxClass\ADMDisableUserLastLoginBatchJob">
+      <SubType>Content</SubType>
+      <Name>ADMDisableUserLastLoginBatchJob</Name>
+      <Link>Classes\ADMDisableUserLastLoginBatchJob</Link>
+    </Content>
     <Content Include="AxClass\ADMExportEnvConfig">
       <SubType>Content</SubType>
       <Name>ADMExportEnvConfig</Name>
@@ -77,12 +92,27 @@
     <Content Include="AxFormExtension\SysUserManagement.D365FOAdminToolkit">
       <SubType>Content</SubType>
       <Name>SysUserManagement.D365FOAdminToolkit</Name>
-      <Link>Forms\SysUserManagement.D365FOAdminToolkit</Link>
+      <Link>FormExt\SysUserManagement.D365FOAdminToolkit</Link>
     </Content>
     <Content Include="AxForm\ADMConfiguration">
       <SubType>Content</SubType>
       <Name>ADMConfiguration</Name>
       <Link>Forms\ADMConfiguration</Link>
+    </Content>
+    <Content Include="AxForm\ADMDisableUserJob">
+      <SubType>Content</SubType>
+      <Name>ADMDisableUserJob</Name>
+      <Link>Forms\ADMDisableUserJob</Link>
+    </Content>
+    <Content Include="AxForm\ADMDisableUserReport">
+      <SubType>Content</SubType>
+      <Name>ADMDisableUserReport</Name>
+      <Link>Forms\ADMDisableUserReport</Link>
+    </Content>
+    <Content Include="AxForm\ADMParameters">
+      <SubType>Content</SubType>
+      <Name>ADMParameters</Name>
+      <Link>Forms\ADMParameters</Link>
     </Content>
     <Content Include="AxForm\ADMSysAdminAssignment">
       <SubType>Content</SubType>
@@ -144,6 +174,21 @@
       <Name>ADMConfiguration</Name>
       <Link>MenuItems\ADMConfiguration</Link>
     </Content>
+    <Content Include="AxMenuItemDisplay\ADMDisabledUserReport">
+      <SubType>Content</SubType>
+      <Name>ADMDisabledUserReport</Name>
+      <Link>MenuItems\ADMDisabledUserReport</Link>
+    </Content>
+    <Content Include="AxMenuItemDisplay\ADMDisableUser">
+      <SubType>Content</SubType>
+      <Name>ADMDisableUser</Name>
+      <Link>MenuItems\ADMDisableUser</Link>
+    </Content>
+    <Content Include="AxMenuItemDisplay\ADMParameters">
+      <SubType>Content</SubType>
+      <Name>ADMParameters</Name>
+      <Link>MenuItems\ADMParameters</Link>
+    </Content>
     <Content Include="AxMenuItemDisplay\ADMSysAdminAssignment">
       <SubType>Content</SubType>
       <Name>ADMSysAdminAssignment</Name>
@@ -159,6 +204,11 @@
       <Name>D365FOAdminToolkitConfiguration</Name>
       <Link>Security\D365FOAdminToolkitConfiguration</Link>
     </Content>
+    <Content Include="AxSecurityPrivilege\D365FOAdminToolkitDisableUsersJob">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkitDisableUsersJob</Name>
+      <Link>Security\D365FOAdminToolkitDisableUsersJob</Link>
+    </Content>
     <Content Include="AxSecurityPrivilege\D365FOAdminToolkitExportRoleAccess">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkitExportRoleAccess</Name>
@@ -168,6 +218,11 @@
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkitSysAdminAssignment</Name>
       <Link>Security\D365FOAdminToolkitSysAdminAssignment</Link>
+    </Content>
+    <Content Include="AxSecurityPrivilege\D365FOAdminToolkitViewDisabledUsersReport">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkitViewDisabledUsersReport</Name>
+      <Link>Security\D365FOAdminToolkitViewDisabledUsersReport</Link>
     </Content>
     <Content Include="AxSecurityPrivilege\D365FOAdminToolkitViewSysAdminReport">
       <SubType>Content</SubType>
@@ -193,6 +248,11 @@
       <SubType>Content</SubType>
       <Name>ADMSysAdminLog</Name>
       <Link>Tables\ADMSysAdminLog</Link>
+    </Content>
+    <Content Include="AxTable\ADMUserDisableLog">
+      <SubType>Content</SubType>
+      <Name>ADMUserDisableLog</Name>
+      <Link>Tables\ADMUserDisableLog</Link>
     </Content>
     <Content Include="D365FOAdminToolkit.en-US.label.txt">
       <SubType>Content</SubType>
@@ -247,5 +307,5 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.Common.targets" />
-  <Import Project="$(BuildTasksDirectory)\Microsoft.Dynamics.Framework.Tools.BuildTasks.17.0.targets" />
+  <Import Project="$(BuildTasksDirectory)\Microsoft.Dynamics.Framework.Tools.BuildTasks.targets" />
 </Project>

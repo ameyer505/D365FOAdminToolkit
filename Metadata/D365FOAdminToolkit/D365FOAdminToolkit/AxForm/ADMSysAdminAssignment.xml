@@ -61,7 +61,7 @@ public class ADMSysAdminAssignment extends FormRun
                     sur.insert();
                     ttscommit;
                 }
-                Box::info(strFmt("@D365FOToolkit:SysAdminAssigned", userId), "", "");
+                Box::info(strFmt("@D365FOAdminToolkit:SysAdminAssigned", userId), "", "");
             }
             element.close();
         }
@@ -95,11 +95,11 @@ public class ADMSysAdminAssignment extends FormRun
                     sur.update();
                     ttscommit;
 
-                    Box::info(strFmt("@D365FOToolkit:SysAdminRevoked", userId), "", "");
+                    Box::info(strFmt("@D365FOAdminToolkit:SysAdminRevoked", userId), "", "");
                 }
                 else
                 {
-                    Box::info(strFmt("@D365FOToolkit:SysAdminNotAssigned", userId), "", "");
+                    Box::info(strFmt("@D365FOAdminToolkit:SysAdminNotAssigned", userId), "", "");
                 }
             }
             element.close();
@@ -130,7 +130,7 @@ public class ADMSysAdminAssignment extends FormRun
 	</SourceCode>
 	<DataSources />
 	<Design>
-		<Caption xmlns="">@D365FOAdminToolkit:AddRvokeSysAdmin</Caption>
+		<Caption xmlns="">@D365FOAdminToolkit:AddRevokeSysAdmin</Caption>
 		<Pattern xmlns="">Dialog</Pattern>
 		<PatternVersion xmlns="">1.2</PatternVersion>
 		<Style xmlns="">Dialog</Style>

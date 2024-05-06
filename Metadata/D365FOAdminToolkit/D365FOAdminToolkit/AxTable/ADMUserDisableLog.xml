@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
-	<Name>ADMSysAdminLog</Name>
+	<Name>ADMUserDisableLog</Name>
 	<SourceCode>
 		<Declaration><![CDATA[
-public class ADMSysAdminLog extends common
+public class ADMUserDisableLog extends common
 {
 }
 ]]></Declaration>
 		<Methods />
 	</SourceCode>
+	<Label>@D365FOAdminToolkit:UserDisableReport</Label>
 	<SubscriberAccessLevel>
 		<Read>Allow</Read>
 	</SubscriberAccessLevel>
-	<CreatedBy>Yes</CreatedBy>
+	<AllowRowVersionChangeTracking>Yes</AllowRowVersionChangeTracking>
 	<CreatedDateTime>Yes</CreatedDateTime>
 	<SaveDataPerCompany>No</SaveDataPerCompany>
 	<DeleteActions />
@@ -42,20 +43,13 @@ public class ADMSysAdminLog extends common
 	<Fields>
 		<AxTableField xmlns=""
 			i:type="AxTableFieldString">
-			<Name>Reason</Name>
-			<Label>@D365FOAdminToolkit:AssignmentReason</Label>
-			<StringSize>250</StringSize>
-		</AxTableField>
-		<AxTableField xmlns=""
-			i:type="AxTableFieldEnum">
-			<Name>Action</Name>
-			<Label>@D365FOAdminToolkit:Action</Label>
-			<EnumType>ADMSysAdminAction</EnumType>
+			<Name>UserId_</Name>
+			<StringSize>50</StringSize>
 		</AxTableField>
 		<AxTableField xmlns=""
 			i:type="AxTableFieldString">
-			<Name>UserId_</Name>
-			<StringSize>50</StringSize>
+			<Name>Reason</Name>
+			<StringSize>250</StringSize>
 		</AxTableField>
 	</Fields>
 	<FullTextIndexes />
