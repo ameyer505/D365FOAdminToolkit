@@ -3,9 +3,9 @@ on:
   workflow_dispatch:
    inputs:
       version:
-        description: 'Select FSCM Version'
+        description: 'Select FSCM Version. Use wildcard * to let settings .json files decide.'
         required: false
-        default: '*'
+        default: '10.0.38'
 
       includeTestModels:
         type: boolean
