@@ -69,7 +69,7 @@ jobs:
         uses: nuget/setup-nuget@v2
 
       - name: Restore FSC Nugets
-        uses: FH-Inway/FSC-PS-Actions/RestoreFSCNuget@restore-fsc-nugets
+        uses: FH-Inway/FSC-PS-Actions/RestoreFSCNuget@restore-fsc-nugets-update
         with:
           version: ${{ matrix.version }}
           packagesDirectory: '${{ github.workspace }}/Project/D365FOAdminToolkit/packages'
