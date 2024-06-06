@@ -15,6 +15,31 @@ public class DATMain
 				<Source><![CDATA[
     public static void main(Args _args)
     {
+        //UserInfo u;
+        ////UserInfo userInfo = xUserInfo::find(true, curUserId());
+        //GraphAPIClient graph = new GraphAPIClient();
+
+        //while select forupdate ObjectId, enable, id from u
+        //{
+        //    IUser iUser = graph.GetUserByUserObjectId(guid2Str(userInfo.ObjectId));
+
+
+        //    if(iUser == null) // account does not exist
+
+        //    {
+
+        //        //disable User in FO/FSCM
+
+        //    }
+
+        //    else if(iUser.AccountEnabled == false)
+
+        //    {
+
+        //        //disable user in FO/FSCM
+
+        //    }
+        //}
 
     }
 

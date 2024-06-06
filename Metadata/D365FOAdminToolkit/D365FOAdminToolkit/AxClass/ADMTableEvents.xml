@@ -21,11 +21,6 @@ internal final class ADMTableEvents
         ADMSysAdminLog sal;
         int reasonDialog = 0;
 
-        sal.Action = ADMSysAdminAction::Assigned;
-        sal.UserId_ = sur.User;
-        sal.Reason = "";
-        sal.insert();
-
         AdmSysAdminLogHelper salh = new AdmSysAdminLogHelper();
         reasonDialog = salh.CheckReasonDialogConfig();
 
@@ -34,6 +29,13 @@ internal final class ADMTableEvents
         {
             if(sur.SecurityRole == sr.RecID)
             {
+                ttsbegin;
+                sal.Action = ADMSysAdminAction::Assigned;
+                sal.UserId_ = sur.User;
+                sal.Reason = "";
+                sal.insert();
+                ttscommit;
+
                 if(reasonDialog == 1)
                 {
                     FormRun fr;
@@ -77,10 +79,12 @@ internal final class ADMTableEvents
                 {
                     if(sur.AssignmentStatus == RoleAssignmentStatus::Enabled)
                     {
+                        ttsbegin;
                         sal.Reason = "";
                         sal.Action = ADMSysAdminAction::Assigned;
                         sal.UserId_ = sur.User;
                         sal.insert();
+                        ttscommit;
 
                         if(reasonDialog == 1)
                         {
@@ -98,10 +102,12 @@ internal final class ADMTableEvents
                     }
                     if(sur.AssignmentStatus == RoleAssignmentStatus::Disabled)
                     {
+                        ttsbegin;
                         sal.Action = ADMSysAdminAction::Revoked;
                         sal.UserId_ = sur.User;
                         sal.Reason = "";
                         sal.insert();
+                        ttscommit;
                     }
                 }
             }
@@ -133,10 +139,12 @@ internal final class ADMTableEvents
             {
                 if(sur.SecurityRole == sr.RecID)
                 {
+                    ttsbegin;
                     sal.Action = ADMSysAdminAction::Revoked;
                     sal.UserId_ = sur.User;
                     sal.Reason = "";
                     sal.insert();
+                    ttscommit;
                 }
             }
         }

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMDisableUserLastLogin</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class ADMDisableUserLastLogin
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>DisableUsersBasedOnLastLogin</Name>
+				<Source><![CDATA[
+    public boolean DisableUsersBasedOnLastLogin(int numDays)
+    {
+        UserInfo ui;
+        SysUserLog ul;
+        SecurityUserRole sur;
+        SecurityRole sr;
+
+        //Put excluded users here
+        //Ex: excludeUsers.add(UserId);
+        Set excludeUsers = new Set(Types::String);
+        excludeUsers.add("Admin");
+        excludeUsers.add("axrunner");
+        excludeUsers.add("cdsaurorauser");
+        excludeUsers.add("cdscapuser");
+        excludeUsers.add("cdscapuser2");
+        excludeUsers.add("cdsdevuser1");
+        excludeUsers.add("cdsdevuser2");
+        excludeUsers.add("D1Assem");
+        excludeUsers.add("DataSyncFrameworkApp");
+        excludeUsers.add("DynamicsMaintAppUser");
+        excludeUsers.add("FinancialReportsApp");
+        excludeUsers.add("FRServiceUser");
+        excludeUsers.add("PowerPfSvcUser");
+        excludeUsers.add("PowerPlatformApp");
+        excludeUsers.add("RetailServiceAccount");
+        excludeUsers.add("ScaleUnitManagement");
+        excludeUsers.add("ScaleUnitPipeline");
+        excludeUsers.add("SysHealthServiceUser");
+        excludeUsers.add("Guest");
+
+        select RecId from sr where sr.AotName == '-SYSADMIN-';
+
+        while select forupdate id, name, enable from ui where ui.enable == true
+        {
+            str userId = ui.id;
+
+            if(!excludeUsers.in(userId))
+            {
+                select User from sur where sur.User == UserId && sur.SecurityRole == sr.RecID;
+
+                if(!sur)
+                {
+                    utcdatetime dateTimeNow = DateTimeUtil::utcNow();
+                    select UserId from ul where ul.UserId == userId && ul.CreatedDateTime > DateTimeUtil::addDays(dateTimeNow, numDays * -1);
+                
+                    if(!ul)
+                    {
+                        ttsbegin;
+
+                        ui.enable = false;
+                        ui.update();
+
+                        ADMUserDisableLog udl;
+                        udl.UserId_ = userId;
+                        udl.Reason = strFmt("%1 disabled because they have not logged in %2 days.", ui.name, numDays);
+                        udl.insert();
+
+                        ttscommit;
+                    }
+                }
+            }
+            
+        }
+        return true;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

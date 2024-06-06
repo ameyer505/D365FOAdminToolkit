@@ -18,7 +18,7 @@
 	</DirectAccessPermissions>
 	<EntryPoints>
 		<AxSecurityEntryPointReference>
-			<Name>ADMConfiguration</Name>
+			<Name>ADMParameters</Name>
 			<Grant>
 				<Correct>Allow</Correct>
 				<Create>Allow</Create>
@@ -26,15 +26,9 @@
 				<Read>Allow</Read>
 				<Update>Allow</Update>
 			</Grant>
-			<ObjectName>ADMConfiguration</ObjectName>
+			<ObjectName>ADMParameters</ObjectName>
 			<ObjectType>MenuItemDisplay</ObjectType>
-			<Forms>
-				<AxSecurityEntryPointReferenceForm>
-					<Name>ADMConfiguration</Name>
-					<Controls />
-					<DataSources />
-				</AxSecurityEntryPointReferenceForm>
-			</Forms>
+			<Forms />
 		</AxSecurityEntryPointReference>
 	</EntryPoints>
 	<FormControlOverrides />

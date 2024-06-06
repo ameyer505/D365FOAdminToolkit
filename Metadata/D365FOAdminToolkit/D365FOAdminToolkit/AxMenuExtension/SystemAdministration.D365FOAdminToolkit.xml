@@ -44,6 +44,23 @@
 								<Name>ADMSysAdminReport</Name>
 								<MenuItemName>ADMSysAdminReport</MenuItemName>
 							</AxMenuElement>
+							<AxMenuElement xmlns=""
+								i:type="AxMenuElementMenuItem">
+								<Name>ADMDisabledUserReport</Name>
+								<MenuItemName>ADMDisabledUserReport</MenuItemName>
+							</AxMenuElement>
+						</Elements>
+					</AxMenuElement>
+					<AxMenuElement xmlns=""
+						i:type="AxMenuElementSubMenu">
+						<Name>ADMPeriodicTasks</Name>
+						<Label>@D365FOAdminToolkit:PeriodicTasks</Label>
+						<Elements>
+							<AxMenuElement xmlns=""
+								i:type="AxMenuElementMenuItem">
+								<Name>ADMDisableUser</Name>
+								<MenuItemName>ADMDisableUser</MenuItemName>
+							</AxMenuElement>
 						</Elements>
 					</AxMenuElement>
 					<AxMenuElement xmlns=""
@@ -53,8 +70,8 @@
 						<Elements>
 							<AxMenuElement xmlns=""
 								i:type="AxMenuElementMenuItem">
-								<Name>ADMConfiguration</Name>
-								<MenuItemName>ADMConfiguration</MenuItemName>
+								<Name>ADMParameters</Name>
+								<MenuItemName>ADMParameters</MenuItemName>
 							</AxMenuElement>
 						</Elements>
 					</AxMenuElement>
