@@ -130,7 +130,7 @@ public class ADMSysAdminAssignment extends FormRun
 	</SourceCode>
 	<DataSources />
 	<Design>
-		<Caption xmlns="">@D365FOAdminToolkit:AddRvokeSysAdmin</Caption>
+		<Caption xmlns="">@D365FOAdminToolkit:AddRevokeSysAdmin</Caption>
 		<Pattern xmlns="">Dialog</Pattern>
 		<PatternVersion xmlns="">1.2</PatternVersion>
 		<Style xmlns="">Dialog</Style>

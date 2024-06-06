@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Diagnostics
+  GenerationTime="2024-03-30T16:36:26.6663584+00:00">
+  <Items>
+    <Diagnostic>
+      <DiagnosticType>Compile</DiagnosticType>
+      <Severity>Error</Severity>
+      <Path>dynamics://Class/ADMSysAdminLogHelperTest</Path>
+      <ElementType>Class</ElementType>
+      <Moniker>IntrinsicArgDoesNotDenoteExistingMetadata</Moniker>
+      <Line>1</Line>
+      <Column>16</Column>
+      <EndLine>1</EndLine>
+      <EndColumn>46</EndColumn>
+      <Message>The 'ADMSysAdminLogHelper' argument of the 'classStr' compile-time function does not specify a known class.</Message>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>Compile</DiagnosticType>
+      <Severity>Error</Severity>
+      <Path>dynamics://Class/ADMSysAdminLogHelperTest</Path>
+      <ElementType>Class</ElementType>
+      <Moniker>TypeNotFound</Moniker>
+      <Line>6</Line>
+      <Column>5</Column>
+      <EndLine>6</EndLine>
+      <EndColumn>47</EndColumn>
+      <Message>The name 'ADMSysAdminLogHelper' does not denote a class, a table, or an extended data type.</Message>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>Compile</DiagnosticType>
+      <Severity>Error</Severity>
+      <Path>dynamics://Class/ADMSysAdminLogHelperTest/Method/setup</Path>
+      <ElementType>Class Method</ElementType>
+      <Moniker>ClassNotFound</Moniker>
+      <Line>11</Line>
+      <Column>32</Column>
+      <EndLine>11</EndLine>
+      <EndColumn>58</EndColumn>
+      <Message>Class 'ADMSysAdminLogHelper' was not found. Are you missing a module reference?</Message>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>Compile</DiagnosticType>
+      <Severity>Error</Severity>
+      <Path>dynamics://Class/ADMSysAdminLogHelperTest/Method/createADMConfigsRecord</Path>
+      <ElementType>Class Method</ElementType>
+      <Moniker>TypeNotFound</Moniker>
+      <Line>110</Line>
+      <Column>9</Column>
+      <EndLine>110</EndLine>
+      <EndColumn>19</EndColumn>
+      <Message>The name 'ADMConfigs' does not denote a class, a table, or an extended data type.</Message>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>Compile</DiagnosticType>
+      <Severity>Error</Severity>
+      <Path>dynamics://Class/ADMSysAdminLogHelperTest/Method/createADMConfigsRecord</Path>
+      <ElementType>Class Method</ElementType>
+      <Moniker>InvalidQualifier</Moniker>
+      <Line>111</Line>
+      <Column>9</Column>
+      <EndLine>111</EndLine>
+      <EndColumn>24</EndColumn>
+      <Message>The qualifier 'admConfigs' is not valid for field 'Name'.</Message>
+    </Diagnostic>
+    <Diagnostic>
+      <DiagnosticType>Compile</DiagnosticType>
+      <Severity>Error</Severity>
+      <Path>dynamics://Class/ADMSysAdminLogHelperTest/Method/createADMConfigsRecord</Path>
+      <ElementType>Class Method</ElementType>
+      <Moniker>InvalidQualifier</Moniker>
+      <Line>112</Line>
+      <Column>9</Column>
+      <EndLine>112</EndLine>
+      <EndColumn>25</EndColumn>
+      <Message>The qualifier 'admConfigs' is not valid for field 'Value'.</Message>
+    </Diagnostic>
+  </Items>
+  <Aliases />
+</Diagnostics>

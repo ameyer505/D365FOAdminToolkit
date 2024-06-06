@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxLabelFile xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>D365FOAdminToolkitSV_sv</Name>
+	<LabelContentFileName>D365FOAdminToolkitSV.sv.label.txt</LabelContentFileName>
+	<LabelFileId>D365FOAdminToolkitSV</LabelFileId>
+	<Language>sv</Language>
+	<RelativeUriInModelStore>D365FOAdminToolkit\D365FOAdminToolkit\AxLabelFile\LabelResources\sv\D365FOAdminToolkitSV.sv.label.txt</RelativeUriInModelStore>
+</AxLabelFile>

@@ -99,6 +99,11 @@
       <Name>ADMSysAdminReport</Name>
       <Link>Forms\ADMSysAdminReport</Link>
     </Content>
+    <Content Include="AxLabelFile\D365FOAdminToolkitSV_sv">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkitSV_sv</Name>
+      <Link>LabelFiles\D365FOAdminToolkitSV_sv</Link>
+    </Content>
     <Content Include="AxLabelFile\D365FOAdminToolkit_en-US">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkit_en-US</Name>
@@ -203,6 +208,11 @@
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkit.nb-NO.label.txt</Name>
       <DependentUpon>AxLabelFile\D365FOAdminToolkit_nb-NO</DependentUpon>
+    </Content>
+    <Content Include="D365FOAdminToolkitSV.sv.label.txt">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkitSV.sv.label.txt</Name>
+      <DependentUpon>AxLabelFile\D365FOAdminToolkitSV_sv</DependentUpon>
     </Content>
   </ItemGroup>
   <ItemGroup>
