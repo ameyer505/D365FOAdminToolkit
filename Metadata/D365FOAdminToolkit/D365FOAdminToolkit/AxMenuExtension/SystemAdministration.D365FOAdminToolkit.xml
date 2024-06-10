@@ -73,6 +73,11 @@
 								<Name>ADMParameters</Name>
 								<MenuItemName>ADMParameters</MenuItemName>
 							</AxMenuElement>
+							<AxMenuElement xmlns=""
+								i:type="AxMenuElementMenuItem">
+								<Name>ADMExcludedUsers</Name>
+								<MenuItemName>ADMExcludedUsers</MenuItemName>
+							</AxMenuElement>
 						</Elements>
 					</AxMenuElement>
 				</Elements>

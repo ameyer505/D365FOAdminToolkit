@@ -24,6 +24,7 @@ EmptyReason=Value for Reason Must be Provided.
 EndDate=End Date :
 EnvConfigFileGenerated=Environment Configuration File Generated Successfully.
 Environment=Environment
+ExcludedUsers=Excluded Users
 ExportRoleAccess=Export Role Access
 ExportSysConfig=Export System Configuration
 General=General

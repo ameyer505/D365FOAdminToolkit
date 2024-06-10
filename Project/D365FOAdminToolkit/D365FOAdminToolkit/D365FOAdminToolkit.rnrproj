@@ -109,6 +109,11 @@
       <Name>ADMDisableUserReport</Name>
       <Link>Forms\ADMDisableUserReport</Link>
     </Content>
+    <Content Include="AxForm\ADMExcludedUsers">
+      <SubType>Content</SubType>
+      <Name>ADMExcludedUsers</Name>
+      <Link>Forms\ADMExcludedUsers</Link>
+    </Content>
     <Content Include="AxForm\ADMParameters">
       <SubType>Content</SubType>
       <Name>ADMParameters</Name>
@@ -184,6 +189,11 @@
       <Name>ADMDisableUser</Name>
       <Link>MenuItems\ADMDisableUser</Link>
     </Content>
+    <Content Include="AxMenuItemDisplay\ADMExcludedUsers">
+      <SubType>Content</SubType>
+      <Name>ADMExcludedUsers</Name>
+      <Link>MenuItems\ADMExcludedUsers</Link>
+    </Content>
     <Content Include="AxMenuItemDisplay\ADMParameters">
       <SubType>Content</SubType>
       <Name>ADMParameters</Name>
@@ -243,6 +253,11 @@
       <SubType>Content</SubType>
       <Name>ADMConfigs</Name>
       <Link>Tables\ADMConfigs</Link>
+    </Content>
+    <Content Include="AxTable\ADMExcludedUsers">
+      <SubType>Content</SubType>
+      <Name>ADMExcludedUsers</Name>
+      <Link>Tables\ADMExcludedUsers</Link>
     </Content>
     <Content Include="AxTable\ADMSysAdminLog">
       <SubType>Content</SubType>

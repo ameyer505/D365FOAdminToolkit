@@ -1,0 +1,635 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxForm xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>ADMExcludedUsers</Name>
+	<SourceCode>
+		<Methods xmlns="">
+			<Method>
+				<Name>classDeclaration</Name>
+				<Source><![CDATA[
+[Form]
+public class ADMExcludedUsers extends FormRun
+{
+    Query qry_adm;
+    QueryRun qryRun_adm;
+    QueryBuildDataSource ds_adm;
+
+    Query qry_user;
+    QueryRun qryRun_user;
+    QueryBuildDataSource ds_user;
+    QueryBuildRange qbr_user;
+
+}
+]]></Source>
+			</Method>
+		</Methods>
+		<DataSources xmlns="">
+			<DataSource>
+				<Name>ADMExcludedUsers</Name>
+				<Methods>
+					<Method>
+						<Name>init</Name>
+						<Source><![CDATA[
+        public void init()
+        {
+            super();
+            qry_adm = this.query();
+            ds_adm = qry_adm.dataSourceTable(tableNum(ADMExcludedUsers));
+            ds_adm.addSortField(fieldNum(ADMExcludedUsers,UserId));
+
+        }
+
+]]></Source>
+					</Method>
+					<Method>
+						<Name>executeQuery</Name>
+						<Source><![CDATA[
+        public void executeQuery()
+        {
+            ds_adm.addSortField(fieldNum(ADMExcludedUsers,UserId));
+            qryRun_adm = new QueryRun(qry_adm);
+            super();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+				<Fields />
+			</DataSource>
+			<DataSource>
+				<Name>UserInfo</Name>
+				<Methods>
+					<Method>
+						<Name>init</Name>
+						<Source><![CDATA[
+        public void init()
+        {
+            super();
+            qry_user = this.query();
+            ds_user = qry_user.dataSourceTable(tableNum(UserInfo));
+            //ds_user.addSortField(fieldNum(UserInfo, id));            
+        }
+
+]]></Source>
+					</Method>
+					<Method>
+						<Name>executeQuery</Name>
+						<Source><![CDATA[
+        public void executeQuery()
+        {
+            ds_user.clearRanges();
+            //ds_user.clearRange(fieldNum(UserInfo, id));
+            
+            UserInfo ui;
+            ADMExcludedUsers adm;
+
+            while select id from ui
+                notexists join adm
+                where ui.id == adm.UserId
+            {
+                qbr_user = ds_user.addRange(fieldNum(UserInfo, id));
+                qbr_user.value(queryValue(ui.id));
+                
+            }
+
+            qryRun_user = new QueryRun(qry_user);
+
+            ds_user.addSortField(fieldNum(UserInfo, id));
+
+            super();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+				<Fields />
+			</DataSource>
+		</DataSources>
+		<DataControls xmlns="">
+			<Control>
+				<Name>AddRemoveSelectedUsers</Name>
+				<Type>Button</Type>
+				<Methods>
+					<Method>
+						<Name>clicked</Name>
+						<Source><![CDATA[
+        void clicked()
+        {
+            UserInfo ui;
+            ADMExcludedUsers eu;
+
+            for(ui = getFirstSelection(UserInfo_ds); ui; ui = UserInfo_ds.getNext() as UserInfo)
+            {
+                select UserId from eu where eu.UserId == ui.id;
+                if(!eu)
+                {
+                    ttsbegin;
+                    eu.clear();
+                    eu.UserId = ui.id;
+                    eu.UserName = ui.name;
+                    eu.insert();
+                    ttscommit;
+                }
+            }
+
+            ui.clear();
+            eu.clear();
+
+            for(eu = getFirstSelection(ADMExcludedUsers_ds); eu; eu = ADMExcludedUsers_ds.getNext() as ADMExcludedUsers)
+            {
+                if(eu)
+                {
+                    ttsbegin;
+                    eu.delete();
+                    ttscommit;
+                }
+            }
+
+            UserGrid.refresh();
+            SelectedUserGrid.refresh();
+
+            super();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+			<Control>
+				<Name>PopulateExcludedUsers</Name>
+				<Type>Button</Type>
+				<Methods>
+					<Method>
+						<Name>clicked</Name>
+						<Source><![CDATA[
+        void clicked()
+        {
+            ADMExcludedUsers eu;
+            UserInfo ui;
+
+            Set excludeUsers = new Set(Types::String);
+            excludeUsers.add("Admin");
+            excludeUsers.add("axrunner");
+            excludeUsers.add("cdsaurorauser");
+            excludeUsers.add("cdscapuser");
+            excludeUsers.add("cdscapuser2");
+            excludeUsers.add("cdsdevuser1");
+            excludeUsers.add("cdsdevuser2");
+            excludeUsers.add("D1Assem");
+            excludeUsers.add("DataSyncFrameworkApp");
+            excludeUsers.add("DynamicsMaintAppUser");
+            excludeUsers.add("FinancialReportsApp");
+            excludeUsers.add("FRServiceUser");
+            excludeUsers.add("PowerPfSvcUser");
+            excludeUsers.add("PowerPlatformApp");
+            excludeUsers.add("RetailServiceAccount");
+            excludeUsers.add("ScaleUnitManagement");
+            excludeUsers.add("ScaleUnitPipeline");
+            excludeUsers.add("SysHealthServiceUser");
+            excludeUsers.add("Guest");
+
+            SetEnumerator se;
+            se = excludeUsers.getEnumerator();
+
+            str userId = "";
+            while(se.moveNext())
+            {
+                userId = se.current();
+                select UserId from eu where eu.UserId == userId;
+                if(!eu)
+                {
+                    select id, name from ui where ui.id == userId;
+                    if(ui)
+                    {
+                        ttsbegin;
+                        eu.clear();
+                        eu.UserId = ui.id;
+                        eu.UserName = ui.name;
+
+                        eu.insert();
+                        ttscommit;
+                    }
+                }
+            }
+
+            UserGrid.refresh();
+            SelectedUserGrid.refresh();
+
+            Box::info("Populated excluded user list.", "", "");
+            super();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+			<Control>
+				<Name>UserGrid</Name>
+				<Type>Grid</Type>
+				<Methods>
+					<Method>
+						<Name>refresh</Name>
+						<Source><![CDATA[
+        public void refresh()
+        {
+            UserInfo_ds.executeQuery();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+			<Control>
+				<Name>SelectedUserGrid</Name>
+				<Type>Grid</Type>
+				<Methods>
+					<Method>
+						<Name>refresh</Name>
+						<Source><![CDATA[
+        public void refresh()
+        {
+            ADMExcludedUsers_ds.executeQuery();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+		</DataControls>
+		<Members xmlns="" />
+	</SourceCode>
+	<DataSources>
+		<AxFormDataSource xmlns="">
+			<Name>ADMExcludedUsers</Name>
+			<Table>ADMExcludedUsers</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>UserId</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources />
+			<DataSourceLinks />
+			<DerivedDataSources />
+		</AxFormDataSource>
+		<AxFormDataSource xmlns="">
+			<Name>UserInfo</Name>
+			<Table>UserInfo</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>accountType</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>autoInfo</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>autoLogOff</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>autoUpdate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>clientAccessLogLevel</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>company</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>compilerWarningLevel</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>confirmDelete</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>confirmUpdate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>credentialRecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>debuggerPopup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>debugInfo</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>defaultPartition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DEL__unused1</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DEL__unused2</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DEL_defaultModelId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DEL_osAccountName</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DEL_password</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DEL_startupMenu</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>enable</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>enabledOnce</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>externalId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>externalIdType</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>externalUser</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>filterByGridOnByDefault</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>formFontName</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>formFontSize</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>garbagecollectlimit</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>generalInfo</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>globalExcelExportFilePath</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>globalExcelExportMode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>globalFormOpenMode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>globalListPageLinkMode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>helplanguage</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>historyLimit</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>homePageRefreshDuration</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>id</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>IdentityProvider</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>infologLevel</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>InteractiveLogon</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>isMicrosoftAccount</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>issuerRecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>language</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>messageLimit</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>name</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>networkAlias</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>networkDomain</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>notifyTimeZoneMismatch</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ObjectId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>preferredCalendar</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>PreferredLocale</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>preferredTimeZone</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>propertyFontName</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>propertyFontSize</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>querytimeLimit</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>reportBottomMargin</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>reportFontName</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>reportFontSize</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>reportLeftMargin</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>reportRightMargin</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>reportTopMargin</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>showAOTLayer</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>showModelNameInAOT</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>showStatusLine</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>showToolbar</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>sid</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>startupProject</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>statuslineInfo</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>toolbarInfo</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>traceInfo</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources />
+			<DataSourceLinks />
+			<DerivedDataSources />
+		</AxFormDataSource>
+	</DataSources>
+	<Design>
+		<Caption xmlns="">@D365FOAdminToolkit:ExcludedUsers</Caption>
+		<ShowDeleteButton xmlns="">No</ShowDeleteButton>
+		<ShowNewButton xmlns="">No</ShowNewButton>
+		<ViewEditMode xmlns="">View</ViewEditMode>
+		<Controls xmlns="">
+			<AxFormControl xmlns=""
+				i:type="AxFormActionPaneControl">
+				<Name>FormActionPaneControl1</Name>
+				<Type>ActionPane</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormButtonGroupControl">
+						<Name>FormButtonGroupControl1</Name>
+						<Type>ButtonGroup</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormButtonControl">
+								<Name>AddRemoveSelectedUsers</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>Button</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Text>Add / Remove Selected Users</Text>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormButtonControl">
+								<Name>PopulateExcludedUsers</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>Button</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Text>Populate Excluded Users</Text>
+							</AxFormControl>
+						</Controls>
+					</AxFormControl>
+				</Controls>
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormStaticTextControl">
+				<Name>UserList</Name>
+				<Type>StaticText</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Text>User List</Text>
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormGridControl">
+				<Name>UserGrid</Name>
+				<AllowEdit>No</AllowEdit>
+				<AutoDeclaration>Yes</AutoDeclaration>
+				<Type>Grid</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>UserId</Name>
+						<Type>String</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>id</DataField>
+						<DataSource>UserInfo</DataSource>
+						<Label>User Id</Label>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>UserName</Name>
+						<Type>String</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>name</DataField>
+						<DataSource>UserInfo</DataSource>
+						<Label>User Name</Label>
+					</AxFormControl>
+				</Controls>
+				<DataSource>UserInfo</DataSource>
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormStaticTextControl">
+				<Name>ExcludedUserList</Name>
+				<Type>StaticText</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Text>Excluded User List</Text>
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormGridControl">
+				<Name>SelectedUserGrid</Name>
+				<AutoDeclaration>Yes</AutoDeclaration>
+				<Type>Grid</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>ExcludedUserId</Name>
+						<Type>String</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>UserId</DataField>
+						<DataSource>ADMExcludedUsers</DataSource>
+						<Label>User Id</Label>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>ExcludedUserName</Name>
+						<Type>String</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>UserName</DataField>
+						<DataSource>ADMExcludedUsers</DataSource>
+						<Label>User Name</Label>
+					</AxFormControl>
+				</Controls>
+				<DataSource>ADMExcludedUsers</DataSource>
+			</AxFormControl>
+		</Controls>
+	</Design>
+	<Parts />
+</AxForm>
