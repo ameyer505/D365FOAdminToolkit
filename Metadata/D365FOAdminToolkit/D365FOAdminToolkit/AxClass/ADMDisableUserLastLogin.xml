@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMDisableUserLastLogin</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class ADMDisableUserLastLogin
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>DisableUsersBasedOnLastLogin</Name>
+				<Source><![CDATA[
+    public boolean DisableUsersBasedOnLastLogin(int numDays)
+    {
+        UserInfo ui;
+        SysUserLog ul;
+        SecurityUserRole sur;
+        SecurityRole sr;
+        ADMExcludedUsers ue;
+
+
+        select RecId from sr where sr.AotName == '-SYSADMIN-';
+
+        while select forupdate id, name, enable from ui where ui.enable == true
+        {
+            str userId = ui.id;
+
+            select userId from ue where ue.UserId == userId;
+
+            if(!ue)
+            {
+                select User from sur where sur.User == UserId && sur.SecurityRole == sr.RecID;
+
+                if(!sur)
+                {
+                    utcdatetime dateTimeNow = DateTimeUtil::utcNow();
+                    select UserId from ul where ul.UserId == userId && ul.CreatedDateTime > DateTimeUtil::addDays(dateTimeNow, numDays * -1);
+                
+                    if(!ul)
+                    {
+                        ttsbegin;
+
+                        ui.enable = false;
+                        ui.update();
+
+                        ADMUserDisableLog udl;
+                        udl.UserId_ = userId;
+                        udl.Reason = strFmt("%1 disabled because they have not logged in %2 days.", ui.name, numDays);
+                        udl.insert();
+
+                        ttscommit;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

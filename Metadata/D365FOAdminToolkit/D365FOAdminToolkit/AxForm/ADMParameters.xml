@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxForm xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>ADMParameters</Name>
+	<SourceCode>
+		<Methods xmlns="">
+			<Method>
+				<Name>classDeclaration</Name>
+				<Source><![CDATA[
+[Form]
+public class ADMParameters extends FormRun
+{
+    ADMConfigs config;
+
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    public void init()
+    {
+        super();
+
+        int reportOffset = 30;
+        int reasonDialog = 0;
+        int disableUser = 90;
+
+        select firstonly Value from config where config.Name == "DefaultNumDaysForReports";
+        if(config)
+        {
+            if(str2NumOK(config.Value))
+            {
+                reportOffset = str2Num(config.Value);
+            }
+        }
+
+        select firstonly Value from config where config.Name == "ShowReasonDialog";
+        if(config)
+        {
+            if(str2NumOK(config.Value))
+            {
+                reasonDialog = str2Num(config.Value);
+            }
+        }
+
+        select firstonly Value from config where config.Name == "DisableUserNumDays";
+        if(config)
+        {
+            if(str2NumOK(config.Value))
+            {
+                disableUser = str2Num(config.Value);
+            }
+        }
+
+        ReportNumDays.value(reportOffset);
+        ShowReasonDialog.value(reasonDialog);
+        DisableUserNumDays.value(disableUser);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>close</Name>
+				<Source><![CDATA[
+    public void close()
+    {
+        super();
+        select forupdate config where config.Name == "DefaultNumDaysForReports";
+        if(config)
+        {
+            str reportOffset = ReportNumDays.valueStr();
+            ttsbegin;
+            config.Value = reportOffset;
+            config.update();
+            ttscommit;
+        }
+        else
+        {
+            config.clear();
+            config.Name = "DefaultNumDaysForReports";
+            str reportOffset = ReportNumDays.valueStr();
+            ttsbegin;
+            config.Value = reportOffset;
+            config.insert();
+            ttscommit;
+        }
+
+        select forupdate config where config.Name == "ShowReasonDialog";
+        if(config)
+        {
+            int reasonDialog = ShowReasonDialog.value();
+            ttsbegin;
+            if(reasonDialog == 1)
+            {
+                config.Value = "1";
+            }
+            else
+            {
+                config.Value = "0";
+            }
+                
+            config.update();
+            ttscommit;
+        }
+        else
+        {
+            config.clear();
+            config.Name = "ShowReasonDialog";
+            int reasonDialog = ShowReasonDialog.value();
+            ttsbegin;
+            if(reasonDialog == 1)
+            {
+                config.Value = "1";
+            }
+            else
+            {
+                config.Value = "0";
+            }
+            config.insert();
+            ttscommit;
+        }
+
+        select forupdate config where config.Name == "DisableUserNumDays";
+        if(config)
+        {
+            str disableUser = DisableUserNumDays.valueStr();
+            ttsbegin;
+            config.Value = disableUser;
+            config.update();
+            ttscommit;
+        }
+        else
+        {
+            config.clear();
+            config.Name = "DisableUserNumDays";
+            str disableUser = DisableUserNumDays.valueStr();
+            ttsbegin;
+            config.Value = disableUser;
+            config.insert();
+            ttscommit;
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+		<DataSources xmlns="" />
+		<DataControls xmlns="" />
+		<Members xmlns="" />
+	</SourceCode>
+	<DataSources />
+	<Design>
+		<Caption xmlns="">@D365FOAdminToolkit:Parameters</Caption>
+		<Pattern xmlns="">TableOfContents</Pattern>
+		<PatternVersion xmlns="">1.1</PatternVersion>
+		<Style xmlns="">TableOfContents</Style>
+		<Controls xmlns="">
+			<AxFormControl xmlns=""
+				i:type="AxFormTabControl">
+				<Name>ADMTab</Name>
+				<Type>Tab</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormTabPageControl">
+						<Name>General</Name>
+						<Type>TabPage</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormGroupControl">
+								<Name>GeneralTitle</Name>
+								<Skip>Yes</Skip>
+								<Type>Group</Type>
+								<WidthMode>SizeToAvailable</WidthMode>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormStaticTextControl">
+										<Name>FormStaticTextControl1</Name>
+										<Skip>Yes</Skip>
+										<Type>StaticText</Type>
+										<WidthMode>SizeToAvailable</WidthMode>
+										<FormControlExtension
+											i:nil="true" />
+										<Style>MainInstruction</Style>
+										<Text>@D365FOAdminToolkit:Parameters</Text>
+									</AxFormControl>
+								</Controls>
+								<AllowUserSetup>No</AllowUserSetup>
+								<FrameType>None</FrameType>
+								<Style>TOCTitleContainer</Style>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormTabControl">
+								<Name>GeneralFastTab</Name>
+								<Type>Tab</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormTabPageControl">
+										<Name>GeneralTab</Name>
+										<Pattern>FieldsFieldGroups</Pattern>
+										<PatternVersion>1.1</PatternVersion>
+										<Type>TabPage</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>ReportNumDaysGroup</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormIntegerControl">
+														<Name>ReportNumDays</Name>
+														<AutoDeclaration>Yes</AutoDeclaration>
+														<Type>Integer</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<AllowNegative>No</AllowNegative>
+														<Label>@D365FOAdminToolkit:DefaultNumDaysReport</Label>
+														<Value>30</Value>
+													</AxFormControl>
+												</Controls>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>ShowReasonDialogGroup</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormCheckBoxControl">
+														<Name>ShowReasonDialog</Name>
+														<AutoDeclaration>Yes</AutoDeclaration>
+														<Type>CheckBox</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<Label>@D365FOAdminToolkit:ShowReasonDialog</Label>
+													</AxFormControl>
+												</Controls>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>DisableUserNumDaysGroup</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormIntegerControl">
+														<Name>DisableUserNumDays</Name>
+														<AutoDeclaration>Yes</AutoDeclaration>
+														<Type>Integer</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<Label>@D365FOAdminToolkit:DisableUserNumDays</Label>
+														<Value>90</Value>
+													</AxFormControl>
+												</Controls>
+											</AxFormControl>
+										</Controls>
+										<ColumnsMode>Fill</ColumnsMode>
+										<Caption>@D365FOAdminToolkit:General</Caption>
+									</AxFormControl>
+								</Controls>
+								<ArrangeMethod>Vertical</ArrangeMethod>
+								<Style>FastTabs</Style>
+							</AxFormControl>
+						</Controls>
+						<Caption>@D365FOAdminToolkit:General</Caption>
+					</AxFormControl>
+				</Controls>
+				<Style>VerticalTabs</Style>
+			</AxFormControl>
+		</Controls>
+	</Design>
+	<Parts />
+</AxForm>

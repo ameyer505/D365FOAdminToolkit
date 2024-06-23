@@ -1,16 +1,11 @@
-name: (BUILD)
-
 on:
   pull_request:
   workflow_dispatch:
    inputs:
       version:
-        description: 'Select FSCM Version'
+        description: 'Select FSCM Version. Use wildcard * to let settings .json files decide.'
         required: false
-        default: ''
-        type: choice
-        options:
-        - "*"
+        default: '10.0.38'
 
       includeTestModels:
         type: boolean
@@ -44,25 +39,17 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: Initialize the workflow
-        uses: ciellosinc/FSC-PS-Actions/WorkflowInitialize@v1.3
+        uses: fscpscollaborative/fscps.gh/WorkflowInitialize@v2.1
         id: init
         env:
           secrets: ${{ toJson(secrets) }}    
 
       - name: Read settings
         id: ReadSettings
-        uses: ciellosinc/FSC-PS-Actions/ReadSettings@v1.3
+        uses: fscpscollaborative/fscps.gh/ReadSettings@v2.1
         with:
           version: ${{ inputs.version }}
           
-      - name: Check for updates to FSC-PS system files
-        uses: ciellosinc/FSC-PS-Actions/CheckForUpdates@v1.3
-        continue-on-error: true
-        with:
-          type: ${{ steps.ReadSettings.outputs.type }}
-          settingsJson: ${{ env.Settings }}
-          secretsJson: ${{ env.RepoSecrets }}
-    
    BuildDotNet:
     needs: [ Initialization ]
     runs-on: ${{ fromJson(needs.Initialization.outputs.githubRunner) }}
@@ -82,7 +69,7 @@ jobs:
         uses: nuget/setup-nuget@v2
 
       - name: Restore FSC Nugets
-        uses: FH-Inway/FSC-PS-Actions/RestoreFSCNuget@restore-fsc-nugets
+        uses: FH-Inway/FSC-PS-Actions/RestoreFSCNuget@restore-fsc-nugets-update
         with:
           version: ${{ matrix.version }}
           packagesDirectory: '${{ github.workspace }}/Project/D365FOAdminToolkit/packages'
@@ -118,7 +105,7 @@ jobs:
           path: Metadata/D365FOAdminToolkit/bin
 
       - name: Read settings
-        uses: ciellosinc/FSC-PS-Actions/ReadSettings@v1.3
+        uses: fscpscollaborative/fscps.gh/ReadSettings@v2.1
         with:
           version: ${{ matrix.version }}
           
@@ -131,7 +118,7 @@ jobs:
           nuget-version: 5.10.x    
           
       - name: Run pipeline
-        uses: ciellosinc/FSC-PS-Actions/RunPipeline@v1.3
+        uses: fscpscollaborative/fscps.gh/RunPipeline@v2.1
         id: runpipeline
         with:
           type: ${{ needs.Initialization.outputs.type}}
@@ -154,7 +141,7 @@ jobs:
                   $content = Get-Content -Path $logFile
                   $summary += "## $logFile `n"
                   foreach ($line in $content) {
-                      # if the line is consists only of = or - characters 
+                      # if the line consists only of = or - characters 
                       # (which would be interpreted as a setext heading 
                       # (https://github.github.com/gfm/#setext-headings)), 
                       # add a new line before it
@@ -177,11 +164,11 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: Read settings
-        uses: ciellosinc/FSC-PS-Actions/ReadSettings@v1.3
+        uses: fscpscollaborative/fscps.gh/ReadSettings@v2.1
 
       - name: Finalize the workflow
         id: PostProcess
-        uses: ciellosinc/FSC-PS-Actions/WorkflowPostProcess@v1.3
+        uses: fscpscollaborative/fscps.gh/WorkflowPostProcess@v2.1
         with:
           remove_current: ${{ needs.Initialization.outputs.environments == '' }}
           settingsJson: ${{ env.Settings }}

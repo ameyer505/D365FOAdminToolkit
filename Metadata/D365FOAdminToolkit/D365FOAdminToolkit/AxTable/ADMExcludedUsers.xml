@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
-	<Name>ADMSysAdminLog</Name>
+	<Name>ADMExcludedUsers</Name>
 	<SourceCode>
 		<Declaration><![CDATA[
-public class ADMSysAdminLog extends common
+public class ADMExcludedUsers extends common
 {
 }
 ]]></Declaration>
@@ -12,8 +12,7 @@ public class ADMSysAdminLog extends common
 	<SubscriberAccessLevel>
 		<Read>Allow</Read>
 	</SubscriberAccessLevel>
-	<CreatedBy>Yes</CreatedBy>
-	<CreatedDateTime>Yes</CreatedDateTime>
+	<AllowRowVersionChangeTracking>Yes</AllowRowVersionChangeTracking>
 	<SaveDataPerCompany>No</SaveDataPerCompany>
 	<DeleteActions />
 	<FieldGroups>
@@ -42,34 +41,17 @@ public class ADMSysAdminLog extends common
 	<Fields>
 		<AxTableField xmlns=""
 			i:type="AxTableFieldString">
-			<Name>Reason</Name>
-			<Label>@D365FOAdminToolkit:AssignmentReason</Label>
-			<StringSize>250</StringSize>
-		</AxTableField>
-		<AxTableField xmlns=""
-			i:type="AxTableFieldEnum">
-			<Name>Action</Name>
-			<Label>@D365FOAdminToolkit:Action</Label>
-			<EnumType>ADMSysAdminAction</EnumType>
+			<Name>UserId</Name>
+			<StringSize>50</StringSize>
 		</AxTableField>
 		<AxTableField xmlns=""
 			i:type="AxTableFieldString">
-			<Name>UserId_</Name>
-			<StringSize>50</StringSize>
+			<Name>UserName</Name>
+			<StringSize>100</StringSize>
 		</AxTableField>
 	</Fields>
 	<FullTextIndexes />
-	<Indexes>
-		<AxTableIndex>
-			<Name>DateTime</Name>
-			<AllowDuplicates>Yes</AllowDuplicates>
-			<Fields>
-				<AxTableIndexField>
-					<DataField>CreatedDateTime</DataField>
-				</AxTableIndexField>
-			</Fields>
-		</AxTableIndex>
-	</Indexes>
+	<Indexes />
 	<Mappings />
 	<Relations />
 	<StateMachines />

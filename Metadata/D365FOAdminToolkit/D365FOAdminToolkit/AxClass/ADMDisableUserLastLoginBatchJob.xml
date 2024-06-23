@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMDisableUserLastLoginBatchJob</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class ADMDisableUserLastLoginBatchJob extends RunBaseBatch
+{
+    DialogField dlgLastLogin;
+    int daysSinceLastLogin;
+
+    #define.CurrentVersion(1)
+    #define.Version(1)
+    #localmacro.CurrentList
+        daysSinceLastLogin
+    #endmacro
+
+    ADMConfigs config;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>run</Name>
+				<Source><![CDATA[
+    public void run()
+    {
+        UserInfo ui;
+        SysUserLog ul;
+        SecurityUserRole sur;
+        SecurityRole sr;
+
+        int disableUser = 90;
+        select firstonly Value from config where config.Name == "DisableUserNumDays";
+        if(config)
+        {
+            if(str2NumOK(config.Value))
+            {
+                disableUser = str2Num(config.Value);
+            }
+        }
+        
+        ADMDisableUserLastLogin dull = new ADMDisableUSerLastLogin();
+        dull.DisableUsersBasedOnLastLogin(disableUser);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>dialog</Name>
+				<Source><![CDATA[
+    public Object dialog()
+    {
+        int disableUser = 90;
+        select firstonly Value from config where config.Name == "DisableUserNumDays";
+        if(config)
+        {
+            if(str2NumOK(config.Value))
+            {
+                disableUser = str2Num(config.Value);
+            }
+        }
+
+        DialogRunbase dialog;
+
+        //Setup the dialog
+        dialog = super();
+        dialog.caption("Parameters for Disable Users Based on Last Login");
+
+        dlgLastLogin = dialog.addField(extendedTypeStr(Integer), "Number of Days Since Last Login");
+        dlgLastLogin.value(disableUser);
+
+        return dialog;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getFromDialog</Name>
+				<Source><![CDATA[
+    public boolean getFromDialog()
+    {
+        boolean ret;
+        ret = super();
+
+        daysSinceLastLogin = dlgLastLogin.value();
+        if(!daysSinceLastLogin)
+        {
+            daysSinceLastLogin = 90;
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>pack</Name>
+				<Source><![CDATA[
+    public container pack()
+    {
+        return [#CurrentVersion, #CurrentList];
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>unpack</Name>
+				<Source><![CDATA[
+    public boolean unpack(container packedClass)
+    {
+        Version version = runbase::getVersion(packedClass);
+        switch (version)
+        {
+            case #CurrentVersion:
+                [version, #CurrentList] = packedClass;
+                break;
+            default:
+                return false;
+        }
+
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>description</Name>
+				<Source><![CDATA[
+    private static ClassDescription description()
+    {
+        return 'Disables users who have not logged in x number of days (based on parameter)';
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runsImpersonated</Name>
+				<Source><![CDATA[
+    public boolean runsImpersonated()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canGoBatchJournal</Name>
+				<Source><![CDATA[
+    boolean canGoBatchJournal()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AxForm xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
-	<Name>ADMSysAdminReason</Name>
+	<Name>ADMDisableUserJob</Name>
 	<SourceCode>
 		<Methods xmlns="">
 			<Method>
 				<Name>classDeclaration</Name>
 				<Source><![CDATA[
 [Form]
-public class ADMSysAdminReason extends FormRun
+public class ADMDisableUserJob extends FormRun
 {
-    public ADMSysAdminLog sal;
+    ADMConfigs config;
 
 }
 ]]></Source>
@@ -20,15 +20,17 @@ public class ADMSysAdminReason extends FormRun
     public void init()
     {
         super();
-        if(element.args())
+        int disableUser = 90;
+        select firstonly Value from config where config.Name == "DisableUserNumDays";
+        if(config)
         {
-            Common cmn = element.args().record();
-            if(cmn.TableId == tableNum(ADMSysAdminLog))
+            if(str2NumOK(config.Value))
             {
-                sal = cmn as ADMSysAdminLog;
-                sal.Reason = "";
+                disableUser = str2Num(config.Value);
             }
         }
+
+        NumDaysLastLogin.value(disableUser);
     }
 
 ]]></Source>
@@ -37,7 +39,7 @@ public class ADMSysAdminReason extends FormRun
 		<DataSources xmlns="" />
 		<DataControls xmlns="">
 			<Control>
-				<Name>btnSubmit</Name>
+				<Name>Submit</Name>
 				<Type>Button</Type>
 				<Methods>
 					<Method>
@@ -45,19 +47,33 @@ public class ADMSysAdminReason extends FormRun
 						<Source><![CDATA[
         public void clicked()
         {
-            str reason = strSysAdminReason.text();
-            if(reason == "")
-            {
-                Box::info("@D365FOAdminToolkit:EmptyReason", "", "");
-            }
-            else
-            {
-                sal.Reason = reason;
-                sal.update();
-            
-                element.close();
-                super();
-            }
+            int numDays = NumDaysLastLogin.value();
+
+            ADMDisableUserLastLogin dull = new ADMDisableUserLastLogin();
+            dull.DisableUsersBasedOnLastLogin(numDays);
+
+            str msg = strFmt("@D365FOAdminToolkit:UserDisableMessage", numDays);
+            str title = "@D365FOAdminToolkit:UserDisableTitle";
+            Box::info(msg, title, "");
+
+            element.close();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+			<Control>
+				<Name>Cancel</Name>
+				<Type>Button</Type>
+				<Methods>
+					<Method>
+						<Name>clicked</Name>
+						<Source><![CDATA[
+        public void clicked()
+        {
+            element.close();
+            super();
         }
 
 ]]></Source>
@@ -69,21 +85,11 @@ public class ADMSysAdminReason extends FormRun
 	</SourceCode>
 	<DataSources />
 	<Design>
-		<Caption xmlns="">@D365FOAdminToolkit:ASTSysAdminChange</Caption>
+		<Caption xmlns="">@D365FOAdminToolkit:DisableUserJob</Caption>
 		<Pattern xmlns="">Dialog</Pattern>
 		<PatternVersion xmlns="">1.2</PatternVersion>
 		<Style xmlns="">Dialog</Style>
 		<Controls xmlns="">
-			<AxFormControl xmlns=""
-				i:type="AxFormStaticTextControl">
-				<Name>FormStaticTextControl1</Name>
-				<ExtendedStyle>dialog_secondaryInstruction</ExtendedStyle>
-				<Type>StaticText</Type>
-				<WidthMode>SizeToAvailable</WidthMode>
-				<FormControlExtension
-					i:nil="true" />
-				<Text>@D365FOAdminToolkit:ChangeReason</Text>
-			</AxFormControl>
 			<AxFormControl xmlns=""
 				i:type="AxFormGroupControl">
 				<Name>FormGroupControl1</Name>
@@ -94,14 +100,14 @@ public class ADMSysAdminReason extends FormRun
 					i:nil="true" />
 				<Controls>
 					<AxFormControl xmlns=""
-						i:type="AxFormStringControl">
-						<Name>strSysAdminReason</Name>
+						i:type="AxFormIntegerControl">
+						<Name>NumDaysLastLogin</Name>
 						<AutoDeclaration>Yes</AutoDeclaration>
-						<Type>String</Type>
+						<Type>Integer</Type>
 						<FormControlExtension
 							i:nil="true" />
-						<MultiLine>Yes</MultiLine>
-						<ViewEditMode>Edit</ViewEditMode>
+						<AllowNegative>No</AllowNegative>
+						<Label>@D365FOAdminToolkit:NumDaysLastLogin</Label>
 					</AxFormControl>
 				</Controls>
 				<Style>DialogContent</Style>
@@ -116,8 +122,7 @@ public class ADMSysAdminReason extends FormRun
 				<Controls>
 					<AxFormControl xmlns=""
 						i:type="AxFormButtonControl">
-						<Name>btnSubmit</Name>
-						<AutoDeclaration>Yes</AutoDeclaration>
+						<Name>Submit</Name>
 						<Type>Button</Type>
 						<FormControlExtension
 							i:nil="true" />
@@ -125,11 +130,11 @@ public class ADMSysAdminReason extends FormRun
 					</AxFormControl>
 					<AxFormControl xmlns=""
 						i:type="AxFormButtonControl">
-						<Name>FormButtonControl2</Name>
+						<Name>Cancel</Name>
 						<Type>Button</Type>
-						<Visible>No</Visible>
 						<FormControlExtension
 							i:nil="true" />
+						<Text>@D365FOAdminToolkit:Cancel</Text>
 					</AxFormControl>
 				</Controls>
 				<ArrangeMethod>HorizontalRight</ArrangeMethod>

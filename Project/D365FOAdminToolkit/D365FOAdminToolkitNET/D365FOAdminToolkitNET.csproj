@@ -32,14 +32,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup Condition="Exists('..\..\..\..\AOSService')">
-    <Reference Include="Microsoft.Dynamics.AX.Metadata.Core">
-      <HintPath>..\..\..\..\AOSService\PackagesLocalDirectory\bin\Microsoft.Dynamics.AX.Metadata.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Dynamics.AX.Security.Management">
-      <HintPath>..\..\..\..\AOSService\PackagesLocalDirectory\bin\Microsoft.Dynamics.AX.Security.Management.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <ItemGroup Condition="Exists('..\packages')">
     <Reference Include="..\packages\Microsoft.Dynamics.AX.Platform.CompilerPackage.*\Microsoft.Dynamics.AX.Metadata.Core.dll" />
     <Reference Include="..\packages\Microsoft.Dynamics.AX.Platform.DevALM.BuildXpp.*\ref\net40\ApplicationFoundation\bin\Microsoft.Dynamics.AX.Security.Management.dll" />
@@ -56,6 +48,12 @@
     </Reference>
     <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.HashCode.1.0.0\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamics.AX.Metadata.Core">
+      <HintPath>..\..\..\..\..\AosService\WebRoot\bin\Microsoft.Dynamics.AX.Metadata.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamics.AX.Security.Management">
+      <HintPath>..\..\..\..\..\AosService\WebRoot\bin\Microsoft.Dynamics.AX.Security.Management.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Graph, Version=5.41.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Graph.5.41.0\lib\netstandard2.0\Microsoft.Graph.dll</HintPath>
