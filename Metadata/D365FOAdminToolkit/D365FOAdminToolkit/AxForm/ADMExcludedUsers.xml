@@ -214,7 +214,7 @@ public class ADMExcludedUsers extends FormRun
             UserGrid.refresh();
             SelectedUserGrid.refresh();
 
-            Box::info("Populated excluded user list.", "", "");
+            Box::info("@D365FOAdminToolkit:PopulateExcludedUserList", "", "");
             super();
         }
 
@@ -535,7 +535,8 @@ public class ADMExcludedUsers extends FormRun
 								<Type>Button</Type>
 								<FormControlExtension
 									i:nil="true" />
-								<Text>Add / Remove Selected Users</Text>
+								<MultiSelect>Yes</MultiSelect>
+								<Text>@D365FOAdminToolkit:AddRemoveSelectedUsers</Text>
 							</AxFormControl>
 							<AxFormControl xmlns=""
 								i:type="AxFormButtonControl">
@@ -544,7 +545,8 @@ public class ADMExcludedUsers extends FormRun
 								<Type>Button</Type>
 								<FormControlExtension
 									i:nil="true" />
-								<Text>Populate Excluded Users</Text>
+								<MultiSelect>Yes</MultiSelect>
+								<Text>@D365FOAdminToolkit:PopulateExcludedUsers</Text>
 							</AxFormControl>
 						</Controls>
 					</AxFormControl>
@@ -556,7 +558,7 @@ public class ADMExcludedUsers extends FormRun
 				<Type>StaticText</Type>
 				<FormControlExtension
 					i:nil="true" />
-				<Text>User List</Text>
+				<Text>@D365FOAdminToolkit:UserList</Text>
 			</AxFormControl>
 			<AxFormControl xmlns=""
 				i:type="AxFormGridControl">
@@ -575,7 +577,7 @@ public class ADMExcludedUsers extends FormRun
 							i:nil="true" />
 						<DataField>id</DataField>
 						<DataSource>UserInfo</DataSource>
-						<Label>User Id</Label>
+						<Label>@D365FOAdminToolkit:UserId</Label>
 					</AxFormControl>
 					<AxFormControl xmlns=""
 						i:type="AxFormStringControl">
@@ -585,7 +587,7 @@ public class ADMExcludedUsers extends FormRun
 							i:nil="true" />
 						<DataField>name</DataField>
 						<DataSource>UserInfo</DataSource>
-						<Label>User Name</Label>
+						<Label>@D365FOAdminToolkit:UserName</Label>
 					</AxFormControl>
 				</Controls>
 				<DataSource>UserInfo</DataSource>
@@ -596,11 +598,12 @@ public class ADMExcludedUsers extends FormRun
 				<Type>StaticText</Type>
 				<FormControlExtension
 					i:nil="true" />
-				<Text>Excluded User List</Text>
+				<Text>@D365FOAdminToolkit:ExcludedUserList</Text>
 			</AxFormControl>
 			<AxFormControl xmlns=""
 				i:type="AxFormGridControl">
 				<Name>SelectedUserGrid</Name>
+				<AllowEdit>No</AllowEdit>
 				<AutoDeclaration>Yes</AutoDeclaration>
 				<Type>Grid</Type>
 				<FormControlExtension
@@ -614,7 +617,7 @@ public class ADMExcludedUsers extends FormRun
 							i:nil="true" />
 						<DataField>UserId</DataField>
 						<DataSource>ADMExcludedUsers</DataSource>
-						<Label>User Id</Label>
+						<Label>@D365FOAdminToolkit:UserId</Label>
 					</AxFormControl>
 					<AxFormControl xmlns=""
 						i:type="AxFormStringControl">
@@ -624,7 +627,7 @@ public class ADMExcludedUsers extends FormRun
 							i:nil="true" />
 						<DataField>UserName</DataField>
 						<DataSource>ADMExcludedUsers</DataSource>
-						<Label>User Name</Label>
+						<Label>@D365FOAdminToolkit:UserName</Label>
 					</AxFormControl>
 				</Controls>
 				<DataSource>ADMExcludedUsers</DataSource>

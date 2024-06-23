@@ -8,7 +8,7 @@ Created by Alex Meyer&#xD;
 Email: alex.itguy@outlook.com&#xD;
 Website: http://d365foblog.com&#xD;
 &#xD;
-Last Updated: 5/6/2024</Description>
+Last Updated: 6/20/2024</Description>
 	<DisplayName>D365FOAdminToolkit</DisplayName>
 	<Id>896000769</Id>
 	<InternalsVisibleTo xmlns:d2p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
@@ -30,6 +30,6 @@ Last Updated: 5/6/2024</Description>
 	<SolutionId>00000000-0000-0000-0000-000000000000</SolutionId>
 	<VersionBuild>0</VersionBuild>
 	<VersionMajor>1</VersionMajor>
-	<VersionMinor>4</VersionMinor>
+	<VersionMinor>5</VersionMinor>
 	<VersionRevision>0</VersionRevision>
 </AxModelInfo>
