@@ -52,8 +52,8 @@ public class ADMDisableUserJob extends FormRun
             ADMDisableUserLastLogin dull = new ADMDisableUserLastLogin();
             dull.DisableUsersBasedOnLastLogin(numDays);
 
-            str msg = strFmt("Users disabled if they have not logged in for %1 days.", numDays);
-            str title = "Disable User Process Complete";
+            str msg = strFmt("@D365FOAdminToolkit:UserDisableMessage", numDays);
+            str title = "@D365FOAdminToolkit:UserDisableTitle";
             Box::info(msg, title, "");
 
             element.close();
