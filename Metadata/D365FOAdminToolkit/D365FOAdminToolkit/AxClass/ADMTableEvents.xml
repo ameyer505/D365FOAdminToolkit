@@ -20,6 +20,7 @@ internal final class ADMTableEvents
         ADMConfigs config;
         ADMSysAdminLog sal;
         int reasonDialog = 0;
+        boolean dialogClosedOk;
 
         AdmSysAdminLogHelper salh = new AdmSysAdminLogHelper();
         reasonDialog = salh.CheckReasonDialogConfig();
@@ -29,24 +30,39 @@ internal final class ADMTableEvents
         {
             if(sur.SecurityRole == sr.RecID)
             {
-                ttsbegin;
                 sal.Action = ADMSysAdminAction::Assigned;
                 sal.UserId_ = sur.User;
-                sal.Reason = "";
-                sal.insert();
-                ttscommit;
 
-                if(reasonDialog == 1)
+                if (reasonDialog)
                 {
-                    FormRun fr;
-                    Args args;
+                    if(xGlobal::hasClient())
+                    {
+                        Args args = new Args(formStr(ADMSysAdminReason));
+                        args.record(sal);
 
-                    args = new Args(formStr(ADMSysAdminReason));
-                    args.record(sal);
-                    fr = new FormRun(args);
-                    fr.init();
-                    fr.run();
-                    fr.wait();
+                        FormRun fr = new FormRun(args);
+                        fr.init();
+                        fr.run();
+                        fr.wait();
+
+                        if (sal.Reason)
+                        {
+                            dialogClosedOk = true;
+                        }
+                        else
+                        {
+                            throw error("@D365FOAdminToolkit:EmptyReason");
+                        }
+                    }
+                }
+                else
+                {
+                    dialogClosedOk = true;
+                }
+                        
+                if (dialogClosedOk)
+                {
+                    sal.insert();
                 }
             }
         }
@@ -66,6 +82,7 @@ internal final class ADMTableEvents
         ADMConfigs config;
         ADMSysAdminLog sal;
         int reasonDialog = 0;
+        boolean dialogClosedOk;
 
         AdmSysAdminLogHelper salh = new AdmSysAdminLogHelper();
         reasonDialog = salh.CheckReasonDialogConfig();
@@ -79,35 +96,48 @@ internal final class ADMTableEvents
                 {
                     if(sur.AssignmentStatus == RoleAssignmentStatus::Enabled)
                     {
-                        ttsbegin;
-                        sal.Reason = "";
                         sal.Action = ADMSysAdminAction::Assigned;
                         sal.UserId_ = sur.User;
-                        sal.insert();
-                        ttscommit;
 
-                        if(reasonDialog == 1)
+                        if (reasonDialog)
                         {
-                            FormRun fr;
-                            Args args;
+                            if(xGlobal::hasClient())
+                            {
+                                Args args = new Args(formStr(ADMSysAdminReason));
+                                args.record(sal);
 
+                                FormRun fr = new FormRun(args);
+                                fr.init();
+                                fr.run();
+                                fr.wait();
 
-                            args = new Args(formStr(ADMSysAdminReason));
-                            args.record(sal);
-                            fr = new FormRun(args);
-                            fr.init();
-                            fr.run();
-                            fr.wait();
+                                if (sal.Reason)
+                                {
+                                    dialogClosedOk = true;
+                                }
+                                else
+                                {
+                                    throw error("@D365FOAdminToolkit:EmptyReason");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            dialogClosedOk = true;
+                        }
+                        
+                        if (dialogClosedOk)
+                        {
+                            sal.insert();
                         }
                     }
+
                     if(sur.AssignmentStatus == RoleAssignmentStatus::Disabled)
                     {
-                        ttsbegin;
                         sal.Action = ADMSysAdminAction::Revoked;
                         sal.UserId_ = sur.User;
                         sal.Reason = "";
                         sal.insert();
-                        ttscommit;
                     }
                 }
             }
