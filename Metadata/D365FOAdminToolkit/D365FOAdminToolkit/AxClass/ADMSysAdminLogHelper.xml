@@ -11,19 +11,23 @@ public class ADMSysAdminLogHelper
 			<Method>
 				<Name>CheckReasonDialogConfig</Name>
 				<Source><![CDATA[
-    public int CheckReasonDialogConfig()
+    public static int CheckReasonDialogConfig()
     {
-        ADMConfigs config;
-        int reasonDialog = 0;
-        select firstonly Value from config where config.Name == "ShowReasonDialog";
-        if(config)
-        {
-            if(str2NumOK(config.Value))
-            {
-                reasonDialog = str2Num(config.Value);
-            }
-        }
-        return reasonDialog;
+        var configShowReasonDialog = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameShowReasonDialog);
+
+        return str2IntOk(configShowReasonDialog) ? str2Int(configShowReasonDialog) : ADMConfigsConstants::defaultValueReasonDialog;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>CheckExpiryDateDialog</Name>
+				<Source><![CDATA[
+    public static int CheckExpiryDateDialog()
+    {
+        var configShowExpiryDialog = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameShowExpiryDateDialog);
+
+        return str2IntOk(configShowExpiryDialog) ? str2Int(configShowExpiryDialog) : ADMConfigsConstants::defaultValueExipryDialog;
     }
 
 ]]></Source>
@@ -31,19 +35,33 @@ public class ADMSysAdminLogHelper
 			<Method>
 				<Name>GetDefaultNumDaysForReports</Name>
 				<Source><![CDATA[
-    public int GetDefaultNumDaysForReports()
+    public static int GetDefaultNumDaysForReports()
     {
-        AdmConfigs config;
-        int reportOffset = -30;
-        select firstonly Value from config where config.Name == "DefaultNumDaysForReports";
-        if(config)
+        int reportOffset = -ADMConfigsConstants::defaultValueReportOffset;
+        var configDefaultNumberOfDays = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameDefaultNumDays);
+
+        if (str2IntOk(configDefaultNumberOfDays))
         {
-            if(str2NumOK(config.Value))
-            {
-                reportOffset = str2Num(config.Value) * -1;
-            }
+            reportOffset = str2Int(configDefaultNumberOfDays) * -1;
         }
+
         return reportOffset;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setUserRoleAssignmentAsExpired</Name>
+				<Source><![CDATA[
+    public static void setUserRoleAssignmentAsExpired(UserId _userId)
+    {
+        ADMSysAdminLog sysAdminLog;
+
+        update_recordset sysAdminLog
+            setting HasExpired = NoYes::Yes
+            where sysAdminLog.UserId_       == _userId
+            &&    sysAdminLog.EndDateTime   != DateTimeUtil::minValue()
+            &&    sysAdminLog.HasExpired    == NoYes::No;
     }
 
 ]]></Source>

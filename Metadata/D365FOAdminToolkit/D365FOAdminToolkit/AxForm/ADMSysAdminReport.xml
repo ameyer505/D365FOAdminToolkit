@@ -13,8 +13,6 @@ public class ADMSysAdminReport extends FormRun
     QueryBuildDataSource ds;
     Query qry;
     QueryRun qryRun;
-     
-    ADMConfigs config;
 
 }
 ]]></Source>
@@ -25,12 +23,11 @@ public class ADMSysAdminReport extends FormRun
     public void init()
     {
         super();
-        AdmSysAdminLogHelper helper = new AdmSysAdminLogHelper();
-        int dateOffset = helper.GetDefaultNumDaysForReports();
 
-        var currDateTime = DateTimeUtil::getSystemDateTime();
-        date startDate = DateTimeUtil::date(DateTimeUtil::addDays(currDateTime, dateOffset));
-        date endDate = DateTimeUtil::date(DateTimeUtil::addDays(currDateTime, 1));
+        var currDateTime    = DateTimeUtil::getSystemDateTime();
+        var startDate       = DateTimeUtil::date(DateTimeUtil::addDays(currDateTime, AdmSysAdminLogHelper::GetDefaultNumDaysForReports()));
+        var endDate         = DateTimeUtil::date(DateTimeUtil::addDays(currDateTime, 1));
+
         StartDateControl.dateValue(startDate);
         EndDateControl.dateValue(endDate);
     }
@@ -91,6 +88,12 @@ public class ADMSysAdminReport extends FormRun
 				</AxFormDataSourceField>
 				<AxFormDataSourceField>
 					<DataField>CreatedDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>EndDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>HasExpired</DataField>
 				</AxFormDataSourceField>
 				<AxFormDataSourceField>
 					<DataField>Partition</DataField>
@@ -245,6 +248,15 @@ public class ADMSysAdminReport extends FormRun
 						<DataField>CreatedBy</DataField>
 						<DataSource>ADMSysAdminLog</DataSource>
 						<Label>@D365FOAdminToolkit:ModifiedBy</Label>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormDateTimeControl">
+						<Name>ADMSysAdminLog_EndDateTime</Name>
+						<Type>DateTime</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>EndDateTime</DataField>
+						<DataSource>ADMSysAdminLog</DataSource>
 					</AxFormControl>
 				</Controls>
 				<DataSource>ADMSysAdminLog</DataSource>

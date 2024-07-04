@@ -9,6 +9,9 @@
 [Form]
 public class ADMSysAdminReason extends FormRun
 {
+    private NoYesId showExpiryDate;
+    private NoYesId requireReason;
+    
     public ADMSysAdminLog sal;
 
 }
@@ -18,7 +21,10 @@ public class ADMSysAdminReason extends FormRun
 				<Name>init</Name>
 				<Source><![CDATA[
     public void init()
-    {
+    {   
+        requireReason   = ADMSysAdminLogHelper::CheckReasonDialogConfig();
+        showExpiryDate  = ADMSysAdminLogHelper::CheckExpiryDateDialog();
+
         super();
         if(element.args())
         {
@@ -27,8 +33,12 @@ public class ADMSysAdminReason extends FormRun
             {
                 sal = cmn as ADMSysAdminLog;
                 sal.Reason = "";
+                sal.EndDateTime = DateTimeUtil::minValue();
             }
         }
+
+        DateTimeSysAdminExpiry.visible(showExpiryDate);
+        
     }
 
 ]]></Source>
@@ -46,14 +56,15 @@ public class ADMSysAdminReason extends FormRun
         public void clicked()
         {
             str reason = strSysAdminReason.text();
-            if(reason == "")
+           
+            if(requireReason && reason == "")
             {
-                Box::info("@D365FOAdminToolkit:EmptyReason", "", "");
+                info("@D365FOAdminToolkit:EmptyReason");
             }
             else
             {
-                sal.Reason = reason;
-                //sal.update();
+                sal.Reason      = reason;
+                sal.EndDateTime = DateTimeSysAdminExpiry.getUtcDateTime();
             
                 element.close();
                 super();
@@ -75,19 +86,11 @@ public class ADMSysAdminReason extends FormRun
 		<Style xmlns="">Dialog</Style>
 		<Controls xmlns="">
 			<AxFormControl xmlns=""
-				i:type="AxFormStaticTextControl">
-				<Name>FormStaticTextControl1</Name>
-				<ExtendedStyle>dialog_secondaryInstruction</ExtendedStyle>
-				<Type>StaticText</Type>
-				<WidthMode>SizeToAvailable</WidthMode>
-				<FormControlExtension
-					i:nil="true" />
-				<Text>@D365FOAdminToolkit:ChangeReason</Text>
-			</AxFormControl>
-			<AxFormControl xmlns=""
 				i:type="AxFormGroupControl">
 				<Name>FormGroupControl1</Name>
 				<HeightMode>SizeToAvailable</HeightMode>
+				<Pattern>FieldsFieldGroups</Pattern>
+				<PatternVersion>1.1</PatternVersion>
 				<Type>Group</Type>
 				<WidthMode>SizeToAvailable</WidthMode>
 				<FormControlExtension
@@ -100,10 +103,21 @@ public class ADMSysAdminReason extends FormRun
 						<Type>String</Type>
 						<FormControlExtension
 							i:nil="true" />
+						<Label>@D365FOAdminToolkit:ChangeReason</Label>
 						<MultiLine>Yes</MultiLine>
 						<ViewEditMode>Edit</ViewEditMode>
 					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormDateTimeControl">
+						<Name>DateTimeSysAdminExpiry</Name>
+						<AutoDeclaration>Yes</AutoDeclaration>
+						<Type>DateTime</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<ExtendedDataType>EndDateTime</ExtendedDataType>
+					</AxFormControl>
 				</Controls>
+				<ColumnsMode>Fill</ColumnsMode>
 				<Style>DialogContent</Style>
 			</AxFormControl>
 			<AxFormControl xmlns=""

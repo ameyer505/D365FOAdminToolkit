@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMRemoveUserAdminRoleEndDateTimeService</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+internal final class ADMRemoveUserAdminRoleEndDateTimeService
+{
+    private static str systemAdministratorRoleName = '-SYSADMIN-';
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>doDisableAdminRoles</Name>
+				<Source><![CDATA[
+    public void doDisableAdminRoles()
+    {
+        #OCCRETRYCOUNT
+
+        ADMSysAdminLog      admSysAdminLog;
+        SecurityUserRole    securityUserRole;
+        SecurityRole        securityRole;
+
+        select firstonly RecId from securityRole
+            where securityRole.AotName == systemAdministratorRoleName;
+
+        if (!securityRole)
+        {
+            return;
+        }
+
+        try
+        {
+            while select admSysAdminLog
+                where admSysAdminLog.EndDateTime > DateTimeUtil::minValue()
+                   && admSysAdminLog.EndDateTime < DateTimeUtil::getSystemDateTime()
+                   && admSysAdminLog.HasExpired == NoYes::No
+            {
+                if (!SysSecHelper::isServiceAccount(admSysAdminLog.UserId_))
+                {
+                    delete_from securityUserRole
+                        where securityUserRole.User         == admSysAdminLog.UserId_
+                        &&    securityUserRole.SecurityRole == securityRole.RecId;
+                }
+                else
+                {
+                    ADMSysAdminLogHelper::setUserRoleAssignmentAsExpired(admSysAdminLog.UserId_);
+                }
+            }
+        }
+        catch (Exception::Deadlock)
+        {
+            // retry on deadlock
+            retry;
+        }
+        catch (Exception::UpdateConflict)
+        {
+            // try to resolve update conflict
+            if (appl.ttsLevel() == 0)
+            {
+                if (xSession::currentRetryCount() >= #RetryNum)
+                {
+                    throw Exception::UpdateConflictNotRecovered;
+                }
+                else
+                {
+                    retry;
+                }
+            }
+            else
+            {
+                throw Exception::UpdateConflict;
+            }
+        }
+        catch(Exception::DuplicateKeyException)
+        {
+            // retry in case of an duplicate key conflict
+            if (appl.ttsLevel() == 0)
+            {
+                if (xSession::currentRetryCount() >= #RetryNum)
+                {
+                    throw Exception::DuplicateKeyExceptionNotRecovered;
+                }
+                else
+                {
+                    retry;
+                }
+            }
+            else
+            {
+                throw Exception::DuplicateKeyException;
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

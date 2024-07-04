@@ -10,7 +10,6 @@
 public class ADMConfiguration extends FormRun
 {
     ADMConfigs config;
-
 }
 ]]></Source>
 			</Method>
@@ -21,29 +20,13 @@ public class ADMConfiguration extends FormRun
     {
         super();
 
-        int reportOffset = 30;
-        int reasonDialog = 0;
+        var reportOffset        = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameDefaultNumDays);
+        var reasonDialog        = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameShowReasonDialog);
+        var expiryDateDialog    = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameShowExpiryDateDialog);
 
-        select firstonly Value from config where config.Name == "DefaultNumDaysForReports";
-        if(config)
-        {
-            if(str2NumOK(config.Value))
-            {
-                reportOffset = str2Num(config.Value);
-            }
-        }
-
-        select firstonly Value from config where config.Name == "ShowReasonDialog";
-        if(config)
-        {
-            if(str2NumOK(config.Value))
-            {
-                reasonDialog = str2Num(config.Value);
-            }
-        }
-
-        ReportNumDays.value(reportOffset);
-        ShowReasonDialog.value(reasonDialog);
+        ReportNumDays.value(str2IntOk(reasonDialog)             ? str2Int(reportOffset)     : ADMConfigsConstants::defaultValueReportOffset);
+        ShowReasonDialog.value(str2IntOk(reportOffset)          ? str2Int(reasonDialog)     : ADMConfigsConstants::defaultValueReasonDialog);
+        ShowAdminExpiryDate.value(str2IntOk(expiryDateDialog)   ? str2Int(expiryDateDialog) : ADMConfigsConstants::defaultValueExipryDialog);
     }
 
 ]]></Source>
@@ -77,65 +60,43 @@ public class ADMConfiguration extends FormRun
 						<Source><![CDATA[
         public void clicked()
         {
-            select forupdate config where config.Name == "DefaultNumDaysForReports";
-            if(config)
-            {
-                str reportOffset = ReportNumDays.valueStr();
-                ttsbegin;
-                config.Value = reportOffset;
-                config.update();
-                ttscommit;
-            }
-            else
-            {
-                config.clear();
-                config.Name = "DefaultNumDaysForReports";
-                str reportOffset = ReportNumDays.valueStr();
-                ttsbegin;
-                config.Value = reportOffset;
-                config.insert();
-                ttscommit;
-            }
+            #OCCRETRYCOUNT
 
-            select forupdate config where config.Name == "ShowReasonDialog";
-            if(config)
+            super();
+
+            try
             {
-                int reasonDialog = ShowReasonDialog.value();
                 ttsbegin;
-                if(reasonDialog == 1)
+
+                ADMConfigs::setConfigValue(ADMConfigsConstants::configNameDefaultNumDays,        ReportNumDays.valueStr());
+                ADMConfigs::setConfigValue(ADMConfigsConstants::configNameShowReasonDialog,      int2Str(ShowReasonDialog.value()));
+                ADMConfigs::setConfigValue(ADMConfigsConstants::configNameShowExpiryDateDialog,  int2Str(ShowAdminExpiryDate.value()));
+
+                ttscommit;
+            }
+            catch (Exception::UpdateConflict)
+            {
+                // try to resolve update conflict
+                if (appl.ttsLevel() == 0)
                 {
-                    config.Value = "1";
+                    if (xSession::currentRetryCount() >= #RetryNum)
+                    {
+                        throw Exception::UpdateConflictNotRecovered;
+                    }
+                    else
+                    {
+                        retry;
+                    }
                 }
                 else
                 {
-                    config.Value = "0";
+                    throw Exception::UpdateConflict;
                 }
-                
-                config.update();
-                ttscommit;
-            }
-            else
-            {
-                config.clear();
-                config.Name = "ShowReasonDialog";
-                int reasonDialog = ShowReasonDialog.value();
-                ttsbegin;
-                if(reasonDialog == 1)
-                {
-                    config.Value = "1";
-                }
-                else
-                {
-                    config.Value = "0";
-                }
-                config.insert();
-                ttscommit;
             }
 
-            Box::info("D365FO Admin Toolkit Configuration Saved Successfully", "", "");
+            info("D365FO Admin Toolkit Configuration Saved Successfully");
             
             element.close();
-            super();
         }
 
 ]]></Source>
@@ -156,6 +117,8 @@ public class ADMConfiguration extends FormRun
 				i:type="AxFormGroupControl">
 				<Name>FormGroupControl1</Name>
 				<HeightMode>SizeToAvailable</HeightMode>
+				<Pattern>FieldsFieldGroups</Pattern>
+				<PatternVersion>1.1</PatternVersion>
 				<Type>Group</Type>
 				<WidthMode>SizeToAvailable</WidthMode>
 				<FormControlExtension
@@ -181,7 +144,17 @@ public class ADMConfiguration extends FormRun
 							i:nil="true" />
 						<Label>@D365FOAdminToolkit:ShowReasonDialog</Label>
 					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormCheckBoxControl">
+						<Name>ShowAdminExpiryDate</Name>
+						<AutoDeclaration>Yes</AutoDeclaration>
+						<Type>CheckBox</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Label>@D365FOAdminToolkit:ShowSysAdminExpiryDateDialog</Label>
+					</AxFormControl>
 				</Controls>
+				<ColumnsMode>Fill</ColumnsMode>
 				<Style>DialogContent</Style>
 			</AxFormControl>
 			<AxFormControl xmlns=""

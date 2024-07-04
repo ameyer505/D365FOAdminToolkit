@@ -57,6 +57,21 @@ public class ADMSysAdminLog extends common
 			<Name>UserId_</Name>
 			<StringSize>50</StringSize>
 		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldUtcDateTime">
+			<Name>EndDateTime</Name>
+			<ExtendedDataType>EndDateTime</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>HasExpired</Name>
+			<ExtendedDataType>NoYesId</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+			<Label>@SYS107504</Label>
+			<Visible>No</Visible>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
 	</Fields>
 	<FullTextIndexes />
 	<Indexes>
@@ -66,6 +81,18 @@ public class ADMSysAdminLog extends common
 			<Fields>
 				<AxTableIndexField>
 					<DataField>CreatedDateTime</DataField>
+				</AxTableIndexField>
+			</Fields>
+		</AxTableIndex>
+		<AxTableIndex>
+			<Name>EndDateTimeExpiredIdx</Name>
+			<AllowDuplicates>Yes</AllowDuplicates>
+			<Fields>
+				<AxTableIndexField>
+					<DataField>EndDateTime</DataField>
+				</AxTableIndexField>
+				<AxTableIndexField>
+					<DataField>HasExpired</DataField>
 				</AxTableIndexField>
 			</Fields>
 		</AxTableIndex>

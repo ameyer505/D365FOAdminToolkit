@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxMenuItemAction xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V1">
+	<Name>ADMRemoveUserAdminRoleEndDateTimeService</Name>
+	<EnumParameter>Synchronous</EnumParameter>
+	<EnumTypeParameter>SysOperationExecutionMode</EnumTypeParameter>
+	<HelpText>@D365FOAdminToolkit:DisableSysAdminBatchJobHelp</HelpText>
+	<Label>@D365FOAdminToolkit:DisableSysAdminBatchJobLabel</Label>
+	<Object>SysOperationServiceController</Object>
+	<ObjectType>Class</ObjectType>
+	<Parameters>ADMRemoveUserAdminRoleEndDateTimeService.doDisableAdminRoles</Parameters>
+	<SubscriberAccessLevel>
+		<Read xmlns="">Allow</Read>
+	</SubscriberAccessLevel>
+</AxMenuItemAction>

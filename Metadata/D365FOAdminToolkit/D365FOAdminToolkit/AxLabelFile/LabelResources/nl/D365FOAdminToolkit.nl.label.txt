@@ -20,6 +20,8 @@ D365FOAdminToolkit=D365FO Admin Toolkit
  ;{locked}
 DateTime=Datum Tijd
 DefaultNumDaysReport=Standaard aantal dagen voor rapporten
+DisableSysAdminBatchJobHelp=Deactiveert verlopen SysAdmin-roltoewijzingen
+DisableSysAdminBatchJobLabel=Deactiveer verlopen SysAdmin-roltoewijzingen
 DisableUserJob=Taak Gebruikers uitschakelen
 DisableUserNumDays=Schakel Gebruikersaantal dagen uit
 EmptyReason=Waarde voor Reden moet worden opgegeven.
@@ -45,6 +47,7 @@ RevokeSysAdmin=SysAdmin intrekken
 RoleAccessFileGenerated=Rol toegang bestand succesvol gegenereerd
 Setup=Instellen
 ShowReasonDialog=Reden Dialoog voor SysAdmin tonen
+ShowSysAdminExpiryDateDialog=Toon vervaldatum voor SysAdmin
 StartDate=Begin Datum :
 Submit=Indienen
 SysAdmin=Systeembeheerder
