@@ -11,6 +11,7 @@ public class ADMSysAdminReason extends FormRun
 {
     private NoYesId showExpiryDate;
     private NoYesId requireReason;
+    private int     defaultExpiryHours;
     
     public ADMSysAdminLog sal;
 
@@ -22,8 +23,9 @@ public class ADMSysAdminReason extends FormRun
 				<Source><![CDATA[
     public void init()
     {   
-        requireReason   = ADMSysAdminLogHelper::CheckReasonDialogConfig();
-        showExpiryDate  = ADMSysAdminLogHelper::CheckExpiryDateDialog();
+        requireReason       = ADMSysAdminLogHelper::CheckReasonDialogConfig();
+        showExpiryDate      = ADMSysAdminLogHelper::CheckExpiryDateDialog();
+        defaultExpiryHours  = ADMSysAdminLogHelper::GetDefaultNumHoursRoleExpiry();
 
         super();
         if(element.args())
@@ -38,7 +40,11 @@ public class ADMSysAdminReason extends FormRun
         }
 
         DateTimeSysAdminExpiry.visible(showExpiryDate);
-        
+
+        if (showExpiryDate)
+        {
+            DateTimeSysAdminExpiry.setUtcDateTime(DateTimeUtil::addHours(DateTimeUtil::getSystemDateTime(), defaultExpiryHours));
+        }        
     }
 
 ]]></Source>

@@ -53,6 +53,7 @@ Submit=Indienen
 SysAdmin=Systeembeheerder
 SysAdminAssigned=SYSADMIN rol toegewezen aan %1
 SysAdminAssignReport=SysAdmin Toewijzing Rapport
+SysAdminExpiryDateDefaultHours=Standaard aantal uren
 SysAdminNotAssigned=SYSADMIN rol niet toegewezen aan %1
 SysAdminReport=SysAdmin Rapport
 SysAdminRevoked=Rol SYSADMIN verwijderd van %1

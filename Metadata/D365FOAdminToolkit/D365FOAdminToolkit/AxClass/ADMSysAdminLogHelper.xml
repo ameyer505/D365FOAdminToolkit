@@ -51,6 +51,18 @@ public class ADMSysAdminLogHelper
 ]]></Source>
 			</Method>
 			<Method>
+				<Name>GetDefaultNumHoursRoleExpiry</Name>
+				<Source><![CDATA[
+    public static int GetDefaultNumHoursRoleExpiry()
+    {
+        var configDefaultRoleExpiryHours = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameRoleDefaultExpiryHours);
+
+        return str2IntOk(configDefaultRoleExpiryHours) ? str2Int(configDefaultRoleExpiryHours) : ADMConfigsConstants::defaultValueRoleExpiryHours;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
 				<Name>setUserRoleAssignmentAsExpired</Name>
 				<Source><![CDATA[
     public static void setUserRoleAssignmentAsExpired(UserId _userId)

@@ -52,6 +52,7 @@ Submit=Enviar
 SysAdmin=Administrador de Sistemas
 SysAdminAssigned=Rol SYSADMIN asignado a %1
 SysAdminAssignReport=Informe de asignación SysAdmin
+SysAdminExpiryDateDefaultHours=Número de horas predeterminado
 SysAdminNotAssigned=Rol SYSADMIN no asignado a %1
 SysAdminReport=Informe SysAdmin
 SysAdminRevoked=Se eliminó el rol SYSADMIN de %1

@@ -52,6 +52,7 @@ Submit=Send
 SysAdmin=Systemadministrator
 SysAdminAssigned=Rollen SYSADMIN blev tildelt %1
 SysAdminAssignReport=SysAdmin Tildelingsrapport
+SysAdminExpiryDateDefaultHours=Standard antal timer
 SysAdminNotAssigned=Rollen SYSADMIN er ikke tildelt %1
 SysAdminReport=SysAdmin Rapport
 SysAdminRevoked=Rollen SYSADMIN blev fjernet fra %1
