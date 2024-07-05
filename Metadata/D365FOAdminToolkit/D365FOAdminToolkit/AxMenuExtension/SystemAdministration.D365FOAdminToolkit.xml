@@ -61,6 +61,12 @@
 								<Name>ADMDisableUser</Name>
 								<MenuItemName>ADMDisableUser</MenuItemName>
 							</AxMenuElement>
+							<AxMenuElement xmlns=""
+								i:type="AxMenuElementMenuItem">
+								<Name>ADMRemoveUserAdminRoleEndDateTimeService</Name>
+								<MenuItemName>ADMRemoveUserAdminRoleEndDateTimeService</MenuItemName>
+								<MenuItemType>Action</MenuItemType>
+							</AxMenuElement>
 						</Elements>
 					</AxMenuElement>
 					<AxMenuElement xmlns=""

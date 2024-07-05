@@ -25,12 +25,11 @@ public class ADMDisableUserReport extends FormRun
     public void init()
     {
         super();
-        AdmSysAdminLogHelper helper = new AdmSysAdminLogHelper();
-        int dateOffset = helper.GetDefaultNumDaysForReports();
 
-        var currDateTime = DateTimeUtil::getSystemDateTime();
-        date startDate = DateTimeUtil::date(DateTimeUtil::addDays(currDateTime, dateOffset));
-        date endDate = DateTimeUtil::date(DateTimeUtil::addDays(currDateTime, 1));
+        var currDateTime    = DateTimeUtil::getSystemDateTime();
+        date startDate      = DateTimeUtil::date(DateTimeUtil::addDays(currDateTime, ADMSysAdminLogHelper::GetDefaultNumDaysForReports()));
+        date endDate        = DateTimeUtil::date(DateTimeUtil::addDays(currDateTime, 1));
+
         StartDateControl.dateValue(startDate);
         EndDateControl.dateValue(endDate);
     }

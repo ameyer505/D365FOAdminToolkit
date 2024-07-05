@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMConfigsConstants</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+internal final class ADMConfigsConstants
+{    
+    public static str configNameDefaultNumDays              = 'DefaultNumDaysForReports';
+    public static str configNameShowReasonDialog            = 'ShowReasonDialog';
+    public static str configNameDisableUserNumDays          = 'DisableUserNumDays';
+    public static str configNameShowExpiryDateDialog        = 'ShowRoleExpiryDateDialog';
+    public static str configNameRoleDefaultExpiryHours      = 'DefaultNumHoursRoleExpiry';
+
+    public static int defaultValueReportOffset      = 30;
+    public static int defaultValueReasonDialog      = NoYes::No;
+    public static int defaultValueExipryDialog      = NoYes::No;
+    public static int defaultValueDisableUser       = 90;
+    public static int defaultValueRoleExpiryHours   = 8;
+}
+]]></Declaration>
+		<Methods />
+	</SourceCode>
+</AxClass>

@@ -6,14 +6,79 @@
 public class ADMConfigs extends common
 {
 }
-
 ]]></Declaration>
-		<Methods />
+		<Methods>
+			<Method>
+				<Name>getConfigValue</Name>
+				<Source><![CDATA[
+    public static str getConfigValue(str _configId)
+    {
+        return (select firstonly Value from ADMConfigs
+            where ADMConfigs.Name == _configId).value;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setConfigValue</Name>
+				<Source><![CDATA[
+    public static void setConfigValue(str _configId, str _value)
+    {
+        #OCCRETRYCOUNT
+
+        try
+        {
+            ADMConfigs admConfigs;
+
+            ttsbegin;
+
+            select firstonly forupdate * from ADMConfigs
+                where ADMConfigs.Name == _configId;
+
+            admConfigs.Name = _configId;
+            admConfigs.Value = _value;
+            admConfigs.write();
+
+            ttscommit;
+        }
+        catch (Exception::Deadlock)
+        {
+            // retry on deadlock
+            retry;
+        }
+        catch (Exception::UpdateConflict)
+        {
+            // try to resolve update conflict
+            if (appl.ttsLevel() == 0)
+            {
+                if (xSession::currentRetryCount() >= #RetryNum)
+                {
+                    throw Exception::UpdateConflictNotRecovered;
+                }
+                else
+                {
+                    retry;
+                }
+            }
+            else
+            {
+                throw Exception::UpdateConflict;
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
 	</SourceCode>
+	<Label>@D365FOAdminToolkit:ConfigurationSetup</Label>
 	<SubscriberAccessLevel>
 		<Read>Allow</Read>
 	</SubscriberAccessLevel>
+	<TableGroup>Parameter</TableGroup>
 	<AllowRowVersionChangeTracking>Yes</AllowRowVersionChangeTracking>
+	<CacheLookup>Found</CacheLookup>
+	<ClusteredIndex>NameIdx</ClusteredIndex>
 	<SaveDataPerCompany>No</SaveDataPerCompany>
 	<DeleteActions />
 	<FieldGroups>
@@ -52,7 +117,17 @@ public class ADMConfigs extends common
 		</AxTableField>
 	</Fields>
 	<FullTextIndexes />
-	<Indexes />
+	<Indexes>
+		<AxTableIndex>
+			<Name>NameIdx</Name>
+			<AlternateKey>Yes</AlternateKey>
+			<Fields>
+				<AxTableIndexField>
+					<DataField>Name</DataField>
+				</AxTableIndexField>
+			</Fields>
+		</AxTableIndex>
+	</Indexes>
 	<Mappings />
 	<Relations />
 	<StateMachines />

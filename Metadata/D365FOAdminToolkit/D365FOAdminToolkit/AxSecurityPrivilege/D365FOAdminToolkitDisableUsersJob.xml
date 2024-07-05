@@ -24,6 +24,12 @@
 				</AxSecurityEntryPointReferenceForm>
 			</Forms>
 		</AxSecurityEntryPointReference>
+		<AxSecurityEntryPointReference>
+			<Name>ADMRemoveUserAdminRoleEndDateTimeService</Name>
+			<ObjectName>ADMRemoveUserAdminRoleEndDateTimeService</ObjectName>
+			<ObjectType>MenuItemAction</ObjectType>
+			<Forms />
+		</AxSecurityEntryPointReference>
 	</EntryPoints>
 	<FormControlOverrides />
 </AxSecurityPrivilege>

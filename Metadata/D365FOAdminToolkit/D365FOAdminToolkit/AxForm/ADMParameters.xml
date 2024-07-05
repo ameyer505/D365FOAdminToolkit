@@ -21,40 +21,19 @@ public class ADMParameters extends FormRun
     {
         super();
 
-        int reportOffset = 30;
-        int reasonDialog = 0;
-        int disableUser = 90;
+        var reportOffset            = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameDefaultNumDays);
+        var reasonDialog            = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameShowReasonDialog);
+        var disableUser             = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameDisableUserNumDays);
+        var adminExpiryDate         = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameShowExpiryDateDialog);
+        var adminExpiryDefaultHours = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameRoleDefaultExpiryHours);
 
-        select firstonly Value from config where config.Name == "DefaultNumDaysForReports";
-        if(config)
-        {
-            if(str2NumOK(config.Value))
-            {
-                reportOffset = str2Num(config.Value);
-            }
-        }
+        ReportNumDays.value(str2IntOk(reportOffset)                             ? str2Int(reportOffset)             : ADMConfigsConstants::defaultValueReportOffset);
+        DisableUserNumDays.value(str2IntOk(disableUser)                         ? str2Int(disableUser)              : ADMConfigsConstants::defaultValueDisableUser);
+        ShowReasonDialog.value(str2IntOk(adminExpiryDate)                       ? str2Int(reasonDialog)             : ADMConfigsConstants::defaultValueReasonDialog);
+        ShowAdminExpiryDate.value(str2IntOk(adminExpiryDate)                    ? str2Int(adminExpiryDate)          : ADMConfigsConstants::defaultValueExipryDialog);
+        AdminExpiryDateDefaultHours.value(str2IntOk(adminExpiryDefaultHours)    ? str2Int(adminExpiryDefaultHours)  : ADMConfigsConstants::defaultValueRoleExpiryHours);
 
-        select firstonly Value from config where config.Name == "ShowReasonDialog";
-        if(config)
-        {
-            if(str2NumOK(config.Value))
-            {
-                reasonDialog = str2Num(config.Value);
-            }
-        }
-
-        select firstonly Value from config where config.Name == "DisableUserNumDays";
-        if(config)
-        {
-            if(str2NumOK(config.Value))
-            {
-                disableUser = str2Num(config.Value);
-            }
-        }
-
-        ReportNumDays.value(reportOffset);
-        ShowReasonDialog.value(reasonDialog);
-        DisableUserNumDays.value(disableUser);
+        AdminExpiryDateDefaultHours.enabled(ShowAdminExpiryDate.value());
     }
 
 ]]></Source>
@@ -64,80 +43,40 @@ public class ADMParameters extends FormRun
 				<Source><![CDATA[
     public void close()
     {
+        #OCCRETRYCOUNT
+
         super();
-        select forupdate config where config.Name == "DefaultNumDaysForReports";
-        if(config)
-        {
-            str reportOffset = ReportNumDays.valueStr();
-            ttsbegin;
-            config.Value = reportOffset;
-            config.update();
-            ttscommit;
-        }
-        else
-        {
-            config.clear();
-            config.Name = "DefaultNumDaysForReports";
-            str reportOffset = ReportNumDays.valueStr();
-            ttsbegin;
-            config.Value = reportOffset;
-            config.insert();
-            ttscommit;
-        }
 
-        select forupdate config where config.Name == "ShowReasonDialog";
-        if(config)
+        try
         {
-            int reasonDialog = ShowReasonDialog.value();
             ttsbegin;
-            if(reasonDialog == 1)
+
+            ADMConfigs::setConfigValue(ADMConfigsConstants::configNameDefaultNumDays,           ReportNumDays.valueStr());
+            ADMConfigs::setConfigValue(ADMConfigsConstants::configNameDisableUserNumDays,       DisableUserNumDays.valueStr());
+            ADMConfigs::setConfigValue(ADMConfigsConstants::configNameShowReasonDialog,         int2Str(ShowReasonDialog.value()));
+            ADMConfigs::setConfigValue(ADMConfigsConstants::configNameShowExpiryDateDialog,     int2Str(ShowAdminExpiryDate.value()));
+            ADMConfigs::setConfigValue(ADMConfigsConstants::configNameRoleDefaultExpiryHours,   int2Str(AdminExpiryDateDefaultHours.value()));
+
+            ttscommit;
+        }
+        catch (Exception::UpdateConflict)
+        {
+            // try to resolve update conflict
+            if (appl.ttsLevel() == 0)
             {
-                config.Value = "1";
+                if (xSession::currentRetryCount() >= #RetryNum)
+                {
+                    throw Exception::UpdateConflictNotRecovered;
+                }
+                else
+                {
+                    retry;
+                }
             }
             else
             {
-                config.Value = "0";
+                throw Exception::UpdateConflict;
             }
-                
-            config.update();
-            ttscommit;
-        }
-        else
-        {
-            config.clear();
-            config.Name = "ShowReasonDialog";
-            int reasonDialog = ShowReasonDialog.value();
-            ttsbegin;
-            if(reasonDialog == 1)
-            {
-                config.Value = "1";
-            }
-            else
-            {
-                config.Value = "0";
-            }
-            config.insert();
-            ttscommit;
-        }
-
-        select forupdate config where config.Name == "DisableUserNumDays";
-        if(config)
-        {
-            str disableUser = DisableUserNumDays.valueStr();
-            ttsbegin;
-            config.Value = disableUser;
-            config.update();
-            ttscommit;
-        }
-        else
-        {
-            config.clear();
-            config.Name = "DisableUserNumDays";
-            str disableUser = DisableUserNumDays.valueStr();
-            ttsbegin;
-            config.Value = disableUser;
-            config.insert();
-            ttscommit;
         }
     }
 
@@ -145,7 +84,28 @@ public class ADMParameters extends FormRun
 			</Method>
 		</Methods>
 		<DataSources xmlns="" />
-		<DataControls xmlns="" />
+		<DataControls xmlns="">
+			<Control>
+				<Name>ShowAdminExpiryDate</Name>
+				<Type>CheckBox</Type>
+				<Methods>
+					<Method>
+						<Name>modified</Name>
+						<Source><![CDATA[
+        public boolean modified()
+        {
+            boolean ret = super();
+
+            AdminExpiryDateDefaultHours.enabled(ShowAdminExpiryDate.value());
+    
+            return ret;
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+		</DataControls>
 		<Members xmlns="" />
 	</SourceCode>
 	<DataSources />
@@ -266,6 +226,34 @@ public class ADMParameters extends FormRun
 														<Value>90</Value>
 													</AxFormControl>
 												</Controls>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>ShowAdminExpiryDateGroup</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormCheckBoxControl">
+														<Name>ShowAdminExpiryDate</Name>
+														<AutoDeclaration>Yes</AutoDeclaration>
+														<Type>CheckBox</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<Label>@D365FOAdminToolkit:ShowSysAdminExpiryDateDialog</Label>
+													</AxFormControl>
+													<AxFormControl xmlns=""
+														i:type="AxFormIntegerControl">
+														<Name>AdminExpiryDateDefaultHours</Name>
+														<AutoDeclaration>Yes</AutoDeclaration>
+														<Type>Integer</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<Label>@D365FOAdminToolkit:SysAdminExpiryDateDefaultHours</Label>
+													</AxFormControl>
+												</Controls>
+												<Caption>@PDS1938</Caption>
 											</AxFormControl>
 										</Controls>
 										<ColumnsMode>Fill</ColumnsMode>

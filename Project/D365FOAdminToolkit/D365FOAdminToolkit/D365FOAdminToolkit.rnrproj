@@ -34,6 +34,11 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="AxClass\ADMConfigsConstants">
+      <SubType>Content</SubType>
+      <Name>ADMConfigsConstants</Name>
+      <Link>Classes\ADMConfigsConstants</Link>
+    </Content>
     <Content Include="AxClass\ADMDisabledUsersReport_EventHandlers">
       <SubType>Content</SubType>
       <Name>ADMDisabledUsersReport_EventHandlers</Name>
@@ -58,6 +63,11 @@
       <SubType>Content</SubType>
       <Name>ADMExportRoleAccess</Name>
       <Link>Classes\ADMExportRoleAccess</Link>
+    </Content>
+    <Content Include="AxClass\ADMRemoveUserAdminRoleEndDateTimeService">
+      <SubType>Content</SubType>
+      <Name>ADMRemoveUserAdminRoleEndDateTimeService</Name>
+      <Link>Classes\ADMRemoveUserAdminRoleEndDateTimeService</Link>
     </Content>
     <Content Include="AxClass\ADMSysAdminLogHelper">
       <SubType>Content</SubType>
@@ -183,6 +193,11 @@
       <SubType>Content</SubType>
       <Name>ADMExportRoleAccess</Name>
       <Link>MenuItems\ADMExportRoleAccess</Link>
+    </Content>
+    <Content Include="AxMenuItemAction\ADMRemoveUserAdminRoleEndDateTimeService">
+      <SubType>Content</SubType>
+      <Name>ADMRemoveUserAdminRoleEndDateTimeService</Name>
+      <Link>MenuItems\ADMRemoveUserAdminRoleEndDateTimeService</Link>
     </Content>
     <Content Include="AxMenuItemDisplay\ADMConfiguration">
       <SubType>Content</SubType>
