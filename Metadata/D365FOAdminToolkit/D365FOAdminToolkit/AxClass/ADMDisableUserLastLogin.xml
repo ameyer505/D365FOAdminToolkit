@@ -22,7 +22,7 @@ public class ADMDisableUserLastLogin
 
         select RecId from sr where sr.AotName == '-SYSADMIN-';
 
-        while select forupdate id, name, enable from ui where ui.enable == true
+        while select forupdate id, name, enable from ui where ui.enable == true && ui.isMicrosoftAccount == false
         {
             str userId = ui.id;
 
