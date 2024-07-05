@@ -41,7 +41,7 @@ internal final class ADMTableEvents
                         fr.run();
                         fr.wait();
 
-                        if (sal.Reason || AdmSysAdminLogHelper::CheckExpiryDateDialog())
+                        if (sal.Reason || (!AdmSysAdminLogHelper::CheckReasonDialogConfig() && AdmSysAdminLogHelper::CheckExpiryDateDialog()))
                         {
                             dialogClosedOk = true;
                         }
@@ -102,7 +102,7 @@ internal final class ADMTableEvents
                             fr.run();
                             fr.wait();
 
-                            if (sal.Reason || AdmSysAdminLogHelper::CheckExpiryDateDialog())
+                            if (sal.Reason || (!AdmSysAdminLogHelper::CheckReasonDialogConfig() && AdmSysAdminLogHelper::CheckExpiryDateDialog()))
                             {
                                 dialogClosedOk = true;
                             }
