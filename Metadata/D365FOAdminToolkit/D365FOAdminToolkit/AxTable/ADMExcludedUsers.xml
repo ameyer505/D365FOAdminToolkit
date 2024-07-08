@@ -101,6 +101,8 @@ public class ADMExcludedUsers extends common
         {
             ttsbegin;
 
+            //Exclude pre-set accounts
+
             ADMExcludedUsers eu;
             UserInfo ui;
 
@@ -113,16 +115,6 @@ public class ADMExcludedUsers extends common
             excludeUsers.add("cdsdevuser1");
             excludeUsers.add("cdsdevuser2");
             excludeUsers.add("D1Assem");
-            excludeUsers.add("DataSyncFrameworkApp");
-            excludeUsers.add("DynamicsMaintAppUser");
-            excludeUsers.add("FinancialReportsApp");
-            excludeUsers.add("FRServiceUser");
-            excludeUsers.add("PowerPfSvcUser");
-            excludeUsers.add("PowerPlatformApp");
-            excludeUsers.add("RetailServiceAccount");
-            excludeUsers.add("ScaleUnitManagement");
-            excludeUsers.add("ScaleUnitPipeline");
-            excludeUsers.add("SysHealthServiceUser");
             excludeUsers.add("Guest");
 
             SetEnumerator se;
@@ -138,6 +130,28 @@ public class ADMExcludedUsers extends common
                 {
                     select id, name from ui where ui.id == userId;
                     if(ui)
+                    {
+                        eu.clear();
+
+                        eu.initFromUserInfo(ui);
+
+                        eu.insert();
+                    }
+                }
+            }
+
+            ttscommit;
+
+
+            ttsbegin;
+
+            //Exclude service accounts
+            while select id, Name, isMicrosoftAccount from ui
+            {
+                if(ui.isMicrosoftAccount)
+                {
+                    select UserId from eu where eu.UserId == ui.id;
+                    if(!eu)
                     {
                         eu.clear();
 
