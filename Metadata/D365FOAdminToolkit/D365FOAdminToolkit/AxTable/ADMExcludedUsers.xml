@@ -7,7 +7,222 @@ public class ADMExcludedUsers extends common
 {
 }
 ]]></Declaration>
-		<Methods />
+		<Methods>
+			<Method>
+				<Name>addSelectedUsers</Name>
+				<Source><![CDATA[
+    public static void addSelectedUsers(UserInfo _userInfo)
+    {
+        #OCCRETRYCOUNT
+
+        try
+        {
+            ADMExcludedUsers excludedUsers;
+
+            if (_userInfo.isFormDataSource())
+            {
+                UserInfo    selectedUserInfo;
+
+                var multiSelectionHelper = MultiSelectionHelper::construct();
+                multiSelectionHelper.parmDataSource(_userInfo.dataSource());
+
+                selectedUserInfo = multiSelectionHelper.getFirst();
+    
+                while (selectedUserInfo)
+                {
+                    excludedUsers.clear();
+                    excludedUsers.initFromUserInfo(selectedUserInfo);
+                    excludedUsers.insert();
+
+                    selectedUserInfo = multiSelectionHelper.getNext();
+                }
+            }
+            else
+            {
+                excludedUsers.initFromUserInfo(_userInfo);
+                excludedUsers.insert();
+            }
+        }
+        catch (Exception::Deadlock)
+        {
+            // retry on deadlock
+            retry;
+        }
+        catch (Exception::UpdateConflict)
+        {
+            // try to resolve update conflict
+            if (appl.ttsLevel() == 0)
+            {
+                if (xSession::currentRetryCount() >= #RetryNum)
+                {
+                    throw Exception::UpdateConflictNotRecovered;
+                }
+                else
+                {
+                    retry;
+                }
+            }
+            else
+            {
+                throw Exception::UpdateConflict;
+            }
+        }
+        catch(Exception::DuplicateKeyException)
+        {
+            // retry in case of an duplicate key conflict
+            if (appl.ttsLevel() == 0)
+            {
+                if (xSession::currentRetryCount() >= #RetryNum)
+                {
+                    throw Exception::DuplicateKeyExceptionNotRecovered;
+                }
+                else
+                {
+                    retry;
+                }
+            }
+            else
+            {
+                throw Exception::DuplicateKeyException;
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>addDefaultUsers</Name>
+				<Source><![CDATA[
+    public static void addDefaultUsers()
+    {
+        #OCCRETRYCOUNT
+
+        try
+        {
+            ttsbegin;
+
+            //Exclude pre-set accounts
+
+            ADMExcludedUsers eu;
+            UserInfo ui;
+
+            Set excludeUsers = new Set(Types::String);
+            excludeUsers.add("Admin");
+            excludeUsers.add("axrunner");
+            excludeUsers.add("cdsaurorauser");
+            excludeUsers.add("cdscapuser");
+            excludeUsers.add("cdscapuser2");
+            excludeUsers.add("cdsdevuser1");
+            excludeUsers.add("cdsdevuser2");
+            excludeUsers.add("D1Assem");
+            excludeUsers.add("Guest");
+
+            SetEnumerator se;
+            se = excludeUsers.getEnumerator();
+
+
+            str userId = "";
+            while(se.moveNext())
+            {
+                userId = se.current();
+                select UserId from eu where eu.UserId == userId;
+                if(!eu)
+                {
+                    select id, name from ui where ui.id == userId;
+                    if(ui)
+                    {
+                        eu.clear();
+
+                        eu.initFromUserInfo(ui);
+
+                        eu.insert();
+                    }
+                }
+            }
+
+            ttscommit;
+
+
+            ttsbegin;
+
+            //Exclude service accounts
+            while select id, Name, isMicrosoftAccount from ui
+            {
+                if(ui.isMicrosoftAccount)
+                {
+                    select UserId from eu where eu.UserId == ui.id;
+                    if(!eu)
+                    {
+                        eu.clear();
+
+                        eu.initFromUserInfo(ui);
+
+                        eu.insert();
+                    }
+                }
+            }
+
+            ttscommit;
+        }
+        catch (Exception::Deadlock)
+        {
+            // retry on deadlock
+            retry;
+        }
+        catch (Exception::UpdateConflict)
+        {
+            // try to resolve update conflict
+            if (appl.ttsLevel() == 0)
+            {
+                if (xSession::currentRetryCount() >= #RetryNum)
+                {
+                    throw Exception::UpdateConflictNotRecovered;
+                }
+                else
+                {
+                    retry;
+                }
+            }
+            else
+            {
+                throw Exception::UpdateConflict;
+            }
+        }
+        catch(Exception::DuplicateKeyException)
+        {
+            // retry in case of an duplicate key conflict
+            if (appl.ttsLevel() == 0)
+            {
+                if (xSession::currentRetryCount() >= #RetryNum)
+                {
+                    throw Exception::DuplicateKeyExceptionNotRecovered;
+                }
+                else
+                {
+                    retry;
+                }
+            }
+            else
+            {
+                throw Exception::DuplicateKeyException;
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFromUserInfo</Name>
+				<Source><![CDATA[
+    public void initFromUserInfo(UserInfo _userInfo)
+    {
+        this.UserId     = _userInfo.id;
+        this.UserName   = _userInfo.name;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
 	</SourceCode>
 	<SubscriberAccessLevel>
 		<Read>Allow</Read>

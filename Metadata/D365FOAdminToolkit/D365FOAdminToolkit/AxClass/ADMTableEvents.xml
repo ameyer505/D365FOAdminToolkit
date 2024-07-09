@@ -16,37 +16,49 @@ internal final class ADMTableEvents
     {        
         SecurityRole sr;
 
-        SecurityUserRole sur = sender as SecurityUserRole;
-        ADMConfigs config;
-        ADMSysAdminLog sal;
-        int reasonDialog = 0;
-
-        AdmSysAdminLogHelper salh = new AdmSysAdminLogHelper();
-        reasonDialog = salh.CheckReasonDialogConfig();
-
+        SecurityUserRole    sur = sender as SecurityUserRole;
+        ADMSysAdminLog      sal;
+        boolean             dialogClosedOk;
+        
         select RecId from sr where sr.AotName == "-SYSADMIN-";
         if(sr)
         {
             if(sur.SecurityRole == sr.RecID)
             {
-                ttsbegin;
                 sal.Action = ADMSysAdminAction::Assigned;
                 sal.UserId_ = sur.User;
-                sal.Reason = "";
-                sal.insert();
-                ttscommit;
 
-                if(reasonDialog == 1)
+                if (AdmSysAdminLogHelper::CheckReasonDialogConfig()
+                    || AdmSysAdminLogHelper::CheckExpiryDateDialog())
                 {
-                    FormRun fr;
-                    Args args;
+                    if(xGlobal::hasClient())
+                    {
+                        Args args = new Args(formStr(ADMSysAdminReason));
+                        args.record(sal);
 
-                    args = new Args(formStr(ADMSysAdminReason));
-                    args.record(sal);
-                    fr = new FormRun(args);
-                    fr.init();
-                    fr.run();
-                    fr.wait();
+                        FormRun fr = new FormRun(args);
+                        fr.init();
+                        fr.run();
+                        fr.wait();
+
+                        if (sal.Reason || (!AdmSysAdminLogHelper::CheckReasonDialogConfig() && AdmSysAdminLogHelper::CheckExpiryDateDialog()))
+                        {
+                            dialogClosedOk = true;
+                        }
+                        else
+                        {
+                            throw error("@D365FOAdminToolkit:EmptyReason");
+                        }
+                    }
+                }
+                else
+                {
+                    dialogClosedOk = true;
+                }
+                        
+                if (dialogClosedOk)
+                {
+                    sal.insert();
                 }
             }
         }
@@ -63,52 +75,61 @@ internal final class ADMTableEvents
         SecurityRole sr;
         FormDataSource fds = sender.dataSource();
         SecurityUserRole sur = sender as SecurityUserRole;
-        ADMConfigs config;
         ADMSysAdminLog sal;
         int reasonDialog = 0;
-
-        AdmSysAdminLogHelper salh = new AdmSysAdminLogHelper();
-        reasonDialog = salh.CheckReasonDialogConfig();
+        boolean dialogClosedOk;
 
         select RecId from sr where sr.AotName == "-SYSADMIN-";
         if(sr)
         {
-            if(sur)
+            if(sur.SecurityRole == sr.RecID)
             {
-                if(sur.SecurityRole == sr.RecID)
+                if(sur.AssignmentStatus == RoleAssignmentStatus::Enabled)
                 {
-                    if(sur.AssignmentStatus == RoleAssignmentStatus::Enabled)
+                    sal.Action = ADMSysAdminAction::Assigned;
+                    sal.UserId_ = sur.User;
+
+                    if (AdmSysAdminLogHelper::CheckReasonDialogConfig()
+                        || AdmSysAdminLogHelper::CheckExpiryDateDialog())
                     {
-                        ttsbegin;
-                        sal.Reason = "";
-                        sal.Action = ADMSysAdminAction::Assigned;
-                        sal.UserId_ = sur.User;
-                        sal.insert();
-                        ttscommit;
-
-                        if(reasonDialog == 1)
+                        if(xGlobal::hasClient())
                         {
-                            FormRun fr;
-                            Args args;
-
-
-                            args = new Args(formStr(ADMSysAdminReason));
+                            Args args = new Args(formStr(ADMSysAdminReason));
                             args.record(sal);
-                            fr = new FormRun(args);
+
+                            FormRun fr = new FormRun(args);
                             fr.init();
                             fr.run();
                             fr.wait();
+
+                            if (sal.Reason || (!AdmSysAdminLogHelper::CheckReasonDialogConfig() && AdmSysAdminLogHelper::CheckExpiryDateDialog()))
+                            {
+                                dialogClosedOk = true;
+                            }
+                            else
+                            {
+                                throw error("@D365FOAdminToolkit:EmptyReason");
+                            }
                         }
                     }
-                    if(sur.AssignmentStatus == RoleAssignmentStatus::Disabled)
+                    else
                     {
-                        ttsbegin;
-                        sal.Action = ADMSysAdminAction::Revoked;
-                        sal.UserId_ = sur.User;
-                        sal.Reason = "";
-                        sal.insert();
-                        ttscommit;
+                        dialogClosedOk = true;
                     }
+                        
+                    if (dialogClosedOk)
+                    {
+                        sal.insert();
+                    }
+                }
+                else if(sur.AssignmentStatus == RoleAssignmentStatus::Disabled)
+                {
+                    ADMSysAdminLogHelper::setUserRoleAssignmentAsExpired(sur.User);
+
+                    sal.Action = ADMSysAdminAction::Revoked;
+                    sal.UserId_ = sur.User;
+                    sal.Reason = "";
+                    sal.insert();
                 }
             }
         }
@@ -125,12 +146,7 @@ internal final class ADMTableEvents
         SecurityRole sr;
         FormDataSource fds = sender.orig().dataSource();
         SecurityUserRole sur = sender as SecurityUserRole;
-        ADMConfigs config;
         ADMSysAdminLog sal;
-        int reasonDialog = 0;
-        
-        AdmSysAdminLogHelper salh = new AdmSysAdminLogHelper();
-        reasonDialog = salh.CheckReasonDialogConfig();
 
         select RecId from sr where sr.AotName == "-SYSADMIN-";
         if(sr)
@@ -139,12 +155,12 @@ internal final class ADMTableEvents
             {
                 if(sur.SecurityRole == sr.RecID)
                 {
-                    ttsbegin;
+                    ADMSysAdminLogHelper::setUserRoleAssignmentAsExpired(sur.User);
+
                     sal.Action = ADMSysAdminAction::Revoked;
                     sal.UserId_ = sur.User;
                     sal.Reason = "";
                     sal.insert();
-                    ttscommit;
                 }
             }
         }

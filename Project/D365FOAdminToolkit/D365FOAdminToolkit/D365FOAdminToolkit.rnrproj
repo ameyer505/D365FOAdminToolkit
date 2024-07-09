@@ -34,6 +34,11 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="AxClass\ADMConfigsConstants">
+      <SubType>Content</SubType>
+      <Name>ADMConfigsConstants</Name>
+      <Link>Classes\ADMConfigsConstants</Link>
+    </Content>
     <Content Include="AxClass\ADMDisabledUsersReport_EventHandlers">
       <SubType>Content</SubType>
       <Name>ADMDisabledUsersReport_EventHandlers</Name>
@@ -58,6 +63,16 @@
       <SubType>Content</SubType>
       <Name>ADMExportRoleAccess</Name>
       <Link>Classes\ADMExportRoleAccess</Link>
+    </Content>
+    <Content Include="AxClass\ADMRemoveUserAdminRoleEndDateTimeService">
+      <SubType>Content</SubType>
+      <Name>ADMRemoveUserAdminRoleEndDateTimeService</Name>
+      <Link>Classes\ADMRemoveUserAdminRoleEndDateTimeService</Link>
+    </Content>
+    <Content Include="AxClass\ADMRevokeAdminRoleBatchJob">
+      <SubType>Content</SubType>
+      <Name>ADMRevokeAdminRoleBatchJob</Name>
+      <Link>Classes\ADMRevokeAdminRoleBatchJob</Link>
     </Content>
     <Content Include="AxClass\ADMSysAdminLogHelper">
       <SubType>Content</SubType>
@@ -134,6 +149,11 @@
       <Name>ADMSysAdminReport</Name>
       <Link>Forms\ADMSysAdminReport</Link>
     </Content>
+    <Content Include="AxLabelFile\D365FOAdminToolkit_da">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkit_da</Name>
+      <Link>LabelFiles\D365FOAdminToolkit_da</Link>
+    </Content>
     <Content Include="AxLabelFile\D365FOAdminToolkit_en-US">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkit_en-US</Name>
@@ -178,6 +198,11 @@
       <SubType>Content</SubType>
       <Name>ADMExportRoleAccess</Name>
       <Link>MenuItems\ADMExportRoleAccess</Link>
+    </Content>
+    <Content Include="AxMenuItemAction\ADMRemoveUserAdminRoleEndDateTimeService">
+      <SubType>Content</SubType>
+      <Name>ADMRemoveUserAdminRoleEndDateTimeService</Name>
+      <Link>MenuItems\ADMRemoveUserAdminRoleEndDateTimeService</Link>
     </Content>
     <Content Include="AxMenuItemDisplay\ADMConfiguration">
       <SubType>Content</SubType>
@@ -273,6 +298,11 @@
       <SubType>Content</SubType>
       <Name>ADMUserDisableLog</Name>
       <Link>Tables\ADMUserDisableLog</Link>
+    </Content>
+    <Content Include="D365FOAdminToolkit.da.label.txt">
+      <SubType>Content</SubType>
+      <Name>D365FOAdminToolkit.da.label.txt</Name>
+      <DependentUpon>AxLabelFile\D365FOAdminToolkit_da</DependentUpon>
     </Content>
     <Content Include="D365FOAdminToolkit.en-US.label.txt">
       <SubType>Content</SubType>

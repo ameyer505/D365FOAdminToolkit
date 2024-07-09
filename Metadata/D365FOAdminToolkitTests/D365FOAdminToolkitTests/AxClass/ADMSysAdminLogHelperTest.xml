@@ -6,10 +6,6 @@
 [SysTestTarget(classStr(ADMSysAdminLogHelper), UtilElementType::Class)]
 public class ADMSysAdminLogHelperTest extends SysTestCase
 {
-    const str ShowReasonDialogConfigName = 'ShowReasonDialog';
-
-    ADMSysAdminLogHelper admSysAdminLogHelper;
-
 }
 ]]></Declaration>
 		<Methods>
@@ -19,7 +15,6 @@ public class ADMSysAdminLogHelperTest extends SysTestCase
     public void setup()
     {
         super();
-        admSysAdminLogHelper = new ADMSysAdminLogHelper();
     }
 
 ]]></Source>
@@ -41,7 +36,7 @@ public class ADMSysAdminLogHelperTest extends SysTestCase
         int actual;
 
         // Act
-        actual = admSysAdminLogHelper.CheckReasonDialogConfig();
+        actual = ADMSysAdminLogHelper::CheckReasonDialogConfig();
     
         // Assert
         this.assertEquals(expected, actual, assertFailedMessage);
@@ -65,10 +60,10 @@ public class ADMSysAdminLogHelperTest extends SysTestCase
         int expected = 1;
         int actual;
 
-        this.createADMConfigsRecord(ShowReasonDialogConfigName, '1');
+        this.createADMConfigsRecord(ADMConfigsConstants::configNameShowReasonDialog, '1');
 
         // Act
-        actual = admSysAdminLogHelper.CheckReasonDialogConfig();
+        actual = ADMSysAdminLogHelper::CheckReasonDialogConfig();
 
         // Assert
         this.assertEquals(expected, actual, assertFailedMessage);
@@ -92,10 +87,10 @@ public class ADMSysAdminLogHelperTest extends SysTestCase
         int expected = 0;
         int actual;
 
-        this.createADMConfigsRecord(ShowReasonDialogConfigName, '0');
+        this.createADMConfigsRecord(ADMConfigsConstants::configNameShowReasonDialog, '1');
 
         // Act
-        actual = admSysAdminLogHelper.CheckReasonDialogConfig();
+        actual = ADMSysAdminLogHelper::CheckReasonDialogConfig();
 
         // Assert
         this.assertEquals(expected, actual, assertFailedMessage);
@@ -127,10 +122,10 @@ public class ADMSysAdminLogHelperTest extends SysTestCase
         int expected = 0;
         int actual;
         
-        this.createADMConfigsRecord(ShowReasonDialogConfigName, _value);
+        this.createADMConfigsRecord(ADMConfigsConstants::configNameShowReasonDialog, '1');
 
         // Act
-        actual = admSysAdminLogHelper.CheckReasonDialogConfig();
+        actual = ADMSysAdminLogHelper::CheckReasonDialogConfig();
 
         // Assert
         this.assertEquals(expected, actual, assertFailedMessage);
@@ -143,10 +138,7 @@ public class ADMSysAdminLogHelperTest extends SysTestCase
 				<Source><![CDATA[
     private void createADMConfigsRecord(str _configName, str _value)
     {
-        ADMConfigs admConfigs;
-        admConfigs.Name = _configName;
-        admConfigs.Value = _value;
-        admConfigs.insert();
+        ADMConfigs::setConfigValue(_configName, _value);
     }
 
 ]]></Source>

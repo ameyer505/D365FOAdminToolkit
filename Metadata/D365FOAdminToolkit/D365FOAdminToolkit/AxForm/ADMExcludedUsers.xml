@@ -35,7 +35,6 @@ public class ADMExcludedUsers extends FormRun
             qry_adm = this.query();
             ds_adm = qry_adm.dataSourceTable(tableNum(ADMExcludedUsers));
             ds_adm.addSortField(fieldNum(ADMExcludedUsers,UserId));
-
         }
 
 ]]></Source>
@@ -48,6 +47,18 @@ public class ADMExcludedUsers extends FormRun
             ds_adm.addSortField(fieldNum(ADMExcludedUsers,UserId));
             qryRun_adm = new QueryRun(qry_adm);
             super();
+        }
+
+]]></Source>
+					</Method>
+					<Method>
+						<Name>delete</Name>
+						<Source><![CDATA[
+        public void delete()
+        {
+            super();
+
+            UserInfo_ds.research(true);
         }
 
 ]]></Source>
@@ -66,7 +77,10 @@ public class ADMExcludedUsers extends FormRun
             super();
             qry_user = this.query();
             ds_user = qry_user.dataSourceTable(tableNum(UserInfo));
-            //ds_user.addSortField(fieldNum(UserInfo, id));            
+        
+            QueryBuildDataSource qbdsExcludedUsersFilter = ds_user.addDataSource(tableNum(ADMExcludedUsers));
+            qbdsExcludedUsersFilter.addLink(fieldNum(UserInfo, id), fieldNum(ADMExcludedUsers, UserId));
+            qbdsExcludedUsersFilter.joinMode(JoinMode::NoExistsJoin);
         }
 
 ]]></Source>
@@ -76,25 +90,6 @@ public class ADMExcludedUsers extends FormRun
 						<Source><![CDATA[
         public void executeQuery()
         {
-            ds_user.clearRanges();
-            //ds_user.clearRange(fieldNum(UserInfo, id));
-            
-            UserInfo ui;
-            ADMExcludedUsers adm;
-
-            while select id from ui
-                notexists join adm
-                where ui.id == adm.UserId
-            {
-                qbr_user = ds_user.addRange(fieldNum(UserInfo, id));
-                qbr_user.value(queryValue(ui.id));
-                
-            }
-
-            qryRun_user = new QueryRun(qry_user);
-
-            ds_user.addSortField(fieldNum(UserInfo, id));
-
             super();
         }
 
@@ -106,48 +101,23 @@ public class ADMExcludedUsers extends FormRun
 		</DataSources>
 		<DataControls xmlns="">
 			<Control>
-				<Name>AddRemoveSelectedUsers</Name>
+				<Name>PopulateExcludedUsersBtn</Name>
 				<Type>Button</Type>
 				<Methods>
 					<Method>
 						<Name>clicked</Name>
 						<Source><![CDATA[
-        void clicked()
+        public void clicked()
         {
-            UserInfo ui;
-            ADMExcludedUsers eu;
-
-            for(ui = getFirstSelection(UserInfo_ds); ui; ui = UserInfo_ds.getNext() as UserInfo)
-            {
-                select UserId from eu where eu.UserId == ui.id;
-                if(!eu)
-                {
-                    ttsbegin;
-                    eu.clear();
-                    eu.UserId = ui.id;
-                    eu.UserName = ui.name;
-                    eu.insert();
-                    ttscommit;
-                }
-            }
-
-            ui.clear();
-            eu.clear();
-
-            for(eu = getFirstSelection(ADMExcludedUsers_ds); eu; eu = ADMExcludedUsers_ds.getNext() as ADMExcludedUsers)
-            {
-                if(eu)
-                {
-                    ttsbegin;
-                    eu.delete();
-                    ttscommit;
-                }
-            }
-
-            UserGrid.refresh();
-            SelectedUserGrid.refresh();
-
             super();
+
+            ADMExcludedUsers::addDefaultUsers();
+
+            UserInfo_ds.research(true);
+            ADMExcludedUsers_ds.research(true);
+
+            info("@D365FOAdminToolkit:PopulateExcludedUserList");
+            
         }
 
 ]]></Source>
@@ -155,99 +125,19 @@ public class ADMExcludedUsers extends FormRun
 				</Methods>
 			</Control>
 			<Control>
-				<Name>PopulateExcludedUsers</Name>
+				<Name>BtnAddUser</Name>
 				<Type>Button</Type>
 				<Methods>
 					<Method>
 						<Name>clicked</Name>
 						<Source><![CDATA[
-        void clicked()
+        public void clicked()
         {
-            ADMExcludedUsers eu;
-            UserInfo ui;
-
-            Set excludeUsers = new Set(Types::String);
-            excludeUsers.add("Admin");
-            excludeUsers.add("axrunner");
-            excludeUsers.add("cdsaurorauser");
-            excludeUsers.add("cdscapuser");
-            excludeUsers.add("cdscapuser2");
-            excludeUsers.add("cdsdevuser1");
-            excludeUsers.add("cdsdevuser2");
-            excludeUsers.add("D1Assem");
-            excludeUsers.add("DataSyncFrameworkApp");
-            excludeUsers.add("DynamicsMaintAppUser");
-            excludeUsers.add("FinancialReportsApp");
-            excludeUsers.add("FRServiceUser");
-            excludeUsers.add("PowerPfSvcUser");
-            excludeUsers.add("PowerPlatformApp");
-            excludeUsers.add("RetailServiceAccount");
-            excludeUsers.add("ScaleUnitManagement");
-            excludeUsers.add("ScaleUnitPipeline");
-            excludeUsers.add("SysHealthServiceUser");
-            excludeUsers.add("Guest");
-
-            SetEnumerator se;
-            se = excludeUsers.getEnumerator();
-
-            str userId = "";
-            while(se.moveNext())
-            {
-                userId = se.current();
-                select UserId from eu where eu.UserId == userId;
-                if(!eu)
-                {
-                    select id, name from ui where ui.id == userId;
-                    if(ui)
-                    {
-                        ttsbegin;
-                        eu.clear();
-                        eu.UserId = ui.id;
-                        eu.UserName = ui.name;
-
-                        eu.insert();
-                        ttscommit;
-                    }
-                }
-            }
-
-            UserGrid.refresh();
-            SelectedUserGrid.refresh();
-
-            Box::info("@D365FOAdminToolkit:PopulateExcludedUserList", "", "");
             super();
-        }
 
-]]></Source>
-					</Method>
-				</Methods>
-			</Control>
-			<Control>
-				<Name>UserGrid</Name>
-				<Type>Grid</Type>
-				<Methods>
-					<Method>
-						<Name>refresh</Name>
-						<Source><![CDATA[
-        public void refresh()
-        {
-            UserInfo_ds.executeQuery();
-        }
-
-]]></Source>
-					</Method>
-				</Methods>
-			</Control>
-			<Control>
-				<Name>SelectedUserGrid</Name>
-				<Type>Grid</Type>
-				<Methods>
-					<Method>
-						<Name>refresh</Name>
-						<Source><![CDATA[
-        public void refresh()
-        {
-            ADMExcludedUsers_ds.executeQuery();
+            ADMExcludedUsers::addSelectedUsers(UserInfo);
+            UserInfo_ds.research(true);
+            ADMExcludedUsers_ds.research();
         }
 
 ]]></Source>
@@ -276,6 +166,9 @@ public class ADMExcludedUsers extends FormRun
 				</AxFormDataSourceField>
 			</Fields>
 			<ReferencedDataSources />
+			<AllowCreate>No</AllowCreate>
+			<AllowEdit>No</AllowEdit>
+			<InsertIfEmpty>No</InsertIfEmpty>
 			<DataSourceLinks />
 			<DerivedDataSources />
 		</AxFormDataSource>
@@ -504,48 +397,43 @@ public class ADMExcludedUsers extends FormRun
 				</AxFormDataSourceField>
 			</Fields>
 			<ReferencedDataSources />
+			<AllowCreate>No</AllowCreate>
+			<AllowDelete>No</AllowDelete>
+			<AllowEdit>No</AllowEdit>
+			<InsertAtEnd>No</InsertAtEnd>
+			<InsertIfEmpty>No</InsertIfEmpty>
 			<DataSourceLinks />
 			<DerivedDataSources />
 		</AxFormDataSource>
 	</DataSources>
 	<Design>
 		<Caption xmlns="">@D365FOAdminToolkit:ExcludedUsers</Caption>
+		<Pattern xmlns="">TaskParentChild</Pattern>
+		<PatternVersion xmlns="">1.2</PatternVersion>
 		<ShowDeleteButton xmlns="">No</ShowDeleteButton>
 		<ShowNewButton xmlns="">No</ShowNewButton>
 		<ViewEditMode xmlns="">View</ViewEditMode>
 		<Controls xmlns="">
 			<AxFormControl xmlns=""
 				i:type="AxFormActionPaneControl">
-				<Name>FormActionPaneControl1</Name>
+				<Name>ActionPaneCtrl</Name>
 				<Type>ActionPane</Type>
 				<FormControlExtension
 					i:nil="true" />
 				<Controls>
 					<AxFormControl xmlns=""
 						i:type="AxFormButtonGroupControl">
-						<Name>FormButtonGroupControl1</Name>
+						<Name>FormBtnGrp</Name>
 						<Type>ButtonGroup</Type>
 						<FormControlExtension
 							i:nil="true" />
 						<Controls>
 							<AxFormControl xmlns=""
 								i:type="AxFormButtonControl">
-								<Name>AddRemoveSelectedUsers</Name>
-								<AutoDeclaration>Yes</AutoDeclaration>
+								<Name>PopulateExcludedUsersBtn</Name>
 								<Type>Button</Type>
 								<FormControlExtension
 									i:nil="true" />
-								<MultiSelect>Yes</MultiSelect>
-								<Text>@D365FOAdminToolkit:AddRemoveSelectedUsers</Text>
-							</AxFormControl>
-							<AxFormControl xmlns=""
-								i:type="AxFormButtonControl">
-								<Name>PopulateExcludedUsers</Name>
-								<AutoDeclaration>Yes</AutoDeclaration>
-								<Type>Button</Type>
-								<FormControlExtension
-									i:nil="true" />
-								<MultiSelect>Yes</MultiSelect>
 								<Text>@D365FOAdminToolkit:PopulateExcludedUsers</Text>
 							</AxFormControl>
 						</Controls>
@@ -553,84 +441,198 @@ public class ADMExcludedUsers extends FormRun
 				</Controls>
 			</AxFormControl>
 			<AxFormControl xmlns=""
-				i:type="AxFormStaticTextControl">
-				<Name>UserList</Name>
-				<Type>StaticText</Type>
-				<FormControlExtension
-					i:nil="true" />
-				<Text>@D365FOAdminToolkit:UserList</Text>
-			</AxFormControl>
-			<AxFormControl xmlns=""
-				i:type="AxFormGridControl">
-				<Name>UserGrid</Name>
-				<AllowEdit>No</AllowEdit>
-				<AutoDeclaration>Yes</AutoDeclaration>
-				<Type>Grid</Type>
+				i:type="AxFormTabControl">
+				<Name>HeaderTab</Name>
+				<Type>Tab</Type>
 				<FormControlExtension
 					i:nil="true" />
 				<Controls>
 					<AxFormControl xmlns=""
-						i:type="AxFormStringControl">
-						<Name>UserId</Name>
-						<Type>String</Type>
+						i:type="AxFormTabPageControl">
+						<Name>HeaderTablPage</Name>
+						<Pattern>ToolbarList</Pattern>
+						<PatternVersion>1.2</PatternVersion>
+						<Type>TabPage</Type>
 						<FormControlExtension
 							i:nil="true" />
-						<DataField>id</DataField>
-						<DataSource>UserInfo</DataSource>
-						<Label>@D365FOAdminToolkit:UserId</Label>
-					</AxFormControl>
-					<AxFormControl xmlns=""
-						i:type="AxFormStringControl">
-						<Name>UserName</Name>
-						<Type>String</Type>
-						<FormControlExtension
-							i:nil="true" />
-						<DataField>name</DataField>
-						<DataSource>UserInfo</DataSource>
-						<Label>@D365FOAdminToolkit:UserName</Label>
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormActionPaneControl">
+								<Name>UserGridActionPane</Name>
+								<Type>ActionPane</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormActionPaneTabControl">
+										<Name>UserGridActionPaneTab</Name>
+										<Type>ActionPaneTab</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormButtonGroupControl">
+												<Name>UserGridActionPaneBtbGrp</Name>
+												<Type>ButtonGroup</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormButtonControl">
+														<Name>BtnAddUser</Name>
+														<Type>Button</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<MultiSelect>Yes</MultiSelect>
+														<NeedsRecord>Yes</NeedsRecord>
+														<Text>@SYS121192</Text>
+													</AxFormControl>
+												</Controls>
+											</AxFormControl>
+										</Controls>
+									</AxFormControl>
+								</Controls>
+								<DataSource>UserInfo</DataSource>
+								<Style>Strip</Style>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormGridControl">
+								<Name>UserGrid</Name>
+								<AllowEdit>No</AllowEdit>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>Grid</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>UserId</Name>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>id</DataField>
+										<DataSource>UserInfo</DataSource>
+										<Label>@D365FOAdminToolkit:UserId</Label>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>UserName</Name>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>name</DataField>
+										<DataSource>UserInfo</DataSource>
+										<Label>@D365FOAdminToolkit:UserName</Label>
+									</AxFormControl>
+								</Controls>
+								<DataSource>UserInfo</DataSource>
+							</AxFormControl>
+						</Controls>
+						<Caption>@SYS122526</Caption>
 					</AxFormControl>
 				</Controls>
-				<DataSource>UserInfo</DataSource>
 			</AxFormControl>
 			<AxFormControl xmlns=""
-				i:type="AxFormStaticTextControl">
-				<Name>ExcludedUserList</Name>
-				<Type>StaticText</Type>
+				i:type="AxFormGroupControl">
+				<Name>SplitterGroup</Name>
+				<Type>Group</Type>
 				<FormControlExtension
 					i:nil="true" />
-				<Text>@D365FOAdminToolkit:ExcludedUserList</Text>
+				<Controls />
+				<Style>SplitterHorizontalContainer</Style>
 			</AxFormControl>
 			<AxFormControl xmlns=""
-				i:type="AxFormGridControl">
-				<Name>SelectedUserGrid</Name>
-				<AllowEdit>No</AllowEdit>
-				<AutoDeclaration>Yes</AutoDeclaration>
-				<Type>Grid</Type>
+				i:type="AxFormTabControl">
+				<Name>DetailsTab</Name>
+				<Type>Tab</Type>
 				<FormControlExtension
 					i:nil="true" />
 				<Controls>
 					<AxFormControl xmlns=""
-						i:type="AxFormStringControl">
-						<Name>ExcludedUserId</Name>
-						<Type>String</Type>
+						i:type="AxFormTabPageControl">
+						<Name>DetailsTabPage</Name>
+						<Pattern>ToolbarList</Pattern>
+						<PatternVersion>1.2</PatternVersion>
+						<Type>TabPage</Type>
 						<FormControlExtension
 							i:nil="true" />
-						<DataField>UserId</DataField>
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormActionPaneControl">
+								<Name>ExcludedUserGridActionPane</Name>
+								<Type>ActionPane</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormActionPaneTabControl">
+										<Name>ExcludedUserGridActionPaneTab</Name>
+										<Type>ActionPaneTab</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormButtonGroupControl">
+												<Name>ExcludedUserGridActionBtnGrp</Name>
+												<Type>ButtonGroup</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormCommandButtonControl">
+														<Name>FormCommandButtonControl1</Name>
+														<Type>CommandButton</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<Command>DeleteRecord</Command>
+														<MultiSelect>Yes</MultiSelect>
+														<NeedsRecord>Yes</NeedsRecord>
+													</AxFormControl>
+												</Controls>
+												<DataSource>ADMExcludedUsers</DataSource>
+											</AxFormControl>
+										</Controls>
+									</AxFormControl>
+								</Controls>
+								<DataSource>ADMExcludedUsers</DataSource>
+								<Style>Strip</Style>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormGridControl">
+								<Name>ExcludedUsersGrid</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>Grid</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>ExcludedUserId</Name>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>UserId</DataField>
+										<DataSource>ADMExcludedUsers</DataSource>
+										<Label>@D365FOAdminToolkit:UserId</Label>
+									</AxFormControl>
+									<AxFormControl xmlns=""
+										i:type="AxFormStringControl">
+										<Name>ExcludedUserName</Name>
+										<Type>String</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<DataField>UserName</DataField>
+										<DataSource>ADMExcludedUsers</DataSource>
+										<Label>@D365FOAdminToolkit:UserName</Label>
+									</AxFormControl>
+								</Controls>
+								<DataSource>ADMExcludedUsers</DataSource>
+							</AxFormControl>
+						</Controls>
+						<Caption>@D365FOAdminToolkit:ExcludedUsers</Caption>
 						<DataSource>ADMExcludedUsers</DataSource>
-						<Label>@D365FOAdminToolkit:UserId</Label>
-					</AxFormControl>
-					<AxFormControl xmlns=""
-						i:type="AxFormStringControl">
-						<Name>ExcludedUserName</Name>
-						<Type>String</Type>
-						<FormControlExtension
-							i:nil="true" />
-						<DataField>UserName</DataField>
-						<DataSource>ADMExcludedUsers</DataSource>
-						<Label>@D365FOAdminToolkit:UserName</Label>
 					</AxFormControl>
 				</Controls>
-				<DataSource>ADMExcludedUsers</DataSource>
 			</AxFormControl>
 		</Controls>
 	</Design>
