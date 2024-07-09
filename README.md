@@ -17,6 +17,7 @@ Please review the provided D365FO Admin Toolkit Overview PDF documentation locat
 - Configuration page
 - Export all role access to CSV
 - Support for the following languages:
+  - Danish
   - Dutch
   - English
   - Norwegian
@@ -26,10 +27,10 @@ Please review the provided D365FO Admin Toolkit Overview PDF documentation locat
 - Unit tests
 - Export environment configuration
 - Ability to auto disable a user based on the last time they have logged in
+- Ability to add time constraint on SysAdmin assignment
   
 # Features in Development
 - Auto disable D365FO users when AAD/Entra user is disabled
-- Ability to add time constraint on SysAdmin assignment
 
 # Future Features
 To submit a new feature request or to see the current feature requests visit: https://d365fo-admin-toolkit.canny.io/
@@ -42,6 +43,8 @@ https://github.com/jatomas
 https://github.com/Alireza-Eshaghzadeh
 
 https://github.com/JoPe72
+
+https://github.com/jofme
 
 # Contact
 Feel free to reach out to d365fotoolkit@outlook.com for any questions or feature suggestions.
