@@ -69,6 +69,11 @@
       <Name>ADMRemoveUserAdminRoleEndDateTimeService</Name>
       <Link>Classes\ADMRemoveUserAdminRoleEndDateTimeService</Link>
     </Content>
+    <Content Include="AxClass\ADMRevokeAdminRoleBatchJob">
+      <SubType>Content</SubType>
+      <Name>ADMRevokeAdminRoleBatchJob</Name>
+      <Link>Classes\ADMRevokeAdminRoleBatchJob</Link>
+    </Content>
     <Content Include="AxClass\ADMSysAdminLogHelper">
       <SubType>Content</SubType>
       <Name>ADMSysAdminLogHelper</Name>
