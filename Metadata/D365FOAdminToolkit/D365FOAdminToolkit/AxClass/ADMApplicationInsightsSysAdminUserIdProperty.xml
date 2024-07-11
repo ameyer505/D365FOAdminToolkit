@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMApplicationInsightsSysAdminUserIdProperty</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+internal final class ADMApplicationInsightsSysAdminUserIdProperty extends SysApplicationInsightsProperty
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>newFromValue</Name>
+				<Source><![CDATA[
+    internal static ADMApplicationInsightsSysAdminUserIdProperty newFromValue(WHSMessage _value)
+    {
+        return new ADMApplicationInsightsSysAdminUserIdProperty(_value);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initialize</Name>
+				<Source><![CDATA[
+    protected container initialize()
+    {
+        return ADMApplicationInsightsConstants::UserId;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>
