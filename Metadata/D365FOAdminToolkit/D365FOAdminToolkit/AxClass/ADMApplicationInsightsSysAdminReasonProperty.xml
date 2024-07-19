@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMApplicationInsightsSysAdminReasonProperty</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+internal final class ADMApplicationInsightsSysAdminReasonProperty extends SysApplicationInsightsProperty
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>newFromValue</Name>
+				<Source><![CDATA[
+    internal static ADMApplicationInsightsSysAdminReasonProperty newFromValue(str _value)
+    {
+        return new ADMApplicationInsightsSysAdminReasonProperty(_value);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initialize</Name>
+				<Source><![CDATA[
+    protected container initialize()
+    {
+        return ADMApplicationInsightsConstants::Reason;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>
