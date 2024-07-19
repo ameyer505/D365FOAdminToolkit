@@ -24,6 +24,7 @@ Last Updated: 6/20/2024</Description>
 		<d2p1:string>ApplicationSuite</d2p1:string>
 		<d2p1:string>ApplicationWorkspaces</d2p1:string>
 		<d2p1:string>Directory</d2p1:string>
+		<d2p1:string>MonitoringandTelemetry</d2p1:string>
 	</ModuleReferences>
 	<Name>D365FOAdminToolkit</Name>
 	<Publisher>D365FO Admin Toolkit</Publisher>

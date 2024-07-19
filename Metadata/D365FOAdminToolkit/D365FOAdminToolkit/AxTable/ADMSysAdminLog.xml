@@ -7,7 +7,38 @@ public class ADMSysAdminLog extends common
 {
 }
 ]]></Declaration>
-		<Methods />
+		<Methods>
+			<Method>
+				<Name>insert</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///
+    /// </summary>
+    public void insert()
+    {
+        super();
+
+        switch (this.Action)
+        {
+            case ADMSysAdminAction::Assigned:
+                ADMSysAdminLogHelper::sendTelemetryAssignedExpiredRevoked(
+                    ADMApplicationInsightsEventIds::SysAdminAssigned,
+                    ADMApplicationInsightsConstants::ADMSysAdminAssigned,
+                    this);
+                break;
+
+            case ADMSysAdminAction::Revoked:
+                ADMSysAdminLogHelper::sendTelemetryAssignedExpiredRevoked(
+                    ADMApplicationInsightsEventIds::SysAdminRevoked,
+                    ADMApplicationInsightsConstants::ADMSysAdminRevoked,
+                    this);
+                break;
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
 	</SourceCode>
 	<SubscriberAccessLevel>
 		<Read>Allow</Read>
