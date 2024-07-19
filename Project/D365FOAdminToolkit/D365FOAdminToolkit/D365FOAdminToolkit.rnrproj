@@ -193,6 +193,11 @@
       <Name>ADMEntraIdGroupSyncFrequency</Name>
       <Link>EDT Integers\ADMEntraIdGroupSyncFrequency</Link>
     </Content>
+    <Content Include="AxEdt\ADMSysUserLastSyncTimeUTC">
+      <SubType>Content</SubType>
+      <Name>ADMSysUserLastSyncTimeUTC</Name>
+      <Link>Extended Data Types\ADMSysUserLastSyncTimeUTC</Link>
+    </Content>
     <Content Include="AxEnum\ADMSecondMinuteHourDay">
       <SubType>Content</SubType>
       <Name>ADMSecondMinuteHourDay</Name>

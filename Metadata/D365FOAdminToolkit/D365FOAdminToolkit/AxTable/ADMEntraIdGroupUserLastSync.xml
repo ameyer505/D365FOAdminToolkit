@@ -150,7 +150,7 @@ public class ADMEntraIdGroupUserLastSync extends common
 			i:type="AxTableFieldUtcDateTime">
 			<Name>LastSyncDateTime</Name>
 			<AssetClassification>Customer Content</AssetClassification>
-			<ExtendedDataType>SysUserLastSyncTimeUTC</ExtendedDataType>
+			<ExtendedDataType>ADMSysUserLastSyncTimeUTC</ExtendedDataType>
 			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
 		</AxTableField>
 		<AxTableField xmlns=""

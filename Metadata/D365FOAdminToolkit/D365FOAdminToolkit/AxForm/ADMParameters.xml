@@ -83,7 +83,77 @@ public class ADMParameters extends FormRun
 ]]></Source>
 			</Method>
 		</Methods>
-		<DataSources xmlns="" />
+		<DataSources xmlns="">
+			<DataSource>
+				<Name>ADMParameters</Name>
+				<Methods>
+					<Method>
+						<Name>showHideFields</Name>
+						<Source><![CDATA[
+        /// <summary>
+        /// Show/hide pattern and frequency
+        /// </summary>
+        public void showHideFields()
+        {
+            if (ADMParameters.SynchronousUserEntraIDGroupSync == NoYes::Yes)
+            {
+                ADMParameters_ds.object(fieldNum(ADMParameters, SyncPattern)).visible(true);
+                ADMParameters_ds.object(fieldNum(ADMParameters, SyncFrequency)).visible(true);
+            }
+            else
+            {
+                ADMParameters_ds.object(fieldNum(ADMParameters, SyncPattern)).visible(false);
+                ADMParameters_ds.object(fieldNum(ADMParameters, SyncFrequency)).visible(false);
+            }
+        }
+
+]]></Source>
+					</Method>
+					<Method>
+						<Name>active</Name>
+						<Source><![CDATA[
+        /// <summary>
+        /// Datasource on active event
+        /// </summary>
+        /// <returns></returns>
+        public int active()
+        {
+            int ret;
+        
+            ret = super();
+
+            this.showHideFields();
+        
+            return ret;
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+				<Fields>
+					<Field>
+						<DataField>SynchronousUserEntraIDGroupSync</DataField>
+						<Methods>
+							<Method>
+								<Name>modified</Name>
+								<Source><![CDATA[
+            /// <summary>
+            /// Show/hide pattern and frequency based on setting
+            /// </summary>
+            public void modified()
+            {
+                super();
+
+                ADMParameters_ds.showHideFields();
+            }
+
+]]></Source>
+							</Method>
+						</Methods>
+					</Field>
+				</Fields>
+			</DataSource>
+		</DataSources>
 		<DataControls xmlns="">
 			<Control>
 				<Name>ShowAdminExpiryDate</Name>
@@ -117,9 +187,6 @@ public class ADMParameters extends FormRun
 					<DataField>AutomaticRoleAssignment</DataField>
 				</AxFormDataSourceField>
 				<AxFormDataSourceField>
-					<DataField>DataAreaId</DataField>
-				</AxFormDataSourceField>
-				<AxFormDataSourceField>
 					<DataField>Key</DataField>
 				</AxFormDataSourceField>
 				<AxFormDataSourceField>
@@ -135,7 +202,13 @@ public class ADMParameters extends FormRun
 					<DataField>RecId</DataField>
 				</AxFormDataSourceField>
 				<AxFormDataSourceField>
+					<DataField>SyncFrequency</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
 					<DataField>SynchronousUserEntraIDGroupSync</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>SyncPattern</DataField>
 				</AxFormDataSourceField>
 				<AxFormDataSourceField>
 					<DataField>TableId</DataField>
@@ -372,6 +445,25 @@ public class ADMParameters extends FormRun
 												<FormControlExtension
 													i:nil="true" />
 												<DataField>SynchronousUserEntraIDGroupSync</DataField>
+												<DataSource>ADMParameters</DataSource>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormComboBoxControl">
+												<Name>ADMParameters_SyncPattern</Name>
+												<Type>ComboBox</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<DataField>SyncPattern</DataField>
+												<DataSource>ADMParameters</DataSource>
+												<Items />
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormIntegerControl">
+												<Name>ADMParameters_SyncFrequency</Name>
+												<Type>Integer</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<DataField>SyncFrequency</DataField>
 												<DataSource>ADMParameters</DataSource>
 											</AxFormControl>
 										</Controls>
