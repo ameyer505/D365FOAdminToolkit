@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMSecurityUserRole_EventHandlers</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The <c>ADMSecurityUserRole_EventHandlers</c> class contains logic to be executed
+/// when date events occurs on the ADMSecurityUserRole table.
+/// </summary>
+internal final class ADMSecurityUserRole_EventHandlers
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>SecurityUserRole_onInserted</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Logic executed when records are inserted in the SecurityUserRole table
+    /// </summary>
+    /// <param name="sender">The record raising the event</param>
+    /// <param name="e">Data event type</param>
+    [DataEventHandler(tableStr(SecurityUserRole), DataEventType::Inserted)]
+    public static void SecurityUserRole_onInserted(Common sender, DataEventArgs e)
+    {
+        SecurityUserRole    secUserRole = sender as SecurityUserRole;
+        UserInfo            userInfo;
+
+        select firstonly accountType from userInfo
+            where userInfo.id == secUserRole.User;
+
+        if (userInfo.accountType == UserAccountType::ClaimsGroup)
+        {
+            ADMEntraIdGroupHelper::createRoleAssignmentRule(secUserRole, userInfo);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>SecurityUserRole_onUpdating</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Logic executed when updating records in the SecurityUserRole table
+    /// </summary>
+    /// <param name="sender">The record raising the event</param>
+    /// <param name="e">Data event type</param>
+    [DataEventHandler(tableStr(SecurityUserRole), DataEventType::Updating)]
+    public static void SecurityUserRole_onUpdating(Common sender, DataEventArgs e)
+    {
+        SecurityUserRole    secUserRole = sender as SecurityUserRole;
+        UserInfo            userInfo;
+
+        select firstonly accountType from userInfo
+            where userInfo.id == secUserRole.User;
+
+        if (userInfo.accountType == UserAccountType::ClaimsGroup && secUserRole.AssignmentStatus != secUserRole.orig().AssignmentStatus)
+        {
+            switch (secUserRole.AssignmentStatus)
+            {
+                case RoleAssignmentStatus::Enabled:
+                    ADMEntraIdGroupHelper::createRoleAssignmentRule(secUserRole, userInfo);
+                    break;
+
+                case RoleAssignmentStatus::Disabled:
+                case RoleAssignmentStatus::None:
+                    ADMEntraIdGroupHelper::deleteRoleAssignmentRule(secUserRole, userInfo);
+                    break;
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>SecurityUserRole_onDeleting</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Logic executed when deleting records in the SecurityUserRole table
+    /// </summary>
+    /// <param name="sender">The record raising the event</param>
+    /// <param name="e">Data event type</param>
+    [DataEventHandler(tableStr(SecurityUserRole), DataEventType::Deleting)]
+    public static void SecurityUserRole_onDeleting(Common sender, DataEventArgs e)
+    {
+        SecurityUserRole    secUserRole = sender as SecurityUserRole;
+        UserInfo            userInfo;
+
+        select firstonly accountType from userInfo
+            where userInfo.id == secUserRole.User;
+
+        if (userInfo.accountType == UserAccountType::ClaimsGroup)
+        {
+            ADMEntraIdGroupHelper::deleteRoleAssignmentRule(secUserRole, userInfo);
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

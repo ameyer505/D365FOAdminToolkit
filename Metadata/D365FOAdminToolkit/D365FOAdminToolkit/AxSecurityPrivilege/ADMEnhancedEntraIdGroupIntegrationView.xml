@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxSecurityPrivilege xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMEnhancedEntraIdGroupIntegrationView</Name>
+	<Label>@D365FOAdminToolkit:EnhancedEntraIdGroupIntegrationView</Label>
+	<DataEntityPermissions />
+	<DirectAccessPermissions />
+	<EntryPoints>
+		<AxSecurityEntryPointReference>
+			<Name>ADMPartEntraIdGroupsForUser</Name>
+			<Grant>
+				<Read>Allow</Read>
+			</Grant>
+			<ObjectName>ADMPartEntraIdGroupsForUser</ObjectName>
+			<ObjectType>MenuItemDisplay</ObjectType>
+			<Forms>
+				<AxSecurityEntryPointReferenceForm>
+					<Name>ADMPartEntraIdGroupsForUser</Name>
+					<Controls />
+					<DataSources />
+				</AxSecurityEntryPointReferenceForm>
+			</Forms>
+		</AxSecurityEntryPointReference>
+		<AxSecurityEntryPointReference>
+			<Name>ADMPartUsersForEntraIdGroup</Name>
+			<Grant>
+				<Read>Allow</Read>
+			</Grant>
+			<ObjectName>ADMPartUsersForEntraIdGroup</ObjectName>
+			<ObjectType>MenuItemDisplay</ObjectType>
+			<Forms>
+				<AxSecurityEntryPointReferenceForm>
+					<Name>ADMPartUsersForEntraIdGroup</Name>
+					<Controls />
+					<DataSources />
+				</AxSecurityEntryPointReferenceForm>
+			</Forms>
+		</AxSecurityEntryPointReference>
+	</EntryPoints>
+	<FormControlOverrides />
+</AxSecurityPrivilege>

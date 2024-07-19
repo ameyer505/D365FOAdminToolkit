@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMSysActiveDirectoryGroupImport_Form_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(formStr(SysActiveDirectoryGroupImport))]
+final class ADMSysActiveDirectoryGroupImport_Form_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>ImportGroups</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Sets the default setting for automatic role assignment based on the 
+    /// D365 admin toolkit parameters setting.
+    /// </summary>
+    /// <returns>true</returns>
+    public boolean ImportGroups()
+    {
+        ADMEntraIdGroupDynamicRoleAssignment    entraIdGroupDynamicRoleAssignmentNew;
+        ADMEntraIdGroupDynamicRoleAssignment    entraIdGroupDynamicRoleAssignmentExist;
+        UserInfo                                userInfo;
+
+        NoYes   automaticRoleAssignment = ADMParameters::find().AutomaticRoleAssignment;
+
+        next ImportGroups();
+
+        ttsbegin;
+
+        insert_recordset entraIdGroupDynamicRoleAssignmentNew (UserInfo,AutomaticRoleAssignment)
+            select RecId, automaticRoleAssignment from userInfo
+            where userInfo.accountType == UserAccountType::ClaimsGroup
+                notexists join entraIdGroupDynamicRoleAssignmentExist
+                where entraIdGroupDynamicRoleAssignmentExist.UserInfo == userInfo.RecId;
+
+        ttscommit;
+
+        return true;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

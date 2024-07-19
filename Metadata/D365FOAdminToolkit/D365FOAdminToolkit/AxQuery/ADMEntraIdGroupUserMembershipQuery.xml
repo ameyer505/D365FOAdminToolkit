@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxQuery xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns=""
+	i:type="AxQuerySimple">
+	<Name>ADMEntraIdGroupUserMembershipQuery</Name>
+	<SourceCode>
+		<Methods>
+			<Method>
+				<Name>classDeclaration</Name>
+				<Source><![CDATA[
+[Query]
+public class ADMEntraIdGroupUserMembershipQuery extends QueryRun
+{
+}
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<DataSources>
+		<AxQuerySimpleRootDataSource>
+			<Name>UserInfo</Name>
+			<Table>UserInfo</Table>
+			<DataSources>
+				<AxQuerySimpleEmbeddedDataSource>
+					<Name>ADMEntraIdGroupUserMembership</Name>
+					<Table>ADMEntraIdGroupUserMembership</Table>
+					<DataSources />
+					<DerivedDataSources />
+					<Fields />
+					<Ranges>
+						<AxQuerySimpleDataSourceRange>
+							<Name>EntraIdGroup</Name>
+							<Field>EntraIdGroup</Field>
+						</AxQuerySimpleDataSourceRange>
+					</Ranges>
+					<FetchMode>OneToN</FetchMode>
+					<JoinMode>ExistsJoin</JoinMode>
+					<Relations>
+						<AxQuerySimpleDataSourceRelation>
+							<Name>QueryDataSourceRelation1</Name>
+							<Field>id</Field>
+							<JoinDataSource>UserInfo</JoinDataSource>
+							<RelatedField>User</RelatedField>
+						</AxQuerySimpleDataSourceRelation>
+					</Relations>
+				</AxQuerySimpleEmbeddedDataSource>
+			</DataSources>
+			<DerivedDataSources />
+			<Fields>
+				<AxQuerySimpleDataSourceField>
+					<Name>accountType</Name>
+					<Field>accountType</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>company</Name>
+					<Field>company</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>enable</Name>
+					<Field>enable</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>id</Name>
+					<Field>id</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>IdentityProvider</Name>
+					<Field>IdentityProvider</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>isMicrosoftAccount</Name>
+					<Field>isMicrosoftAccount</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>language</Name>
+					<Field>language</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>name</Name>
+					<Field>name</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>networkAlias</Name>
+					<Field>networkAlias</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>networkDomain</Name>
+					<Field>networkDomain</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>preferredCalendar</Name>
+					<Field>preferredCalendar</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>PreferredLocale</Name>
+					<Field>PreferredLocale</Field>
+				</AxQuerySimpleDataSourceField>
+				<AxQuerySimpleDataSourceField>
+					<Name>preferredTimeZone</Name>
+					<Field>preferredTimeZone</Field>
+				</AxQuerySimpleDataSourceField>
+			</Fields>
+			<Ranges>
+				<AxQuerySimpleDataSourceRange>
+					<Name>accountType</Name>
+					<Field>accountType</Field>
+					<Status>Hidden</Status>
+					<Value>ClaimsUser</Value>
+				</AxQuerySimpleDataSourceRange>
+				<AxQuerySimpleDataSourceRange>
+					<Name>isMicrosoftAccount</Name>
+					<Field>isMicrosoftAccount</Field>
+					<Status>Hidden</Status>
+					<Value>false</Value>
+				</AxQuerySimpleDataSourceRange>
+				<AxQuerySimpleDataSourceRange>
+					<Name>id</Name>
+					<Field>id</Field>
+				</AxQuerySimpleDataSourceRange>
+			</Ranges>
+			<GroupBy />
+			<Having />
+			<OrderBy />
+		</AxQuerySimpleRootDataSource>
+	</DataSources>
+</AxQuery>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMOMUserRoleOrganization_EventHandlers</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The <c>ADMOMUserRoleOrganization_EventHandlers</c> class contains logic to be executed
+/// when date events occurs on the ADMOMUserRoleOrganization table.
+/// </summary>
+internal final class ADMOMUserRoleOrganization_EventHandlers
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>OMUserRoleOrganization_onInserted</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Logic executed when records are inserted in the OMUserRoleOrganization table
+    /// </summary>
+    /// <param name="sender">The record raising the event</param>
+    /// <param name="e">Data event type</param>
+    [DataEventHandler(tableStr(OMUserRoleOrganization), DataEventType::Inserted)]
+    public static void OMUserRoleOrganization_onInserted(Common sender, DataEventArgs e)
+    {
+        OMUserRoleOrganization  omUserRoleOrganization = sender as OMUserRoleOrganization;
+        UserInfo                userInfo;
+
+        if (omUserRoleOrganization.User)
+        {
+            select firstonly accountType from userInfo
+            where userInfo.id == omUserRoleOrganization.User;
+
+            if (userInfo.accountType == UserAccountType::ClaimsGroup)
+            {
+                ADMEntraIdGroupHelper::createRoleAssignmentRuleOrganization(omUserRoleOrganization, userInfo);
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>OMUserRoleOrganization_onDeleting</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Logic executed when deleting records in the OMUserRoleOrganization table
+    /// </summary>
+    /// <param name="sender">The record raising the event</param>
+    /// <param name="e">Data event type</param>
+    [DataEventHandler(tableStr(OMUserRoleOrganization), DataEventType::Deleting)]
+    public static void OMUserRoleOrganization_onDeleting(Common sender, DataEventArgs e)
+    {
+        OMUserRoleOrganization  omUserRoleOrganization = sender as OMUserRoleOrganization;
+        UserInfo                userInfo;
+
+        if (omUserRoleOrganization.User)
+        {
+            select firstonly accountType from userInfo
+                where userInfo.id == omUserRoleOrganization.User;
+
+            if (userInfo.accountType == UserAccountType::ClaimsGroup)
+            {
+                ADMEntraIdGroupHelper::deleteRoleAssignmentRuleOrganization(omUserRoleOrganization, userInfo);
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

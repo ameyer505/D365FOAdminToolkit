@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMSysQueryRunView</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Query run view only.
+/// </summary>
+class ADMSysQueryRunView extends SysQueryRun
+{
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// public new
+    /// </summary>
+    /// <param name="_p1"> Any type of parameter. </param>
+    public void new(anytype _p1 = null)
+    {
+        super (_p1);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>construct</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Default construct to instanciate the class.
+    /// </summary>
+    /// <returns> New ADMSysQueryRunView object.</returns>
+    public static ADMSysQueryRunView construct()
+    {
+        return new ADMSysQueryRunView();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

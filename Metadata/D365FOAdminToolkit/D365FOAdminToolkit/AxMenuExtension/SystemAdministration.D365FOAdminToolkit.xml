@@ -67,6 +67,18 @@
 								<MenuItemName>ADMRemoveUserAdminRoleEndDateTimeService</MenuItemName>
 								<MenuItemType>Action</MenuItemType>
 							</AxMenuElement>
+							<AxMenuElement xmlns=""
+								i:type="AxMenuElementMenuItem">
+								<Name>ADMEntraIdGroupUserSynchronization</Name>
+								<MenuItemName>ADMEntraIdGroupUserSynchronization</MenuItemName>
+								<MenuItemType>Action</MenuItemType>
+							</AxMenuElement>
+							<AxMenuElement xmlns=""
+								i:type="AxMenuElementMenuItem">
+								<Name>ADMEntraIdGroupUserImport</Name>
+								<MenuItemName>ADMEntraIdGroupUserImport</MenuItemName>
+								<MenuItemType>Action</MenuItemType>
+							</AxMenuElement>
 						</Elements>
 					</AxMenuElement>
 					<AxMenuElement xmlns=""

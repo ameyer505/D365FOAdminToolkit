@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMSysSecRolesEditUsers_AssignmentRulesButtons_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(formControlStr(SysSecRolesEditUsers,assignmentRulesButtons))]
+final class ADMSysSecRolesEditUsers_AssignmentRulesButtons_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>setEnabledState</Name>
+				<Source><![CDATA[
+    public void setEnabledState()
+    {
+        SecurityRoleAssignmentRule rule;
+        boolean     isEntraIdGroupManaged;
+
+        next setEnabledState();
+
+        FormDataSource securityRoleAssignmentRule_ds = element.dataSource(formDataSourceStr(SysSecRolesEditUsers, SecurityRoleAssignmentRule)) as FormDataSource;
+
+        if (securityRoleAssignmentRule_ds.table())
+        {
+            rule = securityRoleAssignmentRule_ds.cursor() as SecurityRoleAssignmentRule;
+        }
+
+        isEntraIdGroupManaged = ADMEntraIdGroupHelper::isEntraIdGroupManaged(rule);
+
+        FormRun formRun = this.formRun();
+
+        FormCommandButtonControl removeAssignmentRulesButton    = formRun.control(formRun.controlId(formControlStr(SysSecRolesEditUsers, removeAssignmentRulesButton)));
+        FormCommandButtonControl editQueryButton                = formRun.control(formRun.controlId(formControlStr(SysSecRolesEditUsers, editQueryButton)));
+        FormCommandButtonControl viewQueryButton                = formRun.control(formRun.controlId(formControlStr(SysSecRolesEditUsers, ADMViewQueryButton)));
+
+        removeAssignmentRulesButton.enabled(removeAssignmentRulesButton.enabled() && !isEntraIdGroupManaged);
+        editQueryButton.visible(!isEntraIdGroupManaged);
+        viewQueryButton.visible(isEntraIdGroupManaged);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

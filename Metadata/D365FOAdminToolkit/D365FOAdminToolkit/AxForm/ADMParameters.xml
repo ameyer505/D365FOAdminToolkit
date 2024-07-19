@@ -108,7 +108,49 @@ public class ADMParameters extends FormRun
 		</DataControls>
 		<Members xmlns="" />
 	</SourceCode>
-	<DataSources />
+	<DataSources>
+		<AxFormDataSource xmlns="">
+			<Name>ADMParameters</Name>
+			<Table>ADMParameters</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>AutomaticRoleAssignment</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DataAreaId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Key</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ModifiedBy</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>ModifiedDateTime</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>SynchronousUserEntraIDGroupSync</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources />
+			<LinkType>Passive</LinkType>
+			<AllowCreate>No</AllowCreate>
+			<AllowDelete>No</AllowDelete>
+			<InsertAtEnd>No</InsertAtEnd>
+			<InsertIfEmpty>No</InsertIfEmpty>
+			<DataSourceLinks />
+			<DerivedDataSources />
+		</AxFormDataSource>
+	</DataSources>
 	<Design>
 		<Caption xmlns="">@D365FOAdminToolkit:Parameters</Caption>
 		<Pattern xmlns="">TableOfContents</Pattern>
@@ -265,6 +307,84 @@ public class ADMParameters extends FormRun
 							</AxFormControl>
 						</Controls>
 						<Caption>@D365FOAdminToolkit:General</Caption>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormTabPageControl">
+						<Name>TabEntraIdGroup</Name>
+						<Type>TabPage</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormGroupControl">
+								<Name>EntraIdGroupTitle</Name>
+								<Skip>Yes</Skip>
+								<Type>Group</Type>
+								<WidthMode>SizeToAvailable</WidthMode>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormStaticTextControl">
+										<Name>StaticTextEntraIdGroupSetup</Name>
+										<Skip>Yes</Skip>
+										<Type>StaticText</Type>
+										<WidthMode>SizeToAvailable</WidthMode>
+										<FormControlExtension
+											i:nil="true" />
+										<Style>MainInstruction</Style>
+										<Text>@D365FOAdminToolkit:SetUpInfoEntraIdSecGrpSync</Text>
+									</AxFormControl>
+								</Controls>
+								<AllowUserSetup>No</AllowUserSetup>
+								<FrameType>None</FrameType>
+								<Style>TOCTitleContainer</Style>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormTabControl">
+								<Name>EntraIdGroupFastTab</Name>
+								<Type>Tab</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls>
+									<AxFormControl xmlns=""
+										i:type="AxFormTabPageControl">
+										<Name>EntraIdGroupsTabPage</Name>
+										<Pattern>FieldsFieldGroups</Pattern>
+										<PatternVersion>1.1</PatternVersion>
+										<Type>TabPage</Type>
+										<FormControlExtension
+											i:nil="true" />
+										<Controls>
+											<AxFormControl xmlns=""
+												i:type="AxFormCheckBoxControl">
+												<Name>ADMParameters_AutomaticRoleAssignment</Name>
+												<Type>CheckBox</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<DataField>AutomaticRoleAssignment</DataField>
+												<DataSource>ADMParameters</DataSource>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormCheckBoxControl">
+												<Name>ADMParameters_SynchronousUserEntraIDGroupSync</Name>
+												<Type>CheckBox</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<DataField>SynchronousUserEntraIDGroupSync</DataField>
+												<DataSource>ADMParameters</DataSource>
+											</AxFormControl>
+										</Controls>
+										<ColumnsMode>Fill</ColumnsMode>
+										<Caption>@D365FOAdminToolkit:EntraIdGroupSynchronization</Caption>
+									</AxFormControl>
+								</Controls>
+								<ArrangeMethod>Vertical</ArrangeMethod>
+								<Style>FastTabs</Style>
+							</AxFormControl>
+						</Controls>
+						<Caption>@D365FOAdminToolkit:EntraIdGroup</Caption>
+						<DataSource>ADMParameters</DataSource>
 					</AxFormControl>
 				</Controls>
 				<Style>VerticalTabs</Style>

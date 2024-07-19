@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxMenuItemDisplay xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V1">
+	<Name>ADMPartEntraIdGroupsForUser</Name>
+	<DisabledResource>0</DisabledResource>
+	<Label>@D365FOAdminToolkit:EntraIdGroupsForUser</Label>
+	<NormalResource>0</NormalResource>
+	<Object>ADMPartEntraIdGroupsForUser</Object>
+	<OperationalDomain>Shared</OperationalDomain>
+	<SubscriberAccessLevel>
+		<Read xmlns="">Allow</Read>
+	</SubscriberAccessLevel>
+</AxMenuItemDisplay>

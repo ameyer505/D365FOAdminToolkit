@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMSysSecRolesEditUsers_EventHandlers</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The <c>ADMSysSecRolesEditUsers_EventHandlers</c> class contains event
+/// handlers related to the form SysSecRolesEditUsers
+/// </summary>
+internal final class ADMSysSecRolesEditUsers_EventHandlers
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>ADMViewQueryButton_OnClicked</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Shows the query in view only mode when user clicks on the view query button.
+    /// </summary>
+    /// <param name="sender">The form button control raising the event</param>
+    /// <param name="e">Event type</param>
+    [FormControlEventHandler(formControlStr(SysSecRolesEditUsers, ADMViewQueryButton), FormControlEventType::Clicked)]
+    public static void ADMViewQueryButton_OnClicked(FormControl sender, FormControlEventArgs e)
+    {
+        FormDataSource rule_ds = sender.formRun().dataSource(tableStr(SecurityRoleAssignmentRule)) as FormDataSource;
+        SecurityRoleAssignmentRule rule = rule_DS.cursor();
+
+        Query q = new Query(rule.RuleQuery);
+        ADMSysQueryRunView qr = new ADMSysQueryRunView(q);
+
+        qr.promptAllowSave(false);
+        qr.promptLoadLastUsedQuery(false);
+        qr.promptSaveQueryPrUser(false);
+        qr.promptShowSorting(false);
+        qr.promptShowQuerySelect(false);
+        qr.promptShowReset(false);
+
+        qr.prompt();
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>userInfo_OnQueryExecuted</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Method to refresh the SecurityRoleAssignmentRule data source when the UserInfo
+    /// data source is executed. Rules might be created or deleted by adding or removing
+    /// Entra ID group users.
+    /// </summary>
+    /// <param name="sender">The data source raising the event</param>
+    /// <param name="e">Event type</param>
+    [FormDataSourceEventHandler(formDataSourceStr(SysSecRolesEditUsers, UserInfo), FormDataSourceEventType::QueryExecuted)]
+    public static void userInfo_OnQueryExecuted(FormDataSource sender, FormDataSourceEventArgs e)
+    {
+        FormDataSource securityRoleAssignmentRule_ds = sender.formRun().dataSource(formDataSourceStr(SysSecRolesEditUsers, SecurityRoleAssignmentRule)) as FormDataSource;
+
+        securityRoleAssignmentRule_ds.research();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

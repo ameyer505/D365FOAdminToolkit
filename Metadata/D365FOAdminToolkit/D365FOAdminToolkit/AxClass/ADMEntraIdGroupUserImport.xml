@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMEntraIdGroupUserImport</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class ADMEntraIdGroupUserImport extends RunBaseBatch implements BatchRetryable
+{
+    SysUserMSODSUserTmp tmp;
+    
+    UserId              groupId;
+
+    
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>canGoBatch</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Indicates whether the job can run in batch mode.
+    /// </summary>
+    /// <returns>
+    /// Always returns true.
+    /// </returns>
+    public boolean canGoBatch()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canGoBatchJournal</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Determines whether the class is shown in the list of <c>Journal</c> types.
+    /// </summary>
+    /// <returns>
+    ///    true if the class is shown in the list of <c>Journal</c> types; otherwise, false.
+    /// </returns>
+    public boolean canGoBatchJournal()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canRunInNewSession</Name>
+				<Source><![CDATA[
+    protected boolean canRunInNewSession()
+    {
+        return false;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>run</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Runs the operation.
+    /// </summary>
+    [Microsoft.Dynamics.BusinessPlatform.SharedTypes.InternalUseOnlyAttribute]
+    public void run()
+    {
+        SysActiveDirectoryGroupTmp  entraIdGroups;
+        UserInfo                    userInfo;
+
+        List                        selectedUsers = new List(Types::Record);
+        SysUserMSODSImportHelper    helper        = new SysUserMSODSImportHelper();
+
+        this.fillTmpUserList();
+
+        while select tmp
+            notexists join userInfo
+            where userInfo.sid == tmp.UserSid
+        {
+            entraIdGroups = ADMEntraIdGroupHelper::getEntraIdGroupsForUserObjectId(tmp.ObjectId);
+
+            select firstonly AxUserId, RecId from entraIdGroups
+            where (!groupId || entraIdGroups.AxUserID == groupId);
+
+            if (entraIdGroups.RecId)
+            {
+                tmp.AxUserID = helper.generateUserID(tmp.NetworkAlias, selectedUsers);
+                
+                // Create the user
+                this.createUser(tmp, entraIdGroups.AxUserID);
+
+                // Sync the user's groups if synchronous parameter is enabled
+                if (ADMParameters::find().SynchronousUserEntraIDGroupSync)
+                {
+                    ADMEntraIdGroupUserSynchronization::synchronize(tmp.AxUserID);
+    
+                }
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>fillTmpUserList</Name>
+				<Source><![CDATA[
+    private void fillTmpUserList()
+    {
+        Microsoft.Dynamics.AX.Security.DirectoryHelper.User user;
+
+        System.Collections.IEnumerator directoryUsersEnumerator;
+        xAxaptaUserManager       axaptaUserManager  = new xAxaptaUserManager();
+        RecordInsertList         tmpUserInsertList  = new RecordInsertList(tableNum(SysUserMSODSUserTmp),true,true,true,true,true,tmp);
+
+        try
+        {
+            directoryUsersEnumerator = SysUserMSODSImportHelper::getActiveDirectoryClient().ListUsers().GetEnumerator();
+        }
+        catch(Exception::CLRError)
+        {
+            SysSecurity::HandleGraphAPIHelperException();
+            SysSecurity::DisplayErrorMessage("@ApplicationFoundation:GraphAPIErrorMsg");
+            return;
+        }
+
+        while(directoryUsersEnumerator.MoveNext())
+        {
+            user = directoryUsersEnumerator.Current;
+
+            if (strScan(user.UserPrincipalName, ADMConstants::Ext, 1, strLen(user.UserPrincipalName)) == 0)
+            {
+                tmp.NetworkAlias = user.UserPrincipalName;
+                tmp.NetworkDomain = Microsoft.Dynamics.ApplicationPlatform.Environment.EnvironmentFactory::GetApplicationEnvironment().get_Provisioning().get_AdminIdentityProvider();
+            }
+            else if (user.Mail != '')
+            {
+                // User is external to the Microsoft Entra ID tenant, treat him as a user from different Microsoft Entra ID tenant
+                tmp.NetworkAlias = user.Mail;
+                System.Net.Mail.MailAddress mailAddress = new System.Net.Mail.MailAddress(user.Mail);
+                tmp.NetworkDomain = System.String::Format(
+                    System.Globalization.CultureInfo::InvariantCulture,
+                    Microsoft.Dynamics.ApplicationPlatform.Environment.EnvironmentFactory::GetApplicationEnvironment().Aad.AADIssuerNameFormat,
+                    mailAddress.Host);
+            }
+            else
+            {
+                // LiveId accounts invited to Microsoft Entra ID tenants appear to have #EXT# in upn and no email populated.
+                // Microsoft don't support such users in coding, so we also skip importing them.
+                continue;
+            }
+
+            tmp.DisplayName = user.DisplayName;
+            tmp.EmailAddress = tmp.NetworkAlias;
+            
+            if (SysUserMSODSImportHelper::IsGraphAPI())
+            {
+                tmp.ObjectId = user.ObjectID;
+                tmp.UserSid = axaptaUserManager.getUserSid(tmp.NetworkAlias, tmp.NetworkDomain);
+            }
+            else
+            {
+                tmp.NetworkDomain = System.String::Format(
+                        System.Globalization.CultureInfo::InvariantCulture,
+                        Microsoft.Dynamics.ApplicationPlatform.Environment.EnvironmentFactory::GetApplicationEnvironment().Aad.AADIssuerNameFormat,
+                        Microsoft.Dynamics.ApplicationPlatform.Environment.EnvironmentFactory::GetApplicationEnvironment().Aad.AADTenantId);
+                tmp.UserSid = axaptaUserManager.getUserSid(tmp.NetworkAlias,
+                        Microsoft.Dynamics.ApplicationPlatform.Environment.EnvironmentFactory::GetApplicationEnvironment().get_Provisioning().get_AdminIdentityProvider());
+            }
+            
+            tmpUserInsertList.add(tmp);
+
+        }
+
+        if(tmp.userSid)
+        {
+            tmpUserInsertList.insertDatabase();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createUser</Name>
+				<Source><![CDATA[
+    private void createUser(SysUserMSODSUserTmp _userToImport, UserId _groupUserId)
+    {
+        UserInfo            ui, groupRecord;
+        SysUserInfo         sui;
+        int                 len;
+        xAxaptaUserManager  axaptaUserManager = new xAxaptaUserManager();
+
+        ttsbegin;
+
+        // select the admin record
+        select firstonly Id, Company, Language, HelpLanguage from groupRecord where groupRecord.Id == _groupUserId;
+        
+        // Insert a row in the UserInfo table
+        ui.Id           = _userToImport.AxUserID;
+        ui.NetworkAlias = _userToImport.NetworkAlias;
+        ui.NetworkDomain = _userToImport.NetworkDomain;
+        ui.AccountType  = UserAccountType::ClaimsUser;
+        ui.ObjectId     = _userToImport.ObjectId;
+
+        ui.Name         = _userToImport.DisplayName;
+        ui.Enable       = true;
+        ui.EnabledOnce  = true;
+        ui.Company      = groupRecord.Company;
+        ui.Language     = groupRecord.Language;
+        ui.Helplanguage = groupRecord.Helplanguage;
+        ui.IdentityProvider = Microsoft.Dynamics.AX.Security.AuthenticationCommon.AadHelper::GetCanonicalIdentityProvider(ui.NetworkDomain);
+        
+
+        if(_userToImport.UserSid != '')
+        {
+            ui.sid = _userToImport.UserSid;
+        }
+        else
+        {
+            try
+            {
+                len = infologLine();
+                ui.Sid = axaptaUserManager.getUserSid(ui.NetworkAlias, ui.IdentityProvider);
+            }
+            catch(Exception::Error)
+            {
+                if(len > 0)
+                {
+                    infolog.clear(len);
+                }
+                ui.Sid = '';
+            }
+        }
+
+        ui.insert();
+
+        // If a row for the user id does not exist in the SysUserInfo, add one
+        select firstonly RecId from sui
+            where sui.Id == ui.Id;
+
+        if(!sui)
+        {
+            sui.initValue(ui.Id);
+            sui.Id = ui.Id;
+            sui.Email = _userToImport.EmailAddress;
+
+            sui.insert();
+        }        
+    
+        ttscommit;
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>isGraphAPI</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Get Entra ID/AD environment.
+    /// </summary>
+    /// <returns>
+    /// true if environment is GraphAPI, else it is Active Directory.
+    /// </returns>
+    public static boolean isGraphAPI()
+    {
+        return Microsoft.Dynamics.AX.Security.DirectoryHelper.DirectoryClientProvider::IsGraphAPI();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runsImpersonated</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Indicates whether the batch task is run on the server or on a client.
+    /// </summary>
+    /// <returns>
+    /// Always returns true.
+    /// </returns>
+    /// <remarks>
+    /// Your classes that extend this class must override the <c>runsImpersonated</c> method and return
+    /// false if you want those tasks to run on a client.
+    /// </remarks>
+    [Microsoft.Dynamics.BusinessPlatform.SharedTypes.InternalUseOnlyAttribute]
+    public boolean runsImpersonated()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>construct</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Constructs a new class instance.
+    /// </summary>
+    /// <returns>An instance of the <c>ADMEntraIdGroupUserImport</c> class.</returns>
+    [Microsoft.Dynamics.BusinessPlatform.SharedTypes.InternalUseOnlyAttribute]
+    public static ADMEntraIdGroupUserImport construct()
+    {
+        return new ADMEntraIdGroupUserImport();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>description</Name>
+				<Source><![CDATA[
+    private static ClassDescription  description()
+    {
+        return "@D365FOAdminToolkit:ImportUsersEntraIdGroupMembership";
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Microsoft internal use only.
+    /// </summary>
+    /// <param name="_args">An instance of the <c>Args</c> class.</param>
+    [Microsoft.Dynamics.BusinessPlatform.SharedTypes.InternalUseOnlyAttribute]
+    public static void main(Args _args)
+    {
+        ADMEntraIdGroupUserImport entraIdGroupUserImport = ADMEntraIdGroupUserImport::construct();
+
+        if (entraIdGroupUserImport.prompt())
+        {
+            entraIdGroupUserImport.runOperation();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmGroupId</Name>
+				<Source><![CDATA[
+    public UserId parmGroupId(UserId _groupId = groupId)
+    {
+        groupId = _groupId;
+        return groupId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>synchronize</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Runs the Import users from Entra ID group membership job as a static method.
+    /// </summary>
+    /// <param name="_groupId">
+    /// A group for which to perform the user import; optional.
+    /// </param>
+    public server static void synchronize(UserId _groupId = '')
+    {
+        ADMEntraIdGroupUserImport entraIdGroupUserImport = new ADMEntraIdGroupUserImport();
+        entraIdGroupUserImport.parmGroupId(_groupId);
+        entraIdGroupUserImport.runOperation();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>isRetryable</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Specifies if the batch task is retryable for transient exceptions or not.
+    /// </summary>
+    /// <returns>
+    /// If true is returned, the batch task is retryable, otherwise it is not.
+    /// </returns>
+    [Hookable(false)]
+    public final boolean isRetryable()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>
