@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FC65038C-1B2F-41E1-A629-BED71D161FFF}") = "D365FOAdminToolkit (USR) [D365FOAdminToolkit]", "D365FOAdminToolkit\D365FOAdminToolkit.rnrproj", "{AD007C16-7078-4710-BC2E-E0E6D058CE5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "D365FOAdminToolkitNET", "D365FOAdminToolkitNET\D365FOAdminToolkitNET.csproj", "{FBAE26B1-8C74-4F17-8D75-E14AFB8D00C5}"
+EndProject
+Project("{FC65038C-1B2F-41E1-A629-BED71D161FFF}") = "D365FOAdminToolkitTests (USR) [D365FOAdminToolkitTests]", "D365FOAdminToolkitTests\D365FOAdminToolkitTests.rnrproj", "{B8490851-594E-44C9-9727-C44FCC8D6DBC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AD007C16-7078-4710-BC2E-E0E6D058CE5C} = {AD007C16-7078-4710-BC2E-E0E6D058CE5C}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AD007C16-7078-4710-BC2E-E0E6D058CE5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD007C16-7078-4710-BC2E-E0E6D058CE5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD007C16-7078-4710-BC2E-E0E6D058CE5C}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD007C16-7078-4710-BC2E-E0E6D058CE5C}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{FBAE26B1-8C74-4F17-8D75-E14AFB8D00C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBAE26B1-8C74-4F17-8D75-E14AFB8D00C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBAE26B1-8C74-4F17-8D75-E14AFB8D00C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBAE26B1-8C74-4F17-8D75-E14AFB8D00C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8490851-594E-44C9-9727-C44FCC8D6DBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8490851-594E-44C9-9727-C44FCC8D6DBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8490851-594E-44C9-9727-C44FCC8D6DBC}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {66A29C2B-2C20-48EC-9D18-71C7A40E96F5}
+	EndGlobalSection
+	GlobalSection(CRMSolutionProperties) = preSolution
+		SolutionIsBoundToCRM = True
+	EndGlobalSection
+EndGlobal
