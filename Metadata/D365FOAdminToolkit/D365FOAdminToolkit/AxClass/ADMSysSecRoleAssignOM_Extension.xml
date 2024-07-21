@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMSysSecRoleAssignOM_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(formStr(SysSecRoleAssignOM))]
+internal final class ADMSysSecRoleAssignOM_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Method to set the form read-only in case of the rule being managed by
+    /// the Entra ID group enhancement feature.
+    /// </summary>
+    public void init()
+    {   
+        tableId tableId = (this.args()) ? this.args().dataset() : 0;
+
+        switch (tableId)
+        {
+            case tableNum(SecurityRoleAssignmentRule):
+                rule = this.args().record();
+                if(ADMEntraIdGroupHelper::isEntraIdGroupManaged(rule))
+                {
+                    isReadOnlyMode = true;
+                }
+                break;
+        }
+
+        next init();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

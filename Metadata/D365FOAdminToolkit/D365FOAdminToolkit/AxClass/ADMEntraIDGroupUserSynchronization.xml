@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMEntraIDGroupUserSynchronization</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+///    Periodic batch job to sync Entra ID Group membership information
+///    and maintain security role assignments.
+/// </summary>
+/// <remarks>
+///    This class adds one or more batch tasks.
+/// </remarks>
+public class ADMEntraIdGroupUserSynchronization extends RunBaseBatch implements BatchRetryable
+{
+    UserId userId;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>canGoBatch</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Indicates whether the job can run in batch mode.
+    /// </summary>
+    /// <returns>
+    /// Always returns true.
+    /// </returns>
+    public boolean canGoBatch()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canGoBatchJournal</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Determines whether the class is shown in the list of <c>Journal</c> types.
+    /// </summary>
+    /// <returns>
+    ///    true if the class is shown in the list of <c>Journal</c> types; otherwise, false.
+    /// </returns>
+    public boolean canGoBatchJournal()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>canRunInNewSession</Name>
+				<Source><![CDATA[
+    protected boolean canRunInNewSession()
+    {
+        return false;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>run</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Runs the operation.
+    /// </summary>
+    [Microsoft.Dynamics.BusinessPlatform.SharedTypes.InternalUseOnlyAttribute]
+    public void run()
+    {
+        UserInfo userInfo;
+
+        while select userInfo
+            where userInfo.accountType == UserAccountType::ClaimsUser
+               && userInfo.isMicrosoftAccount == false
+               && (!userId || userInfo.id == userId)
+        {
+            ADMEntraIdGroupHelper::syncEntraIdGroupsforUser(userInfo.id);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>runsImpersonated</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Indicates whether the batch task is run on the server or on a client.
+    /// </summary>
+    /// <returns>
+    /// Always returns true.
+    /// </returns>
+    /// <remarks>
+    /// Your classes that extend this class must override the <c>runsImpersonated</c> method and return
+    /// false if you want those tasks to run on a client.
+    /// </remarks>
+    [Microsoft.Dynamics.BusinessPlatform.SharedTypes.InternalUseOnlyAttribute]
+    public boolean runsImpersonated()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>construct</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Constructs a new class instance.
+    /// </summary>
+    /// <returns>An instance of the <c>ADMUserEntraIdGroupSynchronization</c> class.</returns>
+    [Microsoft.Dynamics.BusinessPlatform.SharedTypes.InternalUseOnlyAttribute]
+    public static ADMEntraIdGroupUserSynchronization construct()
+    {
+        return new ADMEntraIdGroupUserSynchronization();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>description</Name>
+				<Source><![CDATA[
+    private static ClassDescription  description()
+    {
+        return "@D365FOAdminToolkit:EntraIdGroupUserMembershipSync";
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>main</Name>
+				<Source><![CDATA[
+    /// <summary>
+    ///    Internal use only.
+    /// </summary>
+    /// <param name="_args">An instance of the <c>Args</c> class.</param>
+    [Microsoft.Dynamics.BusinessPlatform.SharedTypes.InternalUseOnlyAttribute]
+    public static void main(
+        Args _args)
+    {
+        ADMEntraIdGroupUserSynchronization entraIdGroupSync = ADMEntraIdGroupUserSynchronization::construct();
+
+        if (entraIdGroupSync.prompt())
+        {
+            entraIdGroupSync.runOperation();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmUserId</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Get or set the userId variable
+    /// </summary>
+    /// <param name = "_userId">
+    /// A user for which to perform the synchronization; optional.
+    /// </param>
+    /// <returns>A userId value</returns>
+    public UserId parmUserId(UserId _userId = userId)
+    {
+        userId = _userId;
+        return userId;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>synchronize</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Runs the Entra ID group user membership synchronization job as a static method.
+    /// </summary>
+    /// <param name="_roleId">
+    /// A user for which to perform synchronization; optional.
+    /// </param>
+    /// <param name="_userId">
+    /// A user for which to perform the assignments; optional.
+    /// </param>
+    public server static void synchronize(UserId _userId = '')
+    {
+        ADMEntraIdGroupUserSynchronization entraIdGroupSync = new ADMEntraIdGroupUserSynchronization();
+        entraIdGroupSync.parmUserId(_userId);
+        entraIdGroupSync.runOperation();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>onInteractiveSessionCreated</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Subscribes to the first time initialization of an user session
+    /// to synchronize the Entra ID groups for the current user.
+    /// </summary>
+    [SubscribesTo(classStr(ApplicationStartupEventManager), staticDelegateStr(ApplicationStartupEventManager, onInteractiveSessionCreated))]
+    public static void onInteractiveSessionCreated()
+    {
+        if (ADMEntraIdGroupUserLastSync::syncRequired())
+        {
+            unchecked(Uncheck::TableSecurityPermission)
+            {
+                ADMEntraIdGroupUserSynchronization::synchronize(curUserId());
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>isRetryable</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Specifies if the batch task is retryable for transient exceptions or not.
+    /// </summary>
+    /// <returns>
+    /// If true is returned, the batch task is retryable, otherwise it is not.
+    /// </returns>
+    [Hookable(false)]
+    public final boolean isRetryable()
+    {
+        return true;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

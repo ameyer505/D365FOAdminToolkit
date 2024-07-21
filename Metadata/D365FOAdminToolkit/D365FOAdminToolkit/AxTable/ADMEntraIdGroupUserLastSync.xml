@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMEntraIdGroupUserLastSync</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class ADMEntraIdGroupUserLastSync extends common
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>syncRequired</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Determines if sync is required based on settings in the application, 
+    /// enabled demo mode and the 
+    /// </summary>
+    /// <param name = "_userId">
+    /// The User ID for which the function should be executed; optional
+    /// </param>
+    /// <returns>True in case a synchronous synchronization is required</returns>
+    internal static boolean syncRequired(UserId _userId = curUserId())
+    {
+        ADMEntraIdGroupUserLastSync lastSync;
+        ADMParameters               parameter = ADMParameters::find();
+
+        boolean ret;
+
+        if (parameter.SynchronousUserEntraIdGroupSync == NoYes::Yes)
+        {
+            select firstonly LastSyncDateTime from lastSync
+                where lastSync.User == _userId;
+
+            if (DateTimeUtil::getDifference(DateTimeUtil::utcNow(), lastSync.LastSyncDateTime) > parameter.SyncFrequencySeconds())
+            {
+                ret = true;
+            }
+        }
+        else
+        {
+            ret = false;
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setLastSync</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Store the last sync date/time per user
+    /// </summary>
+    internal static void setLastSync(UserId _userId = curUserId())
+    {
+        ADMEntraIdGroupUserLastSync lastSync;
+
+        ttsbegin;
+
+        select forupdate firstonly lastSync
+            where lastSync.User == _userId;
+
+        lastSync.LastSyncDateTime = DateTimeUtil::utcNow();
+
+        if (!lastSync.RecId)
+        {
+            lastSync.User = _userId;
+            lastSync.insert();
+        }
+        else
+        {
+            lastSync.update();
+        }
+
+        ttscommit;
+
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<DeveloperDocumentation>@D365FOAdminToolkit:ADMUserEntraIdGroupLastSyncDeveloper</DeveloperDocumentation>
+	<Label>@D365FOAdminToolkit:ADMUserEntraIdGroupLastSync</Label>
+	<TableGroup>Transaction</TableGroup>
+	<TitleField1>User</TitleField1>
+	<TitleField2>LastSyncDateTime</TitleField2>
+	<ClusteredIndex>UserIdIdx</ClusteredIndex>
+	<Modules>SystemAdministration</Modules>
+	<PrimaryIndex>UserIdIdx</PrimaryIndex>
+	<ReplacementKey>UserIdIdx</ReplacementKey>
+	<SaveDataPerCompany>No</SaveDataPerCompany>
+	<DeleteActions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>User</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>LastSyncDateTime</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>User</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>LastSyncDateTime</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>User</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AllFields</Name>
+			<Label>@SYS6047</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>LastSyncDateTime</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>User</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldUtcDateTime">
+			<Name>LastSyncDateTime</Name>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>ADMSysUserLastSyncTimeUTC</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>User</Name>
+			<AllowEdit>No</AllowEdit>
+			<AssetClassification>Customer Content </AssetClassification>
+			<ExtendedDataType>UserId</ExtendedDataType>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes>
+		<AxTableIndex>
+			<Name>UserIdIdx</Name>
+			<AlternateKey>Yes</AlternateKey>
+			<Fields>
+				<AxTableIndexField>
+					<DataField>User</DataField>
+				</AxTableIndexField>
+			</Fields>
+		</AxTableIndex>
+	</Indexes>
+	<Mappings />
+	<Relations>
+		<AxTableRelation xmlns=""
+			i:type="AxTableRelationForeignKey">
+			<Name>UserInfo</Name>
+			<Cardinality>ZeroMore</Cardinality>
+			<RelatedTable>UserInfo</RelatedTable>
+			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>UserInfo</RelatedTableRole>
+			<RelationshipType>Association</RelationshipType>
+			<Role>ADMUserEntraIdGroupLastSync</Role>
+			<UseDefaultRoleNames>No</UseDefaultRoleNames>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>User</Name>
+					<SourceEDT>UserId</SourceEDT>
+					<Field>User</Field>
+					<RelatedField>id</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+			<Index>Id</Index>
+		</AxTableRelation>
+	</Relations>
+	<StateMachines />
+</AxTable>

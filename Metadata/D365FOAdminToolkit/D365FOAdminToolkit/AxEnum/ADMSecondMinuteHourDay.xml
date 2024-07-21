@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxEnum xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMSecondMinuteHourDay</Name>
+	<EnumValues>
+		<AxEnumValue>
+			<Name>Second</Name>
+			<Label>@RET3747</Label>
+		</AxEnumValue>
+		<AxEnumValue>
+			<Name>Minute</Name>
+			<Label>@RET3748</Label>
+			<Value>1</Value>
+		</AxEnumValue>
+		<AxEnumValue>
+			<Name>Hour</Name>
+			<Label>@RET3749</Label>
+			<Value>2</Value>
+		</AxEnumValue>
+		<AxEnumValue>
+			<Name>Day</Name>
+			<Label>@RET3750</Label>
+			<Value>3</Value>
+		</AxEnumValue>
+	</EnumValues>
+</AxEnum>

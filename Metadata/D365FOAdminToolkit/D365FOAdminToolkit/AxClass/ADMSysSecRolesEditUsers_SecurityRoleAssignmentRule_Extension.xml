@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMSysSecRolesEditUsers_SecurityRoleAssignmentRule_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(formDataSourceStr(SysSecRolesEditUsers,securityRoleAssignmentRule))]
+final class ADMSysSecRolesEditUsers_SecurityRoleAssignmentRule_Extension
+{
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>active</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// CoC on active method to manage when buttons are enabled.
+    /// In case of Entra ID integration the rule is managed by the Entra ID group user.
+    /// </summary>
+    /// <returns></returns>
+    public int active()
+    {
+        int ret;
+    
+        ret = next active();
+
+        this.allowEdit(!ADMEntraIdGroupHelper::isEntraIdGroupManaged(this.cursor())); 
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

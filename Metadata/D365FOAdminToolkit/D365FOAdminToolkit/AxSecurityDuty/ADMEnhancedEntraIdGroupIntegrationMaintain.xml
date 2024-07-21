@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxSecurityDuty xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMEnhancedEntraIdGroupIntegrationMaintain</Name>
+	<Label>@D365FOAdminToolkit:EnhancedEntraIdGroupIntegrationMaintain</Label>
+	<Privileges>
+		<AxSecurityPrivilegeReference>
+			<Name>ADMEnhancedEntraIdGroupIntegrationMaintain</Name>
+		</AxSecurityPrivilegeReference>
+	</Privileges>
+</AxSecurityDuty>

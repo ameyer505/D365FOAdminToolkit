@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMUserInfo_EventHandlers</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// THe <c>ADMUserInfo_EventHandlers</c> class extends data events on the UserInfo table.
+/// </summary>
+internal final class ADMUserInfo_EventHandlers
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>UserInfo_onDeleting</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Logic executed when deleting records in the UserInfo table
+    /// </summary>
+    /// <param name="sender">The record raising the event</param>
+    /// <param name="e">Data event type</param>
+    [DataEventHandler(tableStr(UserInfo), DataEventType::Deleting)]
+    public static void UserInfo_onDeleting(Common sender, DataEventArgs e)
+    {
+        ADMEntraIdGroupDynamicRoleAssignment    entraIdGrpDynRoleAssignment;
+        ADMEntraIDGroupUserLastSync             entraIdGrpUserLastSync;
+        ADMEntraIdGroupUserMembership           entraIdGrpUserMembership;
+
+        UserInfo                                userInfo = sender as UserInfo;
+
+        switch (userInfo.accountType)
+        {
+            case UserAccountType::ClaimsUser:
+                delete_from entraIdGrpUserMembership
+                where entraIdGrpUserMembership.User == userInfo.id;
+                
+                delete_from entraIdGrpUserLastSync
+                where entraIdGrpUserLastSync.User == userInfo.id;
+
+                break;
+
+            case UserAccountType::ClaimsGroup:
+                delete_from entraIdGrpDynRoleAssignment
+                where entraIdGrpDynRoleAssignment.UserInfo == userInfo.RecId;
+
+                delete_from entraIdGrpUserMembership
+                where entraIdGrpUserMembership.EntraIdGroup == userInfo.id;
+                
+                break;
+        }
+
+       
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

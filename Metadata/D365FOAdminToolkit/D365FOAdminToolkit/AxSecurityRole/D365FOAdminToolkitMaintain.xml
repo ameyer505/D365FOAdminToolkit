@@ -3,7 +3,11 @@
 	<Name>D365FOAdminToolkitMaintain</Name>
 	<Label>@D365FOAdminToolkit:ADMMaintain</Label>
 	<DirectAccessPermissions />
-	<Duties />
+	<Duties>
+		<AxSecurityDutyReference>
+			<Name>ADMEnhancedEntraIdGroupIntegrationMaintain</Name>
+		</AxSecurityDutyReference>
+	</Duties>
 	<Privileges>
 		<AxSecurityPrivilegeReference>
 			<Name>D365FOAdminToolkitConfiguration</Name>

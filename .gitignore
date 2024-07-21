@@ -372,3 +372,5 @@ BuildProjectResult.err.xml
 BuildProjectResult.xml
 CompileLabels.xml
 *.xref
+/Project/D365FOAdminToolkit/GPUCache
+/Metadata/D365FOAdminToolkit/BuildModelResult.err.xml

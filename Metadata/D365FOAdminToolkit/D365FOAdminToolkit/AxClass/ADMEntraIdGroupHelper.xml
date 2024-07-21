@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMEntraIdGroupHelper</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+using Microsoft.Dynamics.AX.Security.DirectoryHelper;
+using System.Web;
+/// <summary>
+/// Class used to manage direct security role assignments based on Entra ID group memberships
+/// </summary>
+
+internal final class ADMEntraIdGroupHelper
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>syncEntraIdGroupsforUser</Name>
+				<Source><![CDATA[
+    public static void syncEntraIdGroupsforUser(UserId _userId = curUserId())
+    {
+        ADMEntraIdGroupUserMembership   entraIdGroupUserMembership;
+        ADMEntraIdGroupUserMembership   entraIdGroupUserMembershipNew;
+        SysActiveDirectoryGroupTmp      entraIdGroups;
+        
+        entraIdGroups = ADMEntraIdGroupHelper::getEntraIdGroupsForUserId(_userId);
+
+        ttsbegin;
+
+        // Add new groups
+        insert_recordset entraIdGroupUserMembershipNew (User, EntraIdGroup)
+            select _userId, AxUserID from entraIdGroups
+                notexists join entraIdGroupUserMembership
+                where entraIdGroupUserMembership.User == _userId
+                   && entraIdGroupUserMembership.EntraIdGroup == entraIdGroups.AxUserID;
+        
+        // Remove obsolete groups
+        delete_from entraIdGroupUserMembership
+            where entraIdGroupUserMembership.User == _userId
+            notexists join entraIdGroups
+                where entraIdGroups.AxUserID == entraIdGroupUserMembership.EntraIdGroup;
+
+        ADMEntraIdGroupUserLastSync::setLastSync(_userId);
+
+        ttscommit;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getEntraIdGroupsForUserId</Name>
+				<Source><![CDATA[
+    internal static SysActiveDirectoryGroupTmp getEntraIdGroupsForUserId(UserId _userId)
+    {
+        UserInfo                    userInfo;
+
+        select firstonly ObjectId from userInfo where userInfo.id == _userId;
+
+        return ADMEntraIdGroupHelper::getEntraIdGroupsForUserObjectId(userInfo.ObjectId, _userId);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getEntraIdGroupsForUserObjectId</Name>
+				<Source><![CDATA[
+    internal static SysActiveDirectoryGroupTmp getEntraIdGroupsForUserObjectId(guid _objectId, UserId _userId = '')
+    {
+        UserInfo                    groupInfo;
+        SysActiveDirectoryGroupTmp  entraIdGroups;
+
+        entraIdGroups = null;
+
+        try
+        {
+            IDirectoryClient dirClient = DirectoryClientProvider::GetDirectoryClient();
+            System.Collections.IEnumerator enumerator = dirClient.GetSecurityMemberGroupsForUser(guid2Str(_objectId)).GetEnumerator();
+
+            ttsbegin;
+
+            while (enumerator.MoveNext())
+            {
+                select firstonly groupInfo
+                    where groupInfo.sid == enumerator.Current
+                       && groupInfo.accountType == UserAccountType::ClaimsGroup;
+
+                if (groupInfo.RecId)
+                {
+                    entraIdGroups.AxUserID = groupInfo.id;
+                    entraIdGroups.Name = groupInfo.Name;
+                    entraIdGroups.ObjectId = groupInfo.sid;
+                    entraIdGroups.insert();
+                }
+            }
+
+            ttscommit;
+        }
+        catch(Exception::CLRError)
+        {
+            if (_userId)
+            {
+                warning(strFmt("@D365FOAdminToolkit:EntraIdNoGroupsFoundForUser", _userId));
+            }
+            else
+            {
+                error("@ApplicationFoundation:GraphAPIErrorMsg");
+            }
+        }
+
+        return entraIdGroups;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createRoleAssignmentRule</Name>
+				<Source><![CDATA[
+    public static void createRoleAssignmentRule(SecurityUserRole _secUserRole, UserInfo _userInfo)
+    {
+        ADMEntraIdGroupSecurityRoleAssignmentRule   entraIdGroupSecRoleAssignmentRule;
+        ADMEntraIdGroupDynamicRoleAssignment        entraIdGroupDynamicRoleAssignment;
+        SecurityRoleAssignmentRule                  securityRoleAssignmentRule;
+
+        select firstonly entraIdGroupDynamicRoleAssignment
+            where entraIdGroupDynamicRoleAssignment.UserInfo == _userInfo.RecId;
+
+        if (entraIdGroupDynamicRoleAssignment.AutomaticRoleAssignment && _secUserRole.AssignmentStatus == RoleAssignmentStatus::Enabled)
+        {
+            Query                   query = new Query(queryStr(ADMEntraIdGroupUserMembershipQuery));
+            QueryBuildDataSource    qbds = query.dataSourceTable(tableNum(ADMEntraIdGroupUserMembership));
+
+            qbds.findRange(fieldNum(ADMEntraIdGroupUserMembership,EntraIdGroup)).value(queryValue(_userInfo.id));
+
+            ttsbegin;
+    
+            securityRoleAssignmentRule.MembershipRuleName = _userInfo.id;
+            securityRoleAssignmentRule.MembershipRuleDescription = _userInfo.name;
+            securityRoleAssignmentRule.SecurityRole = _secUserRole.SecurityRole;
+            securityRoleAssignmentRule.RuleQuery = query.pack();
+            securityRoleAssignmentRule.ValidFrom = DateTimeUtil::utcNow();
+            securityRoleAssignmentRule.ValidTo = DateTimeUtil::maxValue();
+            securityRoleAssignmentRule.insert();
+
+            entraIdGroupSecRoleAssignmentRule.SecurityRole = _secUserRole.SecurityRole;
+            entraIdGroupSecRoleAssignmentRule.UserInfo = _userInfo.RecId;
+            entraIdGroupSecRoleAssignmentRule.SecurityRoleAssignmentRule = securityRoleAssignmentRule.RecId;
+            entraIdGroupSecRoleAssignmentRule.insert();
+
+            ttscommit;
+
+            SysSecurityDynamicRoleAssignment::synchronize(_secUserRole.SecurityRole);
+
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>deleteRoleAssignmentRule</Name>
+				<Source><![CDATA[
+    public static void deleteRoleAssignmentRule(SecurityUserRole _secUserRole, UserInfo _userInfo)
+    {
+        ADMEntraIdGroupSecurityRoleAssignmentRule   entraIdGroupSecRoleAssignmentRule;
+        SecurityRoleAssignmentRule                  securityRoleAssignmentRule;
+
+    
+        select firstonly SecurityRoleAssignmentRule from entraIdGroupSecRoleAssignmentRule
+            where entraIdGroupSecRoleAssignmentRule.SecurityRole == _secUserRole.SecurityRole
+               && entraIdGroupSecRoleAssignmentRule.UserInfo == _userInfo.RecId
+               && entraIdGroupSecRoleAssignmentRule.OMUserRoleOrganization == 0;
+
+        if (entraIdGroupSecRoleAssignmentRule.SecurityRoleAssignmentRule != 0)
+        {
+            ttsbegin;
+
+            select firstonly forupdate securityRoleAssignmentRule
+                where securityRoleAssignmentRule.RecId == entraIdGroupSecRoleAssignmentRule.SecurityRoleAssignmentRule;
+   
+            if (securityRoleAssignmentRule.RecId != 0)
+            {
+                securityRoleAssignmentRule.ValidTo = DateTimeUtil::addSeconds(DateTimeUtil::utcNow(), -1);
+                securityRoleAssignmentRule.validTimeStateUpdateMode(ValidTimeStateUpdate::Correction);
+                securityRoleAssignmentRule.update();
+
+                PartyIProvider partyProvider = PartyProviderFactory::getPartyProvider();
+
+                if (partyProvider)
+                {
+                    partyProvider.deleteFromomUserRoleOrganization(securityRoleAssignmentRule.RecId);
+                }
+
+                delete_from entraIdGroupSecRoleAssignmentRule
+                    where entraIdGroupSecRoleAssignmentRule.SecurityRole == _secUserRole.SecurityRole
+                       && entraIdGroupSecRoleAssignmentRule.UserInfo == _userInfo.RecId;
+            }
+            
+            ttscommit;
+
+            SysSecurityDynamicRoleAssignment::synchronize(_secUserRole.SecurityRole);
+
+        }
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createRoleAssignmentRuleOrganization</Name>
+				<Source><![CDATA[
+    public static void createRoleAssignmentRuleOrganization(OMUserRoleOrganization  _omUserRoleOrganization, UserInfo _userInfo)
+    {
+        ADMEntraIdGroupSecurityRoleAssignmentRule   entraIdGroupSecRoleAssignmentRule;
+        OMUserRoleOrganization                      omUserRoleOrganizationRule;
+
+        select firstonly entraIdGroupSecRoleAssignmentRule
+            where entraIdGroupSecRoleAssignmentRule.SecurityRole == _omUserRoleOrganization.SecurityRole
+               && entraIdGroupSecRoleAssignmentRule.UserInfo == _userInfo.RecId
+               && entraIdGroupSecRoleAssignmentRule.OMUserRoleOrganization == 0;
+
+        if (entraIdGroupSecRoleAssignmentRule.RecId != 0)
+        {
+            ttsbegin;
+
+            omUserRoleOrganizationRule.OMHierarchyType = _omUserRoleOrganization.OMHierarchyType;
+            omUserRoleOrganizationRule.OMInternalOrganization = _omUserRoleOrganization.OMInternalOrganization;
+            omUserRoleOrganizationRule.SecurityRole = _omUserRoleOrganization.SecurityRole;
+            omUserRoleOrganizationRule.SecurityRoleAssignmentRule = entraIdGroupSecRoleAssignmentRule.SecurityRoleAssignmentRule;
+            omUserRoleOrganizationRule.insert();
+
+            entraIdGroupSecRoleAssignmentRule.SecurityRole = _omUserRoleOrganization.SecurityRole;
+            entraIdGroupSecRoleAssignmentRule.UserInfo = _userInfo.RecId;
+            entraIdGroupSecRoleAssignmentRule.SecurityRoleAssignmentRule = entraIdGroupSecRoleAssignmentRule.SecurityRoleAssignmentRule;
+            entraIdGroupSecRoleAssignmentRule.OMUserRoleOrganization = _omUserRoleOrganization.RecId;
+            entraIdGroupSecRoleAssignmentRule.insert();
+
+            ttscommit;
+
+            SysSecurityDynamicRoleAssignment::synchronize(_omUserRoleOrganization.SecurityRole);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>deleteRoleAssignmentRuleOrganization</Name>
+				<Source><![CDATA[
+    public static void deleteRoleAssignmentRuleOrganization(OMUserRoleOrganization _omUserRoleOrganization, UserInfo _userInfo)
+    {
+        ADMEntraIdGroupSecurityRoleAssignmentRule   entraIdGroupSecRoleAssignmentRule;
+        OMUserRoleOrganization                      omUserRoleOrganization;
+        
+
+        select firstonly forupdate entraIdGroupSecRoleAssignmentRule
+            where entraIdGroupSecRoleAssignmentRule.OMUserRoleOrganization == _omUserRoleOrganization.RecId
+               && _omUserRoleOrganization.RecId != 0;
+
+        if (entraIdGroupSecRoleAssignmentRule.RecId != 0)
+        {
+            ttsbegin;
+
+            delete_from omUserRoleOrganization
+                where omUserRoleOrganization.OMHierarchyType == _omUserRoleOrganization.OMHierarchyType
+                   && omUserRoleOrganization.OMInternalOrganization == _omUserRoleOrganization.OMInternalOrganization
+                   && omUserRoleOrganization.SecurityRole == _omUserRoleOrganization.SecurityRole
+                   && omUserRoleOrganization.SecurityRoleAssignmentRule == entraIdGroupSecRoleAssignmentRule.SecurityRoleAssignmentRule;
+
+            entraIdGroupSecRoleAssignmentRule.delete();
+
+            ttscommit;
+
+            SysSecurityDynamicRoleAssignment::synchronize(_omUserRoleOrganization.SecurityRole);
+        }
+
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>isEntraIdGroupManaged</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Method to determine if a record is managed by the Entra ID group integration
+    /// </summary>
+    /// <param name = "_common">The record that needs to be evaluated</param>
+    /// <returns>True in case the record is managed by the Entra ID group integration</returns>
+    public static boolean isEntraIdGroupManaged(Common _common)
+    {
+        ADMEntraIdGroupSecurityRoleAssignmentRule   entraIdGroupSecRoleAssignmentRule;
+
+        boolean ret = false;
+
+        switch (_common.TableId)
+        {
+            case tableNum(SecurityRoleAssignmentRule):
+                select firstonly entraIdGroupSecRoleAssignmentRule
+                    where entraIdGroupSecRoleAssignmentRule.SecurityRoleAssignmentRule == _common.RecId;
+
+                ret = entraIdGroupSecRoleAssignmentRule.RecId != 0;
+                break;
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

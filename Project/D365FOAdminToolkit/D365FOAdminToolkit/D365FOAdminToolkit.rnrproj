@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <BuildTasksDirectory Condition=" '$(BuildTasksDirectory)' == ''">$(MSBuildProgramFiles32)\MSBuild\Microsoft\Dynamics\AX</BuildTasksDirectory>
     <Model>D365FOAdminToolkit</Model>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <OutputPath>bin</OutputPath>
     <SchemaVersion>2.0</SchemaVersion>
     <GenerateCrossReferences>True</GenerateCrossReferences>
@@ -16,7 +16,6 @@
     <Name>D365FOAdminToolkit</Name>
     <RootNamespace>D365FOAdminToolkit</RootNamespace>
     <StartupType>Class</StartupType>
-    <StartupObject>DATMain</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <Configuration>Debug</Configuration>
@@ -69,10 +68,15 @@
       <Name>ADMConfigsConstants</Name>
       <Link>Classes\ADMConfigsConstants</Link>
     </Content>
+    <Content Include="AxClass\ADMConstants">
+      <SubType>Content</SubType>
+      <Name>ADMConstants</Name>
+      <Link>Classes\ADMConstants</Link>
+    </Content>
     <Content Include="AxClass\ADMDisabledUsersReport_EventHandlers">
       <SubType>Content</SubType>
       <Name>ADMDisabledUsersReport_EventHandlers</Name>
-      <Link>EventHandlers\ADMDisabledUsersReport_EventHandlers</Link>
+      <Link>Classes\ADMDisabledUsersReport_EventHandlers</Link>
     </Content>
     <Content Include="AxClass\ADMDisableUserLastLogin">
       <SubType>Content</SubType>
@@ -84,6 +88,21 @@
       <Name>ADMDisableUserLastLoginBatchJob</Name>
       <Link>Classes\ADMDisableUserLastLoginBatchJob</Link>
     </Content>
+    <Content Include="AxClass\ADMEntraIdGroupHelper">
+      <SubType>Content</SubType>
+      <Name>ADMEntraIdGroupHelper</Name>
+      <Link>Classes\ADMEntraIdGroupHelper</Link>
+    </Content>
+    <Content Include="AxClass\ADMEntraIdGroupUserImport">
+      <SubType>Content</SubType>
+      <Name>ADMEntraIdGroupUserImport</Name>
+      <Link>Classes\ADMEntraIdGroupUserImport</Link>
+    </Content>
+    <Content Include="AxClass\ADMEntraIDGroupUserSynchronization">
+      <SubType>Content</SubType>
+      <Name>ADMEntraIDGroupUserSynchronization</Name>
+      <Link>Classes\ADMEntraIDGroupUserSynchronization</Link>
+    </Content>
     <Content Include="AxClass\ADMExportEnvConfig">
       <SubType>Content</SubType>
       <Name>ADMExportEnvConfig</Name>
@@ -93,6 +112,11 @@
       <SubType>Content</SubType>
       <Name>ADMExportRoleAccess</Name>
       <Link>Classes\ADMExportRoleAccess</Link>
+    </Content>
+    <Content Include="AxClass\ADMOMUserRoleOrganization_EventHandlers">
+      <SubType>Content</SubType>
+      <Name>ADMOMUserRoleOrganization_EventHandlers</Name>
+      <Link>Classes\ADMOMUserRoleOrganization_EventHandlers</Link>
     </Content>
     <Content Include="AxClass\ADMRemoveUserAdminRoleEndDateTimeService">
       <SubType>Content</SubType>
@@ -104,6 +128,16 @@
       <Name>ADMRevokeAdminRoleBatchJob</Name>
       <Link>Classes\ADMRevokeAdminRoleBatchJob</Link>
     </Content>
+    <Content Include="AxClass\ADMSecurityUserRole_EventHandlers">
+      <SubType>Content</SubType>
+      <Name>ADMSecurityUserRole_EventHandlers</Name>
+      <Link>Classes\ADMSecurityUserRole_EventHandlers</Link>
+    </Content>
+    <Content Include="AxClass\ADMSysActiveDirectoryGroupImport_Form_Extension">
+      <SubType>Content</SubType>
+      <Name>ADMSysActiveDirectoryGroupImport_Form_Extension</Name>
+      <Link>Classes\ADMSysActiveDirectoryGroupImport_Form_Extension</Link>
+    </Content>
     <Content Include="AxClass\ADMSysAdminLogHelper">
       <SubType>Content</SubType>
       <Name>ADMSysAdminLogHelper</Name>
@@ -112,32 +146,97 @@
     <Content Include="AxClass\ADMSysAdminReport_EventHandlers">
       <SubType>Content</SubType>
       <Name>ADMSysAdminReport_EventHandlers</Name>
-      <Link>EventHandlers\ADMSysAdminReport_EventHandlers</Link>
+      <Link>Classes\ADMSysAdminReport_EventHandlers</Link>
+    </Content>
+    <Content Include="AxClass\ADMSysQueryForm_Extension">
+      <SubType>Content</SubType>
+      <Name>ADMSysQueryForm_Extension</Name>
+      <Link>Classes\ADMSysQueryForm_Extension</Link>
+    </Content>
+    <Content Include="AxClass\ADMSysQueryRunView">
+      <SubType>Content</SubType>
+      <Name>ADMSysQueryRunView</Name>
+      <Link>Classes\ADMSysQueryRunView</Link>
+    </Content>
+    <Content Include="AxClass\ADMSysSecRoleAssignOM_Extension">
+      <SubType>Content</SubType>
+      <Name>ADMSysSecRoleAssignOM_Extension</Name>
+      <Link>Classes\ADMSysSecRoleAssignOM_Extension</Link>
+    </Content>
+    <Content Include="AxClass\ADMSysSecRolesEditUsers_AssignmentRulesButtons_Extension">
+      <SubType>Content</SubType>
+      <Name>ADMSysSecRolesEditUsers_AssignmentRulesButtons_Extension</Name>
+      <Link>Classes\ADMSysSecRolesEditUsers_AssignmentRulesButtons_Extension</Link>
+    </Content>
+    <Content Include="AxClass\ADMSysSecRolesEditUsers_EventHandlers">
+      <SubType>Content</SubType>
+      <Name>ADMSysSecRolesEditUsers_EventHandlers</Name>
+      <Link>Classes\ADMSysSecRolesEditUsers_EventHandlers</Link>
+    </Content>
+    <Content Include="AxClass\ADMSysSecRolesEditUsers_SecurityRoleAssignmentRule_Extension">
+      <SubType>Content</SubType>
+      <Name>ADMSysSecRolesEditUsers_SecurityRoleAssignmentRule_Extension</Name>
+      <Link>Classes\ADMSysSecRolesEditUsers_SecurityRoleAssignmentRule_Extension</Link>
     </Content>
     <Content Include="AxClass\ADMTableEvents">
       <SubType>Content</SubType>
       <Name>ADMTableEvents</Name>
-      <Link>TableEvents\ADMTableEvents</Link>
+      <Link>Classes\ADMTableEvents</Link>
+    </Content>
+    <Content Include="AxClass\ADMUserInfo_EventHandlers">
+      <SubType>Content</SubType>
+      <Name>ADMUserInfo_EventHandlers</Name>
+      <Link>Classes\ADMUserInfo_EventHandlers</Link>
     </Content>
     <Content Include="AxClass\DATMain">
       <SubType>Content</SubType>
       <Name>DATMain</Name>
-      <Link>DATMain</Link>
+      <Link>Classes\DATMain</Link>
+    </Content>
+    <Content Include="AxEdtExtension\FiscalCode.D365FOAdminToolkit">
+      <SubType>Content</SubType>
+      <Name>FiscalCode.D365FOAdminToolkit</Name>
+      <Link>EDT Extensions\FiscalCode.D365FOAdminToolkit</Link>
+    </Content>
+    <Content Include="AxEdt\ADMEntraIdGroupSyncFrequency">
+      <SubType>Content</SubType>
+      <Name>ADMEntraIdGroupSyncFrequency</Name>
+      <Link>EDT Integers\ADMEntraIdGroupSyncFrequency</Link>
+    </Content>
+    <Content Include="AxEdt\ADMSysUserLastSyncTimeUTC">
+      <SubType>Content</SubType>
+      <Name>ADMSysUserLastSyncTimeUTC</Name>
+      <Link>Extended Data Types\ADMSysUserLastSyncTimeUTC</Link>
+    </Content>
+    <Content Include="AxEnum\ADMSecondMinuteHourDay">
+      <SubType>Content</SubType>
+      <Name>ADMSecondMinuteHourDay</Name>
+      <Link>Base Enums\ADMSecondMinuteHourDay</Link>
     </Content>
     <Content Include="AxEnum\ADMSysAdminAction">
       <SubType>Content</SubType>
       <Name>ADMSysAdminAction</Name>
-      <Link>Enums\ADMSysAdminAction</Link>
+      <Link>Base Enums\ADMSysAdminAction</Link>
+    </Content>
+    <Content Include="AxFormExtension\SysGroupManagement.D365FOAdminToolkit">
+      <SubType>Content</SubType>
+      <Name>SysGroupManagement.D365FOAdminToolkit</Name>
+      <Link>Form Extensions\SysGroupManagement.D365FOAdminToolkit</Link>
     </Content>
     <Content Include="AxFormExtension\SysSecConfiguration.D365FOAdminToolkit">
       <SubType>Content</SubType>
       <Name>SysSecConfiguration.D365FOAdminToolkit</Name>
-      <Link>FormExt\SysSecConfiguration.D365FOAdminToolkit</Link>
+      <Link>Form Extensions\SysSecConfiguration.D365FOAdminToolkit</Link>
+    </Content>
+    <Content Include="AxFormExtension\SysSecRolesEditUsers.D365FOAdminToolkit">
+      <SubType>Content</SubType>
+      <Name>SysSecRolesEditUsers.D365FOAdminToolkit</Name>
+      <Link>Form Extensions\SysSecRolesEditUsers.D365FOAdminToolkit</Link>
     </Content>
     <Content Include="AxFormExtension\SysUserManagement.D365FOAdminToolkit">
       <SubType>Content</SubType>
       <Name>SysUserManagement.D365FOAdminToolkit</Name>
-      <Link>FormExt\SysUserManagement.D365FOAdminToolkit</Link>
+      <Link>Form Extensions\SysUserManagement.D365FOAdminToolkit</Link>
     </Content>
     <Content Include="AxForm\ADMConfiguration">
       <SubType>Content</SubType>
@@ -164,6 +263,16 @@
       <Name>ADMParameters</Name>
       <Link>Forms\ADMParameters</Link>
     </Content>
+    <Content Include="AxForm\ADMPartEntraIdGroupsForUser">
+      <SubType>Content</SubType>
+      <Name>ADMPartEntraIdGroupsForUser</Name>
+      <Link>Forms\ADMPartEntraIdGroupsForUser</Link>
+    </Content>
+    <Content Include="AxForm\ADMPartUsersForEntraIdGroup">
+      <SubType>Content</SubType>
+      <Name>ADMPartUsersForEntraIdGroup</Name>
+      <Link>Forms\ADMPartUsersForEntraIdGroup</Link>
+    </Content>
     <Content Include="AxForm\ADMSysAdminAssignment">
       <SubType>Content</SubType>
       <Name>ADMSysAdminAssignment</Name>
@@ -182,142 +291,212 @@
     <Content Include="AxLabelFile\D365FOAdminToolkit_da">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkit_da</Name>
-      <Link>LabelFiles\D365FOAdminToolkit_da</Link>
+      <Link>Label Files\D365FOAdminToolkit_da</Link>
     </Content>
     <Content Include="AxLabelFile\D365FOAdminToolkit_en-US">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkit_en-US</Name>
-      <Link>LabelFiles\D365FOAdminToolkit_en-US</Link>
+      <Link>Label Files\D365FOAdminToolkit_en-US</Link>
     </Content>
     <Content Include="AxLabelFile\D365FOAdminToolkit_es">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkit_es</Name>
-      <Link>LabelFiles\D365FOAdminToolkit_es</Link>
+      <Link>Label Files\D365FOAdminToolkit_es</Link>
     </Content>
     <Content Include="AxLabelFile\D365FOAdminToolkit_nb-NO">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkit_nb-NO</Name>
-      <Link>LabelFiles\D365FOAdminToolkit_nb-NO</Link>
+      <Link>Label Files\D365FOAdminToolkit_nb-NO</Link>
     </Content>
     <Content Include="AxLabelFile\D365FOAdminToolkit_nl">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkit_nl</Name>
-      <Link>LabelFiles\D365FOAdminToolkit_nl</Link>
+      <Link>Label Files\D365FOAdminToolkit_nl</Link>
     </Content>
     <Content Include="AxLabelFile\D365FOAdminToolkit_nl-BE">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkit_nl-BE</Name>
-      <Link>LabelFiles\D365FOAdminToolkit_nl-BE</Link>
+      <Link>Label Files\D365FOAdminToolkit_nl-BE</Link>
     </Content>
     <Content Include="AxLabelFile\D365FOAdminToolkit_sv">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkit_sv</Name>
-      <Link>LabelFiles\D365FOAdminToolkit_sv</Link>
+      <Link>Label Files\D365FOAdminToolkit_sv</Link>
     </Content>
     <Content Include="AxMenuExtension\SystemAdministration.D365FOAdminToolkit">
       <SubType>Content</SubType>
       <Name>SystemAdministration.D365FOAdminToolkit</Name>
-      <Link>MenuExt\SystemAdministration.D365FOAdminToolkit</Link>
+      <Link>Menu Extensions\SystemAdministration.D365FOAdminToolkit</Link>
+    </Content>
+    <Content Include="AxMenuItemAction\ADMEntraIdGroupUserImport">
+      <SubType>Content</SubType>
+      <Name>ADMEntraIdGroupUserImport</Name>
+      <Link>Action Menu Items\ADMEntraIdGroupUserImport</Link>
+    </Content>
+    <Content Include="AxMenuItemAction\ADMEntraIdGroupUserSynchronization">
+      <SubType>Content</SubType>
+      <Name>ADMEntraIdGroupUserSynchronization</Name>
+      <Link>Action Menu Items\ADMEntraIdGroupUserSynchronization</Link>
     </Content>
     <Content Include="AxMenuItemAction\ADMExportEnvConfig">
       <SubType>Content</SubType>
       <Name>ADMExportEnvConfig</Name>
-      <Link>MenuItems\ADMExportEnvConfig</Link>
+      <Link>Action Menu Items\ADMExportEnvConfig</Link>
     </Content>
     <Content Include="AxMenuItemAction\ADMExportRoleAccess">
       <SubType>Content</SubType>
       <Name>ADMExportRoleAccess</Name>
-      <Link>MenuItems\ADMExportRoleAccess</Link>
+      <Link>Action Menu Items\ADMExportRoleAccess</Link>
     </Content>
     <Content Include="AxMenuItemAction\ADMRemoveUserAdminRoleEndDateTimeService">
       <SubType>Content</SubType>
       <Name>ADMRemoveUserAdminRoleEndDateTimeService</Name>
-      <Link>MenuItems\ADMRemoveUserAdminRoleEndDateTimeService</Link>
+      <Link>Action Menu Items\ADMRemoveUserAdminRoleEndDateTimeService</Link>
     </Content>
     <Content Include="AxMenuItemDisplay\ADMConfiguration">
       <SubType>Content</SubType>
       <Name>ADMConfiguration</Name>
-      <Link>MenuItems\ADMConfiguration</Link>
+      <Link>Display Menu Items\ADMConfiguration</Link>
     </Content>
     <Content Include="AxMenuItemDisplay\ADMDisabledUserReport">
       <SubType>Content</SubType>
       <Name>ADMDisabledUserReport</Name>
-      <Link>MenuItems\ADMDisabledUserReport</Link>
+      <Link>Display Menu Items\ADMDisabledUserReport</Link>
     </Content>
     <Content Include="AxMenuItemDisplay\ADMDisableUser">
       <SubType>Content</SubType>
       <Name>ADMDisableUser</Name>
-      <Link>MenuItems\ADMDisableUser</Link>
+      <Link>Display Menu Items\ADMDisableUser</Link>
     </Content>
     <Content Include="AxMenuItemDisplay\ADMExcludedUsers">
       <SubType>Content</SubType>
       <Name>ADMExcludedUsers</Name>
-      <Link>MenuItems\ADMExcludedUsers</Link>
+      <Link>Display Menu Items\ADMExcludedUsers</Link>
     </Content>
     <Content Include="AxMenuItemDisplay\ADMParameters">
       <SubType>Content</SubType>
       <Name>ADMParameters</Name>
-      <Link>MenuItems\ADMParameters</Link>
+      <Link>Display Menu Items\ADMParameters</Link>
+    </Content>
+    <Content Include="AxMenuItemDisplay\ADMPartEntraIdGroupsForUser">
+      <SubType>Content</SubType>
+      <Name>ADMPartEntraIdGroupsForUser</Name>
+      <Link>Display Menu Items\ADMPartEntraIdGroupsForUser</Link>
+    </Content>
+    <Content Include="AxMenuItemDisplay\ADMPartUsersForEntraIdGroup">
+      <SubType>Content</SubType>
+      <Name>ADMPartUsersForEntraIdGroup</Name>
+      <Link>Display Menu Items\ADMPartUsersForEntraIdGroup</Link>
     </Content>
     <Content Include="AxMenuItemDisplay\ADMSysAdminAssignment">
       <SubType>Content</SubType>
       <Name>ADMSysAdminAssignment</Name>
-      <Link>MenuItems\ADMSysAdminAssignment</Link>
+      <Link>Display Menu Items\ADMSysAdminAssignment</Link>
     </Content>
     <Content Include="AxMenuItemDisplay\ADMSysAdminReport">
       <SubType>Content</SubType>
       <Name>ADMSysAdminReport</Name>
-      <Link>MenuItems\ADMSysAdminReport</Link>
+      <Link>Display Menu Items\ADMSysAdminReport</Link>
+    </Content>
+    <Content Include="AxQuery\ADMEntraIdGroupUserMembershipQuery">
+      <SubType>Content</SubType>
+      <Name>ADMEntraIdGroupUserMembershipQuery</Name>
+      <Link>Simple Queries\ADMEntraIdGroupUserMembershipQuery</Link>
+    </Content>
+    <Content Include="AxSecurityDuty\ADMEnhancedEntraIdGroupIntegrationMaintain">
+      <SubType>Content</SubType>
+      <Name>ADMEnhancedEntraIdGroupIntegrationMaintain</Name>
+      <Link>Security Duties\ADMEnhancedEntraIdGroupIntegrationMaintain</Link>
+    </Content>
+    <Content Include="AxSecurityDuty\ADMEnhancedEntraIdGroupIntegrationView">
+      <SubType>Content</SubType>
+      <Name>ADMEnhancedEntraIdGroupIntegrationView</Name>
+      <Link>Security Duties\ADMEnhancedEntraIdGroupIntegrationView</Link>
+    </Content>
+    <Content Include="AxSecurityPrivilege\ADMEnhancedEntraIdGroupIntegrationMaintain">
+      <SubType>Content</SubType>
+      <Name>ADMEnhancedEntraIdGroupIntegrationMaintain</Name>
+      <Link>Security Privileges\ADMEnhancedEntraIdGroupIntegrationMaintain</Link>
+    </Content>
+    <Content Include="AxSecurityPrivilege\ADMEnhancedEntraIdGroupIntegrationView">
+      <SubType>Content</SubType>
+      <Name>ADMEnhancedEntraIdGroupIntegrationView</Name>
+      <Link>Security Privileges\ADMEnhancedEntraIdGroupIntegrationView</Link>
     </Content>
     <Content Include="AxSecurityPrivilege\D365FOAdminToolkitConfiguration">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkitConfiguration</Name>
-      <Link>Security\D365FOAdminToolkitConfiguration</Link>
+      <Link>Security Privileges\D365FOAdminToolkitConfiguration</Link>
     </Content>
     <Content Include="AxSecurityPrivilege\D365FOAdminToolkitDisableUsersJob">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkitDisableUsersJob</Name>
-      <Link>Security\D365FOAdminToolkitDisableUsersJob</Link>
+      <Link>Security Privileges\D365FOAdminToolkitDisableUsersJob</Link>
     </Content>
     <Content Include="AxSecurityPrivilege\D365FOAdminToolkitExportRoleAccess">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkitExportRoleAccess</Name>
-      <Link>Security\D365FOAdminToolkitExportRoleAccess</Link>
+      <Link>Security Privileges\D365FOAdminToolkitExportRoleAccess</Link>
     </Content>
     <Content Include="AxSecurityPrivilege\D365FOAdminToolkitSysAdminAssignment">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkitSysAdminAssignment</Name>
-      <Link>Security\D365FOAdminToolkitSysAdminAssignment</Link>
+      <Link>Security Privileges\D365FOAdminToolkitSysAdminAssignment</Link>
     </Content>
     <Content Include="AxSecurityPrivilege\D365FOAdminToolkitViewDisabledUsersReport">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkitViewDisabledUsersReport</Name>
-      <Link>Security\D365FOAdminToolkitViewDisabledUsersReport</Link>
+      <Link>Security Privileges\D365FOAdminToolkitViewDisabledUsersReport</Link>
     </Content>
     <Content Include="AxSecurityPrivilege\D365FOAdminToolkitViewSysAdminReport">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkitViewSysAdminReport</Name>
-      <Link>Security\D365FOAdminToolkitViewSysAdminReport</Link>
+      <Link>Security Privileges\D365FOAdminToolkitViewSysAdminReport</Link>
     </Content>
     <Content Include="AxSecurityRole\D365FOAdminToolkitMaintain">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkitMaintain</Name>
-      <Link>Security\D365FOAdminToolkitMaintain</Link>
+      <Link>Security Roles\D365FOAdminToolkitMaintain</Link>
     </Content>
     <Content Include="AxSecurityRole\D365FOAdminToolkitView">
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkitView</Name>
-      <Link>Security\D365FOAdminToolkitView</Link>
+      <Link>Security Roles\D365FOAdminToolkitView</Link>
     </Content>
     <Content Include="AxTable\ADMConfigs">
       <SubType>Content</SubType>
       <Name>ADMConfigs</Name>
       <Link>Tables\ADMConfigs</Link>
     </Content>
+    <Content Include="AxTable\ADMEntraIdGroupDynamicRoleAssignment">
+      <SubType>Content</SubType>
+      <Name>ADMEntraIdGroupDynamicRoleAssignment</Name>
+      <Link>Tables\ADMEntraIdGroupDynamicRoleAssignment</Link>
+    </Content>
+    <Content Include="AxTable\ADMEntraIdGroupSecurityRoleAssignmentRule">
+      <SubType>Content</SubType>
+      <Name>ADMEntraIdGroupSecurityRoleAssignmentRule</Name>
+      <Link>Tables\ADMEntraIdGroupSecurityRoleAssignmentRule</Link>
+    </Content>
+    <Content Include="AxTable\ADMEntraIdGroupUserLastSync">
+      <SubType>Content</SubType>
+      <Name>ADMEntraIdGroupUserLastSync</Name>
+      <Link>Tables\ADMEntraIdGroupUserLastSync</Link>
+    </Content>
+    <Content Include="AxTable\ADMEntraIDGroupUserMembership">
+      <SubType>Content</SubType>
+      <Name>ADMEntraIDGroupUserMembership</Name>
+      <Link>Tables\ADMEntraIDGroupUserMembership</Link>
+    </Content>
     <Content Include="AxTable\ADMExcludedUsers">
       <SubType>Content</SubType>
       <Name>ADMExcludedUsers</Name>
       <Link>Tables\ADMExcludedUsers</Link>
+    </Content>
+    <Content Include="AxTable\ADMParameters">
+      <SubType>Content</SubType>
+      <Name>ADMParameters</Name>
+      <Link>Tables\ADMParameters</Link>
     </Content>
     <Content Include="AxTable\ADMSysAdminLog">
       <SubType>Content</SubType>
@@ -328,6 +507,16 @@
       <SubType>Content</SubType>
       <Name>ADMUserDisableLog</Name>
       <Link>Tables\ADMUserDisableLog</Link>
+    </Content>
+    <Content Include="AxView\ADMEntraIdGroupUserView">
+      <SubType>Content</SubType>
+      <Name>ADMEntraIdGroupUserView</Name>
+      <Link>Views\ADMEntraIdGroupUserView</Link>
+    </Content>
+    <Content Include="AxView\ADMSysUserLog">
+      <SubType>Content</SubType>
+      <Name>ADMSysUserLog</Name>
+      <Link>Views\ADMSysUserLog</Link>
     </Content>
     <Content Include="D365FOAdminToolkit.da.label.txt">
       <SubType>Content</SubType>
@@ -343,11 +532,6 @@
       <SubType>Content</SubType>
       <Name>D365FOAdminToolkit.es.label.txt</Name>
       <DependentUpon>AxLabelFile\D365FOAdminToolkit_es</DependentUpon>
-    </Content>
-    <Content Include="AxView\ADMSysUserLog">
-      <SubType>Content</SubType>
-      <Name>ADMSysUserLog</Name>
-      <Link>Views\ADMSysUserLog</Link>
     </Content>
     <Content Include="D365FOAdminToolkit.nb-NO.label.txt">
       <SubType>Content</SubType>
@@ -371,26 +555,15 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MenuExt" />
-    <Folder Include="MenuItems" />
-    <Folder Include="Forms" />
-    <Folder Include="Enums" />
-    <Folder Include="EventHandlers" />
-    <Folder Include="Classes" />
-    <Folder Include="FormExt" />
-    <Folder Include="LabelFiles" />
-    <Folder Include="Views" />
-    <Folder Include="Security" />
-    <Folder Include="TableEvents" />
-    <Folder Include="Tables" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\D365FOAdminToolkitNET\D365FOAdminToolkitNET.csproj">
       <Name>D365FOAdminToolkitNET</Name>
       <Project>{fbae26b1-8c74-4f17-8d75-e14afb8d00c5}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="D365FOAdminToolkitNET, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.Common.targets" />
-  <Import Project="$(BuildTasksDirectory)\Microsoft.Dynamics.Framework.Tools.BuildTasks.targets" />
+  <Import Project="$(BuildTasksDirectory)\Microsoft.Dynamics.Framework.Tools.BuildTasks.17.0.targets" />
 </Project>

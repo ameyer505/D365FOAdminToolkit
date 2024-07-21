@@ -3,7 +3,11 @@
 	<Name>D365FOAdminToolkitView</Name>
 	<Label>@D365FOAdminToolkit:ADMView</Label>
 	<DirectAccessPermissions />
-	<Duties />
+	<Duties>
+		<AxSecurityDutyReference>
+			<Name>ADMEnhancedEntraIdGroupIntegrationView</Name>
+		</AxSecurityDutyReference>
+	</Duties>
 	<Privileges>
 		<AxSecurityPrivilegeReference>
 			<Name>D365FOAdminToolkitViewSysAdminReport</Name>

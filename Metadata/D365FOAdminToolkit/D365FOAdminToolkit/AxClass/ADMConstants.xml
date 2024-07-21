@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMConstants</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// The <c>ADMConstants</c> class holds constants for the D365 admin toolkit module.
+/// </summary>
+internal static class ADMConstants
+{
+    internal const str ext = '#EXT';
+}
+]]></Declaration>
+		<Methods />
+	</SourceCode>
+</AxClass>

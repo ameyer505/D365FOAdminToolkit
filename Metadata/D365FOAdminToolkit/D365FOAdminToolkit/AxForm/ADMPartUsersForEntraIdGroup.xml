@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxForm xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>ADMPartUsersForEntraIdGroup</Name>
+	<SourceCode>
+		<Methods xmlns="">
+			<Method>
+				<Name>classDeclaration</Name>
+				<Source><![CDATA[
+[Form]
+public class ADMPartUsersForEntraIdGroup extends FormRun
+{
+    userId selectedUserId;
+    QueryBuildRange rangeUser;
+
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    public void init()
+    {
+        Args args;
+        Object caller;
+        UserInfo user;
+        UserInfo callerUserInfo;
+
+        args = this.args();
+        if ((args.record() != null) && (args.record() is UserInfo))
+        {
+            user = args.record() as UserInfo;
+            select firstonly callerUserInfo
+                where callerUserInfo.Id == user.Id;
+        }
+        else
+        {
+            select firstonly callerUserInfo;
+        }
+
+        selectedUserId = callerUserInfo.Id;
+
+        super();
+
+        // register Fact Box with caller
+        caller = args.caller();
+        if (caller)
+        {
+            args.caller().registerForUserSelChange(this);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>run</Name>
+				<Source><![CDATA[
+    public void run()
+    {
+        super();
+        select selectedUser where selectedUser.Id == selectedUserId;
+        selectedUser_ds.setRecord(selectedUser);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateSelection</Name>
+				<Source><![CDATA[
+    public void updateSelection(userId _userId)
+    {
+        select selectedUser
+            where selectedUser.Id == _userId;
+
+        if (selectedUser)
+        {
+            selectedUserId = _userId;
+        }
+        else
+        {
+            selectedUserId = '-1';
+        }
+
+        selectedUser_ds.setRecord(selectedUser);
+
+        rangeUser.value(selectedUserId);
+        EntraIdGroupUserView_ds.executeQuery();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+		<DataSources xmlns="">
+			<DataSource>
+				<Name>EntraIdGroupUserView</Name>
+				<Methods>
+					<Method>
+						<Name>init</Name>
+						<Source><![CDATA[
+        public void init()
+        {
+            QueryBuildDataSource ds;
+
+            super();
+
+            ds = this.query().dataSourceTable(tablenum(ADMEntraIdGroupUserView));
+
+            rangeUser = ds.addRange(fieldnum(ADMEntraIdGroupUserView,EntraIdGroup));
+            rangeUser.value(selectedUserId);
+            rangeUser.status(RangeStatus::Hidden);
+
+        }
+
+]]></Source>
+					</Method>
+					<Method>
+						<Name>executeQuery</Name>
+						<Source><![CDATA[
+        /// <summary>
+        /// Method executed when executing the query
+        /// </summary>
+        public void executeQuery()
+        {
+            QueryBuildDataSource ds;
+
+            ds = this.query().dataSourceTable(tablenum(ADMEntraIdGroupUserView));
+            ds.clearRange(fieldnum(ADMEntraIdGroupUserView,User));
+
+            super();
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+				<Fields />
+			</DataSource>
+		</DataSources>
+		<DataControls xmlns="" />
+		<Members xmlns="" />
+	</SourceCode>
+	<DataSources>
+		<AxFormDataSource xmlns="">
+			<Name>EntraIdGroupUserView</Name>
+			<Table>ADMEntraIdGroupUserView</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>EntraIdGroup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>name</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>User</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources />
+			<LinkType>Passive</LinkType>
+			<InsertIfEmpty>No</InsertIfEmpty>
+			<DataSourceLinks />
+			<DerivedDataSources />
+		</AxFormDataSource>
+		<AxFormDataSource xmlns="">
+			<Name>SelectedUser</Name>
+			<Table>UserInfo</Table>
+			<Fields>
+				<AxFormDataSourceField>
+					<DataField>accountType</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>autoInfo</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>autoLogOff</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>autoUpdate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>clientAccessLogLevel</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>company</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>compilerWarningLevel</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>confirmDelete</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>confirmUpdate</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>credentialRecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DataAreaId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>debuggerPopup</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>debugInfo</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>defaultPartition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DEL_defaultModelId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DEL_osAccountName</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DEL_password</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DEL_startupMenu</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DEL__unused1</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>DEL__unused2</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>enable</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>enabledOnce</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>externalId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>externalIdType</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>externalUser</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>filterByGridOnByDefault</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>formFontName</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>formFontSize</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>garbagecollectlimit</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>generalInfo</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>globalExcelExportFilePath</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>globalExcelExportMode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>globalFormOpenMode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>globalListPageLinkMode</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>helplanguage</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>historyLimit</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>homePageRefreshDuration</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>id</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>infologLevel</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>issuerRecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>language</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>messageLimit</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>name</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>networkAlias</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>networkDomain</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>notifyTimeZoneMismatch</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>Partition</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>preferredCalendar</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>preferredTimeZone</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>propertyFontName</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>propertyFontSize</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>querytimeLimit</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>RecId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>reportBottomMargin</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>reportFontName</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>reportFontSize</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>reportLeftMargin</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>reportRightMargin</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>reportTopMargin</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>showAOTLayer</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>showModelNameInAOT</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>showStatusLine</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>showToolbar</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>sid</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>startupProject</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>statuslineInfo</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>TableId</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>toolbarInfo</DataField>
+				</AxFormDataSourceField>
+				<AxFormDataSourceField>
+					<DataField>traceInfo</DataField>
+				</AxFormDataSourceField>
+			</Fields>
+			<ReferencedDataSources />
+			<LinkType>Passive</LinkType>
+			<AllowCreate>No</AllowCreate>
+			<AllowDelete>No</AllowDelete>
+			<AllowEdit>No</AllowEdit>
+			<DataSourceLinks />
+			<DerivedDataSources />
+		</AxFormDataSource>
+	</DataSources>
+	<Design>
+		<AlwaysOnTop xmlns="">Yes</AlwaysOnTop>
+		<Caption xmlns="">@D365FOAdminToolkit:UsersForEntraIdGroup</Caption>
+		<DataSource xmlns="">EntraIdGroupUserView</DataSource>
+		<HideIfEmpty xmlns="">No</HideIfEmpty>
+		<HideToolbar xmlns="">Yes</HideToolbar>
+		<Pattern xmlns="">FormPartFactboxGrid</Pattern>
+		<PatternVersion xmlns="">1.1</PatternVersion>
+		<Scrollbars xmlns="">No</Scrollbars>
+		<SetCompany xmlns="">No</SetCompany>
+		<StatusBarStyle xmlns="">None</StatusBarStyle>
+		<Style xmlns="">FormPart</Style>
+		<ViewEditMode xmlns="">View</ViewEditMode>
+		<Width xmlns="">0</Width>
+		<WidthMode xmlns="">Column</WidthMode>
+		<Controls xmlns="">
+			<AxFormControl xmlns=""
+				i:type="AxFormGridControl">
+				<Name>usersForEntraIdGroups</Name>
+				<AllowEdit>No</AllowEdit>
+				<AutoDeclaration>Yes</AutoDeclaration>
+				<ElementPosition>1431655764</ElementPosition>
+				<FilterExpression>%1</FilterExpression>
+				<Type>Grid</Type>
+				<VerticalSpacing>-1</VerticalSpacing>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>users</Name>
+						<AllowEdit>No</AllowEdit>
+						<ElementPosition>1073741822</ElementPosition>
+						<FilterExpression>%1</FilterExpression>
+						<HeightMode>Auto</HeightMode>
+						<Type>String</Type>
+						<VerticalSpacing>-1</VerticalSpacing>
+						<WidthMode>Auto</WidthMode>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>User</DataField>
+						<DataSource>EntraIdGroupUserView</DataSource>
+						<DisplayLength>8</DisplayLength>
+						<DisplayLengthMode>Fixed</DisplayLengthMode>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormStringControl">
+						<Name>names</Name>
+						<ElementPosition>1610612733</ElementPosition>
+						<FilterExpression>%1</FilterExpression>
+						<HeightMode>Auto</HeightMode>
+						<Type>String</Type>
+						<VerticalSpacing>-1</VerticalSpacing>
+						<WidthMode>Auto</WidthMode>
+						<FormControlExtension
+							i:nil="true" />
+						<DataField>UserName</DataField>
+						<DataSource>EntraIdGroupUserView</DataSource>
+						<DisplayLength>22</DisplayLength>
+						<DisplayLengthMode>Fixed</DisplayLengthMode>
+					</AxFormControl>
+				</Controls>
+				<AlternateRowShading>No</AlternateRowShading>
+				<DataSource>EntraIdGroupUserView</DataSource>
+				<HighlightActive>No</HighlightActive>
+				<MultiSelect>No</MultiSelect>
+				<ShowRowLabels>No</ShowRowLabels>
+				<Style>SimpleReadOnly</Style>
+				<VisibleRows>5</VisibleRows>
+				<VisibleRowsMode>Fixed</VisibleRowsMode>
+			</AxFormControl>
+		</Controls>
+	</Design>
+	<Parts />
+</AxForm>

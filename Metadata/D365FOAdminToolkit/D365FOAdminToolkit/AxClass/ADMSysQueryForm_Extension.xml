@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMSysQueryForm_Extension</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[ExtensionOf(formStr(SysQueryForm))]
+internal final class ADMSysQueryForm_Extension
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Runtime control behavior for making SysQueryForm read-only
+    /// </summary>
+    void init()
+    {
+        next init();
+
+        if (this.args().callerName() == classStr(ADMSysQueryRunView))
+        {
+            RangeTab.allowEdit(false);
+            RangeAdd.visible(false);
+            RangeRemove.visible(false);
+            AppendValuesOnRanges.visible(false);
+
+            JoinsTab.allowEdit(false);
+            AddDataSourceButton.visible(false);
+            DeleteDataSourceButton.visible(false);
+
+            CancelButton.visible(false);
+
+        }
+
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

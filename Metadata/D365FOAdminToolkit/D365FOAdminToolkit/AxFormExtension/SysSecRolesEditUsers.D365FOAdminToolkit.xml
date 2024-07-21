@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxFormExtension xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>SysSecRolesEditUsers.D365FOAdminToolkit</Name>
+	<ControlModifications />
+	<Controls>
+		<AxFormExtensionControl xmlns="">
+			<Name>Copyvll3gxr11</Name>
+			<FormControl xmlns=""
+				i:type="AxFormCommandButtonControl">
+				<Name>ADMViewQueryButton</Name>
+				<AutoDeclaration>Yes</AutoDeclaration>
+				<ElementPosition>1431655764</ElementPosition>
+				<FilterExpression>%1</FilterExpression>
+				<HeightMode>Auto</HeightMode>
+				<Type>CommandButton</Type>
+				<VerticalSpacing>-1</VerticalSpacing>
+				<Visible>No</Visible>
+				<WidthMode>Auto</WidthMode>
+				<FormControlExtension
+					i:nil="true" />
+				<ButtonDisplay>TextWithImageLeft</ButtonDisplay>
+				<MultiSelect>No</MultiSelect>
+				<NormalImage>View</NormalImage>
+				<SaveRecord>No</SaveRecord>
+				<Text>@D365FOAdminToolkit:ViewQuery</Text>
+			</FormControl>
+			<Parent>assignmentRulesButtons</Parent>
+			<PositionType>AfterItem</PositionType>
+			<PreviousSibling>editQueryButton</PreviousSibling>
+		</AxFormExtensionControl>
+	</Controls>
+	<DataSourceModifications />
+	<DataSourceReferences />
+	<DataSources />
+	<Parts />
+	<PropertyModifications />
+</AxFormExtension>

@@ -3,9 +3,24 @@ AddRemoveSelectedUsers=Add / Remove Selected Users
 AddRevokeSysAdmin=Assign / Revoke SysAdmin
 ADMConfig=D365FO Admin Toolkit Configuration
 ADMDisableUsersJob=D365FO Admin Toolkit Execute Disable Users Job
+ADMEntraIdGroupDynamicRoleAssignmentDeveloper=The ADMEntraIdGroupDynamicRoleAssignment table contains the information if automatic role assignment rules needs to be maintained for Azure Entra ID security group role assignments.
+ ;Developer documentation
+ADMEntraIdGroupSecurityRoleAssignmentRuleDeveloper=The ADMEntraIdGroupDynamicRoleAssignment table contains the information which automatic role assignment rules are created for which Entra ID groups.
+ ;Developer documentation
+ADMEntraIDGroupUserMembershipDeveloper=The ADMEntraIDGroupUserMembership table contains the information about Entra ID group membership per user.
+ ;Developer documentation
+ADMEntraIdGroupUserView=Entra ID group user membership view
 ADMExportRoleAccess=D365FO Admin Toolkit Export Role Access
 ADMMaintain=D365FO Admin Toolkit Maintain
+ADMParametersDeveloper=The ADMParameters table contains the basic setup information for the D365 Admin toolkit module.
+ ;Developer documentation
 ADMSysAdmAssignment=D365FO Admin Toolkit SysAdmin Assignment
+ADMUserEntraIdGroup=User Entra ID security group membership
+ ;Table name
+ADMUserEntraIdGroupLastSync=Last Entra ID security group synchronization
+ ;Table name
+ADMUserEntraIdGroupLastSyncDeveloper=The ADMUserEntraIdGroupLastSync table contains the information about when the last synchronization was made per user with Azure Entra ID security groups.
+ ;Developer documentation
 ADMView=D365FO Admin Toolkit View
 ADMViewDisabledUsersReport=D365FO Admin Toolkit View Disabled Users Report
 ADMViewReport=D365FO Admin Toolkit View SysAdmin Report
@@ -13,6 +28,7 @@ Assigned=Assigned
 AssignmentReason=Assignment Reason
 AssingSysAdmin=Assign SysAdmin
 ASTSysAdminChange=Admin Security Toolkit - SysAdmin Change
+AutomaticRoleAssignment=Automatic role assignment
 Cancel=Cancel
 ChangeReason=SysAdmin Assignment Change Reason :
 ConfigurationSetup=Configuration Setup
@@ -25,6 +41,17 @@ DisableUserJob=Disable Users Job
 DisableUserNumDays=Disable User Number of Days
 EmptyReason=Value for Reason Must be Provided.
 EndDate=End Date :
+EnhancedEntraIdGroupIntegrationMaintain=Maintain enhanced Entra ID group integration
+EnhancedEntraIdGroupIntegrationView=View enhanced Entra ID group integration
+EntraIdGroup=Entra ID group
+EntraIdGroupDynamicRoleAssignment=Entra ID group dynamic role assignment
+EntraIdGroupIdSyncFrequency=Frequency
+ ;Interval between subsequent synchronous synchronizations
+EntraIdGroupsForUser=Entra ID groups for user
+EntraIdGroupSynchronization=Entra ID group synchronization
+EntraIdGroupSyncPattern=Pattern
+EntraIdGroupUserMembershipSync=Entra ID group user membership synchronization
+EntraIdNoGroupsFoundForUser=No Entra ID groups found for user '%1'
 EnvConfigFileGenerated=Environment Configuration File Generated Successfully.
 Environment=Environment
 ExcludedUserList=Excluded User List
@@ -32,6 +59,8 @@ ExcludedUsers=Excluded Users
 ExportRoleAccess=Export Role Access
 ExportSysConfig=Export System Configuration
 General=General
+GroupId=Group ID
+ImportUsersEntraIdGroupMembership=Import users from Entra ID group membership
 InquiriesReports=Inquiries and Reports
 LastLogin=Last Login
 ModifiedBy=Modified By
@@ -47,10 +76,12 @@ RoleAccessFileGenerated=Role Access File Generated Successfully.
 SendTelemetrySysAdminLogHelp=Sends telemetry to application insights when log is created in SysAdminLog
 SendTelemetrySysAdminLogLabel=SysAdminLog
 Setup=Setup
+SetUpInfoEntraIdSecGrpSync=Set up information for Entra ID security group synchronization
 ShowReasonDialog=Show Reason Dialog for SysAdmin
 ShowSysAdminExpiryDateDialog=Enable expiry dates for SysAdmin
 StartDate=Start Date :
 Submit=Submit
+SynchronousSynchronization=Synchronous synchronization
 SysAdmin=System Administrator
 SysAdminAssigned=Assigned SYSADMIN role to %1
 SysAdminAssignReport=SysAdmin Assignment Report
@@ -65,3 +96,6 @@ UserDisableTitle=Disable User Process Complete
 UserId=User Id
 UserList=User List
 UserName=User Name
+UsersForEntraIdGroup=Users for Entra ID group
+UsersForGroup=Users for group
+ViewQuery=View query
