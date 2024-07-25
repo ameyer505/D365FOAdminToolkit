@@ -5,10 +5,66 @@
 		<Declaration><![CDATA[
 public class ADMEntraIdGroupDynamicRoleAssignment extends common
 {
-}
 
+}
 ]]></Declaration>
-		<Methods />
+		<Methods>
+			<Method>
+				<Name>delete</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Code executed when deleting a record
+    /// </summary>
+    public void delete()
+    {
+        SecurityUserRole secUserRole;
+        UserInfo         userInfo;
+
+        super();
+
+        select userInfo where UserInfo.RecId == this.UserInfo;
+
+        while select secUserRole
+            where secUserRole.User == userInfo.id
+        {
+            ADMEntraIdGroupHelper::deleteRoleAssignmentRule(secUserRole, userInfo);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>update</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Code executed when updating a record
+    /// </summary>
+    public void update()
+    {
+        SecurityUserRole secUserRole;
+        UserInfo         userInfo;
+
+        super();
+
+        select userInfo where UserInfo.RecId == this.UserInfo;
+
+        while select secUserRole
+            where secUserRole.User == userInfo.id
+        {
+            if (this.AutomaticRoleAssignment == NoYes::Yes)
+            {
+                ADMEntraIdGroupHelper::createRoleAssignmentRule(secUserRole, userInfo);
+            }
+            else
+            {
+                ADMEntraIdGroupHelper::deleteRoleAssignmentRule(secUserRole, userInfo);
+            }
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
 	</SourceCode>
 	<DeveloperDocumentation>@D365FOAdminToolkit:ADMEntraIdGroupDynamicRoleAssignmentDeveloper</DeveloperDocumentation>
 	<FormRef>SysGroupManagementPage</FormRef>
