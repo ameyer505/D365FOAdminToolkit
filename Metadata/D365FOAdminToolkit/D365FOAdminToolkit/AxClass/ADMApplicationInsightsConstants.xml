@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMApplicationInsightsConstants</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+internal final class ADMApplicationInsightsConstants
+{
+    internal static const str ADMSysAdminAssigned   = 'ADMSysAdminAssigned';
+    internal static const str ADMSysAdminRevoked    = 'ADMSysAdminRevoked';
+    internal static const str ADMSysAdminExpired    = 'ADMSysAdminExpired';
+
+
+    internal static const container UserId          = ['UserId',        SysApplicationInsightsComplianceDataType::SystemMetadata];
+    internal static const container Reason          = ['Reason',        SysApplicationInsightsComplianceDataType::CustomerContent];
+    internal static const container FromDateTime    = ['FromDateTime',  SysApplicationInsightsComplianceDataType::SystemMetadata];
+    internal static const container ToDateTime      = ['ToDateTime',    SysApplicationInsightsComplianceDataType::SystemMetadata];
+}
+]]></Declaration>
+		<Methods />
+	</SourceCode>
+</AxClass>

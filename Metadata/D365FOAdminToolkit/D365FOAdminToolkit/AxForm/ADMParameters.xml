@@ -26,12 +26,14 @@ public class ADMParameters extends FormRun
         var disableUser             = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameDisableUserNumDays);
         var adminExpiryDate         = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameShowExpiryDateDialog);
         var adminExpiryDefaultHours = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameRoleDefaultExpiryHours);
+        var telemetrySysAdminRole   = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameTelemetrySysAdminRole);
 
         ReportNumDays.value(str2IntOk(reportOffset)                             ? str2Int(reportOffset)             : ADMConfigsConstants::defaultValueReportOffset);
         DisableUserNumDays.value(str2IntOk(disableUser)                         ? str2Int(disableUser)              : ADMConfigsConstants::defaultValueDisableUser);
         ShowReasonDialog.value(str2IntOk(adminExpiryDate)                       ? str2Int(reasonDialog)             : ADMConfigsConstants::defaultValueReasonDialog);
         ShowAdminExpiryDate.value(str2IntOk(adminExpiryDate)                    ? str2Int(adminExpiryDate)          : ADMConfigsConstants::defaultValueExipryDialog);
         AdminExpiryDateDefaultHours.value(str2IntOk(adminExpiryDefaultHours)    ? str2Int(adminExpiryDefaultHours)  : ADMConfigsConstants::defaultValueRoleExpiryHours);
+        SendTelemetrySysAdminLog.value(str2IntOk(telemetrySysAdminRole)         ? str2Int(telemetrySysAdminRole)    : ADMConfigsConstants::defaultValueTelemetrySysAdminRole);
 
         AdminExpiryDateDefaultHours.enabled(ShowAdminExpiryDate.value());
     }
@@ -56,6 +58,7 @@ public class ADMParameters extends FormRun
             ADMConfigs::setConfigValue(ADMConfigsConstants::configNameShowReasonDialog,         int2Str(ShowReasonDialog.value()));
             ADMConfigs::setConfigValue(ADMConfigsConstants::configNameShowExpiryDateDialog,     int2Str(ShowAdminExpiryDate.value()));
             ADMConfigs::setConfigValue(ADMConfigsConstants::configNameRoleDefaultExpiryHours,   int2Str(AdminExpiryDateDefaultHours.value()));
+            ADMConfigs::setConfigValue(ADMConfigsConstants::configNameTelemetrySysAdminRole,    int2Str(SendTelemetrySysAdminLog.value()));
 
             ttscommit;
         }
@@ -369,6 +372,26 @@ public class ADMParameters extends FormRun
 													</AxFormControl>
 												</Controls>
 												<Caption>@PDS1938</Caption>
+											</AxFormControl>
+											<AxFormControl xmlns=""
+												i:type="AxFormGroupControl">
+												<Name>SendTelemetryGroup</Name>
+												<Type>Group</Type>
+												<FormControlExtension
+													i:nil="true" />
+												<Controls>
+													<AxFormControl xmlns=""
+														i:type="AxFormCheckBoxControl">
+														<Name>SendTelemetrySysAdminLog</Name>
+														<AutoDeclaration>Yes</AutoDeclaration>
+														<HelpText>@D365FOAdminToolkit:SendTelemetrySysAdminLogHelp</HelpText>
+														<Type>CheckBox</Type>
+														<FormControlExtension
+															i:nil="true" />
+														<Label>@D365FOAdminToolkit:SendTelemetrySysAdminLogLabel</Label>
+													</AxFormControl>
+												</Controls>
+												<Caption>@MonitoringAndTelemetry:Telemetry</Caption>
 											</AxFormControl>
 										</Controls>
 										<ColumnsMode>Fill</ColumnsMode>

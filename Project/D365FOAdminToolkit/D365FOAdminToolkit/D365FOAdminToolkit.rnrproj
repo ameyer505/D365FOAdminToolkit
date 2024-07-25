@@ -33,26 +33,36 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Action Menu Items\" />
-    <Folder Include="AxReference\" />
-    <Folder Include="Base Enums\" />
-    <Folder Include="Classes\" />
-    <Folder Include="Display Menu Items\" />
-    <Folder Include="EDT Extensions\" />
-    <Folder Include="EDT Integers\" />
-    <Folder Include="Extended Data Types\" />
-    <Folder Include="Form Extensions\" />
-    <Folder Include="Forms\" />
-    <Folder Include="Label Files\" />
-    <Folder Include="Menu Extensions\" />
-    <Folder Include="Security Duties\" />
-    <Folder Include="Security Privileges\" />
-    <Folder Include="Security Roles\" />
-    <Folder Include="Simple Queries\" />
-    <Folder Include="Tables\" />
-    <Folder Include="Views\" />
-  </ItemGroup>
-  <ItemGroup>
+    <Content Include="AxClass\ADMApplicationInsightsConstants">
+      <SubType>Content</SubType>
+      <Name>ADMApplicationInsightsConstants</Name>
+      <Link>Classes\ADMApplicationInsightsConstants</Link>
+    </Content>
+    <Content Include="AxClass\ADMApplicationInsightsEventIds">
+      <SubType>Content</SubType>
+      <Name>ADMApplicationInsightsEventIds</Name>
+      <Link>Classes\ADMApplicationInsightsEventIds</Link>
+    </Content>
+    <Content Include="AxClass\ADMApplicationInsightsSysAdminFromDateTimeProperty">
+      <SubType>Content</SubType>
+      <Name>ADMApplicationInsightsSysAdminFromDateTimeProperty</Name>
+      <Link>Classes\ADMApplicationInsightsSysAdminFromDateTimeProperty</Link>
+    </Content>
+    <Content Include="AxClass\ADMApplicationInsightsSysAdminReasonProperty">
+      <SubType>Content</SubType>
+      <Name>ADMApplicationInsightsSysAdminReasonProperty</Name>
+      <Link>Classes\ADMApplicationInsightsSysAdminReasonProperty</Link>
+    </Content>
+    <Content Include="AxClass\ADMApplicationInsightsSysAdminToDateTimeProperty">
+      <SubType>Content</SubType>
+      <Name>ADMApplicationInsightsSysAdminToDateTimeProperty</Name>
+      <Link>Classes\ADMApplicationInsightsSysAdminToDateTimeProperty</Link>
+    </Content>
+    <Content Include="AxClass\ADMApplicationInsightsSysAdminUserIdProperty">
+      <SubType>Content</SubType>
+      <Name>ADMApplicationInsightsSysAdminUserIdProperty</Name>
+      <Link>Classes\ADMApplicationInsightsSysAdminUserIdProperty</Link>
+    </Content>
     <Content Include="AxClass\ADMConfigsConstants">
       <SubType>Content</SubType>
       <Name>ADMConfigsConstants</Name>

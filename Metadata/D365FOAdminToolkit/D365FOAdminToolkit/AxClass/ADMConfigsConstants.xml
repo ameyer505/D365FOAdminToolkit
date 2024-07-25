@@ -10,12 +10,14 @@ internal final class ADMConfigsConstants
     public static str configNameDisableUserNumDays          = 'DisableUserNumDays';
     public static str configNameShowExpiryDateDialog        = 'ShowRoleExpiryDateDialog';
     public static str configNameRoleDefaultExpiryHours      = 'DefaultNumHoursRoleExpiry';
+    public static str configNameTelemetrySysAdminRole       = 'TelemetrySysAdminRole';
 
-    public static int defaultValueReportOffset      = 30;
-    public static int defaultValueReasonDialog      = NoYes::No;
-    public static int defaultValueExipryDialog      = NoYes::No;
-    public static int defaultValueDisableUser       = 90;
-    public static int defaultValueRoleExpiryHours   = 8;
+    public static int defaultValueReportOffset              = 30;
+    public static int defaultValueReasonDialog              = NoYes::No;
+    public static int defaultValueExipryDialog              = NoYes::No;
+    public static int defaultValueDisableUser               = 90;
+    public static int defaultValueRoleExpiryHours           = 8;
+    public static int defaultValueTelemetrySysAdminRole     = NoYes::No;
 }
 ]]></Declaration>
 		<Methods />

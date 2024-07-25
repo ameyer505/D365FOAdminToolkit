@@ -5,6 +5,7 @@
 		<Declaration><![CDATA[
 public class ADMSysAdminLogHelper
 {
+            
 }
 ]]></Declaration>
 		<Methods>
@@ -28,6 +29,18 @@ public class ADMSysAdminLogHelper
         var configShowExpiryDialog = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameShowExpiryDateDialog);
 
         return str2IntOk(configShowExpiryDialog) ? str2Int(configShowExpiryDialog) : ADMConfigsConstants::defaultValueExipryDialog;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>CheckTelemetrySysAdminRole</Name>
+				<Source><![CDATA[
+    public static int CheckTelemetrySysAdminRole()
+    {
+        var configTelemetrySysAdminRole = ADMConfigs::getConfigValue(ADMConfigsConstants::configNameTelemetrySysAdminRole);
+
+        return str2IntOk(configTelemetrySysAdminRole) ? str2Int(configTelemetrySysAdminRole) : ADMConfigsConstants::defaultValueTelemetrySysAdminRole;
     }
 
 ]]></Source>
@@ -74,6 +87,27 @@ public class ADMSysAdminLogHelper
             where sysAdminLog.UserId_       == _userId
             &&    sysAdminLog.EndDateTime   != DateTimeUtil::minValue()
             &&    sysAdminLog.HasExpired    == NoYes::No;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>sendTelemetryAssignedExpiredRevoked</Name>
+				<Source><![CDATA[
+    public static void sendTelemetryAssignedExpiredRevoked(
+        str             _id, 
+        str             _name, 
+        ADMSysAdminLog  _sysAdminLog)
+    {
+        if(ADMSysAdminLogHelper::CheckTelemetrySysAdminRole())
+        {
+            SysApplicationInsightsTelemetryLogger::instance().trackEvent(
+                SysApplicationInsightsEventTelemetry::newFromEventIdName(_id, _name)
+                .addProperty(ADMApplicationInsightsSysAdminUserIdProperty::newFromValue(_sysAdminLog.UserId_))
+                .addProperty(ADMApplicationInsightsSysAdminReasonProperty::newFromValue(_sysAdminLog.Reason))
+                .addProperty(ADMApplicationInsightsSysAdminFromDateTimeProperty::newFromValue(DateTimeUtil::toStr(_sysAdminLog.CreatedDateTime)))
+                .addProperty(ADMApplicationInsightsSysAdminToDateTimeProperty::newFromValue(DateTimeUtil::toStr(_sysAdminLog.EndDateTime))));
+        }
     }
 
 ]]></Source>

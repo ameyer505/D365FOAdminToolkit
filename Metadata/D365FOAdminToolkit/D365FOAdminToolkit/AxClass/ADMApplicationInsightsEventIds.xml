@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMApplicationInsightsEventIds</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+internal final class ADMApplicationInsightsEventIds
+{
+    internal static const str SysAdminAssigned  = 'ATK000001';
+    internal static const str SysAdminRevoked   = 'ATK000002';
+    internal static const str SysAdminExpired   = 'ATK000003';
+}
+]]></Declaration>
+		<Methods />
+	</SourceCode>
+</AxClass>
