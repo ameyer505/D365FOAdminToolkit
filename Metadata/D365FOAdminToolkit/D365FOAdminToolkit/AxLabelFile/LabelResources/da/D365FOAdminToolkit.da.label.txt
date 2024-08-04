@@ -3,9 +3,24 @@ AddRemoveSelectedUsers=Tilføj / Fjern Valgte Brugere
 AddRevokeSysAdmin=Tildel / Tilbagekald SysAdmin
 ADMConfig=D365FO Admin Toolkit Konfiguration
 ADMDisableUsersJob=D365FO Admin Toolkit Kør Deaktiver Brugere Kørsel
+ADMEntraIdGroupDynamicRoleAssignmentDeveloper=The ADMEntraIdGroupDynamicRoleAssignment table contains the information if automatic role assignment rules needs to be maintained for Azure Entra ID security group role assignments.
+ ;Developer documentation
+ADMEntraIdGroupSecurityRoleAssignmentRuleDeveloper=The ADMEntraIdGroupDynamicRoleAssignment table contains the information which automatic role assignment rules are created for which Entra ID groups.
+ ;Developer documentation
+ADMEntraIDGroupUserMembershipDeveloper=The ADMEntraIDGroupUserMembership table contains the information about Entra ID group membership per user.
+ ;Developer documentation
+ADMEntraIdGroupUserView=Entra ID gruppemedlemsvisning
 ADMExportRoleAccess=D365FO Admin Toolkit Eksporter Rolletildeling
 ADMMaintain=D365FO Admin Toolkit Vedligehold
+ADMParametersDeveloper=The ADMParameters table contains the basic setup information for the D365 Admin toolkit module.
+ ;Developer documentation
 ADMSysAdmAssignment=D365FO Admin Toolkit SysAdmin Tildeling
+ADMUserEntraIdGroup=Bruger Entra ID sikkerhedsgruppemedlemskab
+ ;Table name
+ADMUserEntraIdGroupLastSync=Sidste Entra ID sikkerhedsgruppesynkronisering
+ ;Table name
+ADMUserEntraIdGroupLastSyncDeveloper=The ADMUserEntraIdGroupLastSync table contains the information about when the last synchronization was made per user with Azure Entra ID security groups.
+ ;Developer documentation
 ADMView=D365FO Admin Toolkit Vis
 ADMViewDisabledUsersReport=D365FO Admin Toolkit Vis Deaktiverede Brugere Rapport
 ADMViewReport=D365FO Admin Toolkit Vis SysAdmin Rapport
@@ -13,6 +28,7 @@ Assigned=Tildelt
 AssignmentReason=Tildelingsårsag
 AssingSysAdmin=Tildel SysAdmin
 ASTSysAdminChange=Admin Security Toolkit - SysAdmin Ændringer
+AutomaticRoleAssignment=Automatisk rolletildeling
 Cancel=Annuller
 ChangeReason=SysAdmin Ændringsårsag :
 ConfigurationSetup=Konfigurationsopsætning
@@ -25,6 +41,17 @@ DisableUserJob=Deaktivering af brugere
 DisableUserNumDays=Deaktivering Bruger Dage
 EmptyReason=Værdien Årsag Skal Være Udfyldt
 EndDate=Slut dato :
+EnhancedEntraIdGroupIntegrationMaintain=Vedligehold forbedret Entra ID gruppeintegration
+EnhancedEntraIdGroupIntegrationView=Vis forbedret Entra ID gruppeintegration
+EntraIdGroup=Entra ID gruppe
+EntraIdGroupDynamicRoleAssignment=Entra ID gruppe dynamisk rolletildeling
+EntraIdGroupIdSyncFrequency=Frekvens
+ ;Interval between subsequent synchronous synchronizations
+EntraIdGroupsForUser=Entra ID grupper for bruger
+EntraIdGroupSynchronization=Entra ID gruppesynkronisering
+EntraIdGroupSyncPattern=Mønster
+EntraIdGroupUserMembershipSync=Entra ID gruppebrugermedlemskabssynkronisering
+EntraIdNoGroupsFoundForUser=Ingen Entra ID grupper fundet for bruger '%1'
 EnvConfigFileGenerated=Miljøkonfigurationsfil Genereret.
 Environment=Miljø
 ExcludedUserList=Undtagede Brugere
@@ -32,6 +59,8 @@ ExcludedUsers=Undtagede Brugere
 ExportRoleAccess=Eksporter Rolleadgange
 ExportSysConfig=Eksporter Systemkonfiguration
 General=Generel
+GroupId=Gruppe ID
+ImportUsersEntraIdGroupMembership=Importer brugere fra Entra ID gruppemedlemskab
 InquiriesReports=Forespørgelser og Rapporter
 LastLogin=Sidste Login
 ModifiedBy=Ændret Af
@@ -47,10 +76,12 @@ RoleAccessFileGenerated=Rolleadgangsfil genereret.
 SendTelemetrySysAdminLogHelp=Sender telemetri til application insights, når der oprettes log i SysAdminLog
 SendTelemetrySysAdminLogLabel=SysAdminLog
 Setup=Opsætning
+SetUpInfoEntraIdSecGrpSync=Opsæt information for Entra ID sikkerhedsgruppesynkronisering
 ShowReasonDialog=Vis Årsagsdialog For SysAdmin
 ShowSysAdminExpiryDateDialog=Vis udløbsdato for SysAdmin
 StartDate=Start Dato :
 Submit=Send
+SynchronousSynchronization=Synkron synkronisering
 SysAdmin=Systemadministrator
 SysAdminAssigned=Rollen SYSADMIN blev tildelt %1
 SysAdminAssignReport=SysAdmin Tildelingsrapport
@@ -65,3 +96,6 @@ UserDisableTitle=Brugere Deaktiveret
 UserId=Bruger-id
 UserList=Brugerliste
 UserName=Brugernavn
+UsersForEntraIdGroup=Brugere for Entra ID gruppe
+UsersForGroup=Brugere for gruppe
+ViewQuery=Vis forespørgsel
