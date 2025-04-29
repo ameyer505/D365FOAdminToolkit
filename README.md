@@ -23,6 +23,7 @@ Please review the provided D365FO Admin Toolkit Overview PDF documentation locat
   - Norwegian
   - Spanish
   - Swedish
+  - French
 - Adding last login to user info form
 - Unit tests
 - Export environment configuration
@@ -47,6 +48,8 @@ https://github.com/JoPe72
 https://github.com/jofme
 
 https://github.com/Dynamicspedia
+
+https://github.com/AurelienClere-365
 
 # Contact
 Feel free to reach out to d365fotoolkit@outlook.com for any questions or feature suggestions.
