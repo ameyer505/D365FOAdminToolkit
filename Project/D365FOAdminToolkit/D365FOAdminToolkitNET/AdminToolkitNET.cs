@@ -29,8 +29,7 @@ namespace D365FOAdminToolkitNET
                     foreach (var role in roleList)
                     {
                         List<RoleAccess> accessList = new List<RoleAccess>();
-                        Dictionary<string, ComputedLicense> rsol;
-                        ISecurityRelatedObjectsData srod = rsof.FindRelatedSecurityObjectsForRolesWithLicenseInfo(new List<string>() { role }, out rsol);
+                        ISecurityRelatedObjectsData srod = rsof.FindRelatedSecurityObjectsForRolesWithLicenseInfo(new List<string>() { role }, out Dictionary<string, ComputedLicense> rsol);
 
                         foreach (var roleAccess in srod.RelatedObjects)
                         {
