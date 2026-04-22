@@ -375,3 +375,11 @@ CompileLabels.xml
 /Project/D365FOAdminToolkit/GPUCache
 /Metadata/D365FOAdminToolkit/BuildModelResult.err.xml
 /Metadata/D365FOAdminToolkitTests/BuildModelResult.err.xml
+
+# User-specific D365 local paths
+Directory.Build.props
+/Metadata/d365fo-crossref-cache.db
+/Metadata/d365fo-crossref-cache.db-shm
+/Metadata/d365fo-crossref-cache.db-wal
+/Metadata/GeneratedXppSource
+/Metadata/XppSource
