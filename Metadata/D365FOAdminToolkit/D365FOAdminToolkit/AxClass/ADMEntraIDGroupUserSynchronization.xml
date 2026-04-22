@@ -14,6 +14,12 @@ public class ADMEntraIdGroupUserSynchronization extends RunBaseBatch implements 
 {
     UserId userId;
 
+    DialogField dialogUserId;
+
+    #define.CurrentVersion(1)
+    #localmacro.CurrentList
+        userId
+    #endmacro
 }
 ]]></Declaration>
 		<Methods>
@@ -60,22 +66,64 @@ public class ADMEntraIdGroupUserSynchronization extends RunBaseBatch implements 
 ]]></Source>
 			</Method>
 			<Method>
-				<Name>run</Name>
+				<Name>synchronizeRolesForDirtyGroups</Name>
 				<Source><![CDATA[
     /// <summary>
-    /// Runs the operation.
+    /// Calls standard SysSecurityDynamicRoleAssignment::synchronize(roleId) once per
+    /// distinct security role currently assigned (via SecurityUserRole with
+    /// AssignmentStatus == Enabled) to any group in the supplied dirtyGroups set.
     /// </summary>
-    [Microsoft.Dynamics.BusinessPlatform.SharedTypes.InternalUseOnlyAttribute]
-    public void run()
+    /// <param name = "_dirtyGroups">
+    /// Set of Entra ID group user ids (UserInfo.id) whose membership was refreshed
+    /// successfully during this run AND actually changed.
+    /// </param>
+    /// <remarks>
+    /// Deduplicating per role (rather than per user/group) keeps the work proportional
+    /// to the number of affected roles. The standard synchronize method evaluates
+    /// SecurityRoleAssignmentRule records for the role against the current content of
+    /// ADMEntraIdGroupUserMembership and materialises / removes SecurityUserRole rows
+    /// accordingly. Direct (non-rule) SecurityUserRole rows are not touched.
+    /// </remarks>
+    protected void synchronizeRolesForDirtyGroups(Set _dirtyGroups)
     {
-        UserInfo userInfo;
-
-        while select userInfo
-            where userInfo.accountType == UserAccountType::ClaimsUser
-               && userInfo.isMicrosoftAccount == false
-               && (!userId || userInfo.id == userId)
+        if (!_dirtyGroups || _dirtyGroups.elements() == 0)
         {
-            ADMEntraIdGroupHelper::syncEntraIdGroupsforUser(userInfo.id);
+            return;
+        }
+
+        SecurityUserRole    secUserRole;
+        Set                 processedRoles = new Set(Types::Int64);
+        SetEnumerator       groupEnum = _dirtyGroups.getEnumerator();
+        int                 rolesSynchronized = 0;
+        UserId              groupId;
+
+        while (groupEnum.moveNext())
+        {
+            groupId = groupEnum.current();
+
+            while select SecurityRole from secUserRole
+                where secUserRole.User == groupId
+                   && secUserRole.AssignmentStatus == RoleAssignmentStatus::Enabled
+            {
+                if (secUserRole.SecurityRole == 0 || processedRoles.in(secUserRole.SecurityRole))
+                {
+                    continue;
+                }
+
+                processedRoles.add(secUserRole.SecurityRole);
+
+                unchecked(Uncheck::TableSecurityPermission)
+                {
+                    SysSecurityDynamicRoleAssignment::synchronize(secUserRole.SecurityRole);
+                }
+
+                rolesSynchronized++;
+            }
+        }
+
+        if (rolesSynchronized > 0)
+        {
+            info(strFmt("@D365FOAdminToolkit:EntraIdGroupRoleSyncCompleted", rolesSynchronized, _dirtyGroups.elements()));
         }
     }
 
@@ -223,6 +271,148 @@ public class ADMEntraIdGroupUserSynchronization extends RunBaseBatch implements 
         return true;
     }
 
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getFromDialog</Name>
+				<Source><![CDATA[
+/// <summary>
+/// Reads the optional User ID entered in the dialog.
+/// </summary>
+public boolean getFromDialog()
+{
+    boolean ret = super();
+
+    if (dialogUserId)
+    {
+        userId = dialogUserId.value();
+    }
+
+    return ret;
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>pack</Name>
+				<Source><![CDATA[
+public container pack()
+{
+    return [#CurrentVersion, #CurrentList];
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>unpack</Name>
+				<Source><![CDATA[
+public boolean unpack(container _packedClass)
+{
+    Version version = RunBase::getVersion(_packedClass);
+
+    switch (version)
+    {
+        case #CurrentVersion:
+            [version, #CurrentList] = _packedClass;
+            return true;
+        default:
+            return false;
+    }
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>run</Name>
+				<Source><![CDATA[
+/// <summary>
+/// Runs the operation. For every enabled ClaimsUser, refreshes the Entra ID group
+/// membership snapshot and tracks which groups actually changed. At the end of the
+/// run, calls the dynamic role assignment framework once per distinct security role
+/// attached to a successfully-refreshed, changed group, then invokes the repair /
+/// backfill pass.
+/// </summary>
+[Microsoft.Dynamics.BusinessPlatform.SharedTypes.InternalUseOnlyAttribute]
+public void run()
+{
+    UserInfo        userInfo;
+    Set             dirtyGroups = new Set(Types::String);
+    Set             failedUsers = new Set(Types::String);
+    container       changeResult;
+    container       packedChangedForUser;
+    Set             changedForUser;
+    boolean         success;
+    SetEnumerator   groupEnum;
+    int             usersProcessed;
+    int             usersSucceeded;
+    int             usersWithChanges;
+
+    while select userInfo
+        where userInfo.accountType == UserAccountType::ClaimsUser
+           && userInfo.isMicrosoftAccount == false
+           && userInfo.Enable == NoYes::Yes
+           && (!userId || userInfo.id == userId)
+    {
+        usersProcessed++;
+
+        changeResult = ADMEntraIdGroupHelper::syncEntraIdGroupsforUserWithChangeTracking(userInfo.id);
+
+        [success, packedChangedForUser] = changeResult;
+
+        if (success)
+        {
+            usersSucceeded++;
+            changedForUser = Set::create(packedChangedForUser);
+
+            if (changedForUser && changedForUser.elements() > 0)
+            {
+                usersWithChanges++;
+                groupEnum = changedForUser.getEnumerator();
+                while (groupEnum.moveNext())
+                {
+                    dirtyGroups.add(groupEnum.current());
+                }
+            }
+        }
+        else
+        {
+            failedUsers.add(userInfo.id);
+        }
+    }
+
+    if (failedUsers.elements() > 0)
+    {
+        warning(strFmt("@D365FOAdminToolkit:EntraIdGroupSyncFailedUsers", failedUsers.elements()));
+    }
+
+    this.synchronizeRolesForDirtyGroups(dirtyGroups);
+
+    ADMEntraIdGroupHelper::ensureDynamicRoleAssignmentRulesForOptedInGroups();
+
+    info(strFmt("@D365FOAdminToolkit:EntraIdSyncRunSummary",
+        usersProcessed,
+        usersSucceeded,
+        failedUsers.elements(),
+        usersWithChanges,
+        dirtyGroups.elements()));
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>dialog</Name>
+				<Source><![CDATA[
+/// <summary>
+/// Builds the RunBase dialog with an optional User ID field so an administrator can
+/// run the sync for a single user (useful for diagnostics). Leaving the field blank
+/// processes all enabled ClaimsUsers as before.
+/// </summary>
+public Object dialog()
+{
+    DialogRunbase dialog = super();
+
+    dialogUserId = dialog.addField(extendedTypeStr(UserId),
+        "@D365FOAdminToolkit:EntraIdSyncUserIdCaption",
+        "@D365FOAdminToolkit:EntraIdSyncUserIdHelp");
+
+    return dialog;
+}
 ]]></Source>
 			</Method>
 		</Methods>

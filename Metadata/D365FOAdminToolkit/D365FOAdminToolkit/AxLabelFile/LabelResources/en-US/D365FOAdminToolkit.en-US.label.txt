@@ -59,6 +59,50 @@ EntraIdGroupsForUser=Entra ID groups for user
 EntraIdGroupSynchronization=Entra ID group synchronization
 EntraIdGroupSyncPattern=Pattern
 EntraIdGroupUserMembershipSync=Entra ID group user membership synchronization
+EntraIdGroupGraphFailedForUser=Graph API call failed for user '%1' after %2 attempt(s); user skipped for this run.
+EntraIdGroupSyncFailedUsers=%1 user(s) failed Entra ID group refresh; roles were not modified for those users and their groups were excluded from this run.
+EntraIdGroupRoleSyncCompleted=Synchronized %1 security role(s) across %2 changed Entra ID group(s).
+EntraIdGroupRepairBackfillCreated=Backfilled missing role assignment rule for group '%1', role '%2'.
+EntraIdGroupCacheLoading=Loading Entra ID security group cache...
+EntraIdGroupCacheLoaded=Entra ID security group cache loaded (%1 entries).
+EntraIdGroupCacheError=Failed to load Entra ID group cache from Graph API.
+EntraIdGroupCacheErrorDetailed=Entra ID group cache load failed: %1
+EntraIdGroupFoundByName=Resolved group '%1' to ObjectId %2 via name lookup.
+EntraIdGroupNameNotFound=Group name '%1' not found in Entra cache (cache has %2 entries, sample keys: %3).
+EntraIdGroupObjectIdMissing=UserInfo row for group '%1' has no ObjectId and name lookup failed — group skipped.
+EntraIdGroupMembersError=Failed to enumerate members of Entra ID group '%1' via Graph API — group skipped.
+EntraIdGroupImportStart=[Group %1] ObjectId=%2 — starting import
+EntraIdGroupImportSummary=[Group %1] members fetched: %2, created: %3, skipped-existing: %4, skipped-liveid: %5, not-in-cache: %6
+ ;Per-group summary line. %1=group UserId, %2=fetched, %3=created, %4=skipped-existing, %5=skipped-liveid, %6=not-in-cache.
+EntraIdImportStarting=Starting Entra ID user import — %1 groups to process
+EntraIdImportCompleted=Entra ID user import completed — groups processed: %1, members fetched: %2, users created: %3, skipped existing: %4, skipped LiveId/external: %5, errors: %6, not in cache: %7
+ ;Run-level summary. %1=groups, %2=fetched, %3=created, %4=skipped-existing, %5=skipped-liveid, %6=errors, %7=not-in-cache.
+EntraIdSyncGroupNotInUserInfo=[User %1] Graph returned group ObjectId '%2' but no ClaimsGroup row in UserInfo matches — run ADMEntraIdGroupUserImport or add the group manually.
+ ;Sync: group from Graph not yet imported into D365 as ClaimsGroup.
+EntraIdSyncGroupParseFailed=[User %1] Graph returned an unparseable group ObjectId '%2' — skipping.
+ ;Sync: str2Guid failed to parse Graph's group ObjectId string.
+EntraIdSyncRunSummary=Entra ID sync: %1 users processed, %2 succeeded, %3 failed, %4 users with membership changes, %5 changed groups.
+ ;End-of-run summary for ADMEntraIDGroupUserSynchronization. Placeholders: users processed, succeeded, failed, users-with-changes, distinct changed groups.
+EntraIdSyncUserGraphResult=[User %1] Graph returned %2 groups — parsed OK: %3, matched ClaimsGroup in UserInfo: %4, unmatched: %5.
+ ;Sync: per-user Graph result summary for diagnostics.
+EntraIdSyncUserIdCaption=User to synchronize
+ ;Caption for the UserId dialog field on the Entra ID group user synchronization batch dialog.
+EntraIdSyncUserIdHelp=Optional. Enter a specific User ID to synchronize only that user's Entra ID group memberships. Leave blank to process all enabled users.
+ ;Help text for the optional User ID field on the sync batch dialog.
+EntraIdTenantCacheError=Failed to load tenant user cache: %1
+ ;Logged when tenant user cache failed to load. %1=exception message.
+EntraIdTenantCacheLoaded=Tenant user cache loaded — %1 users.
+ ;Logged when tenant user cache finished loading. %1=user count.
+EntraIdTenantCacheLoading=Loading tenant user cache from Entra...
+ ;Logged when tenant-wide Entra user cache begins loading.
+EntraIdUserNotInCache=Group member ObjectId %1 (group %2) not found in tenant user cache — skipping.
+ ;Warning when a Graph group member ObjectId is missing from the tenant user cache. %1=member ObjectId, %2=group UserId.
+EntraIdUserObjectIdMissing=Skipped Entra group refresh for user %1 — UserInfo.ObjectId is empty. Populate it (from Entra) and re-run.
+ ;Warning: user cannot be Graph-synced because ObjectId is missing.
+EntraIdUserSidLookupFailed=Could not resolve SID for user %1 — SID left blank.
+EntraIdUserLiveIdSkipped=Skipped LiveId / non-resolvable user %1 — no UPN/Mail match.
+EntraIdUserImportFailed=Failed to import user %1 from group %2 — see previous infolog entries.
+EntraIdUserInsertFailed=Failed to insert UserInfo row for user '%1' — last infolog: %2
 EntraIdNoGroupsFoundForUser=No Entra ID groups found for user '%1'
 EnvConfigFileGenerated=Environment Configuration File Generated Successfully.
 Environment=Environment
@@ -95,7 +139,8 @@ Setup=Setup
 SetUpInfoEntraIdSecGrpSync=Set up information for Entra ID security group synchronization
 ShowReasonDialog=Show Reason Dialog for SysAdmin
 ShowSysAdminExpiryDateDialog=Enable expiry dates for SysAdmin
-StartDate=Start Date :
+StarCreatedFromGroup=Created user '%1' from Entra ID group '%2'.
+UsertDate=Start Date :
 Submit=Submit
 SynchronousSynchronization=Synchronous synchronization
 SysAdmin=System Administrator
