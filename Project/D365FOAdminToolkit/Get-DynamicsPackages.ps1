@@ -1,7 +1,7 @@
 # Copies the following nessesary files to the folder Packages\DynamicsTemp
 # - Microsoft.Dynamics.AX.Security.Management
 # - Microsoft.Dynamics.AX.Metadata.Core
-# In ordet to overcome differences between Local VHD VMs, Cloud Hosted Environments and Universal Development Environments
+# In order to overcome differences between Local VHD VMs, Cloud Hosted Environments and Universal Development Environments
 
 
 param (
