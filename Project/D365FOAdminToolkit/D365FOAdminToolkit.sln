@@ -12,6 +12,11 @@ Project("{FC65038C-1B2F-41E1-A629-BED71D161FFF}") = "D365FOAdminToolkitTests (US
 		{AD007C16-7078-4710-BC2E-E0E6D058CE5C} = {AD007C16-7078-4710-BC2E-E0E6D058CE5C}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

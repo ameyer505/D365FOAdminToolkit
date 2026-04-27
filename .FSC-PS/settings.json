@@ -1,7 +1,7 @@
 {
   "type":"FSCM",
   "packageName": "D365FOAdminToolkit",
-  "buildVersion": "10.0.40",
+  "buildVersion": "10.0.45",
   "ciBranches": "main,release",
   "useLocalNuGetStorage":true,
   "deploymentScheduler":false
