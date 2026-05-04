@@ -565,6 +565,159 @@ public static boolean tryGetEntraIdGroupsForUser(
 }
 ]]></Source>
 			</Method>
+			<Method>
+				<Name>backfillClaimsGroupObjectIds</Name>
+				<Source><![CDATA[
+/// <summary>
+/// One-off repair pass: for every <c>UserInfo</c> row of type <c>ClaimsGroup</c>
+/// whose <c>ObjectId</c> is the empty GUID, looks the group up by display name
+/// against Microsoft Graph and writes the resolved ObjectId back. Safe to call on
+/// every batch run — exits early when no gaps exist.
+/// </summary>
+/// <returns>Number of rows successfully back-filled.</returns>
+public static int backfillClaimsGroupObjectIds()
+{
+    UserInfo                                                                userInfo;
+    UserInfo                                                                updateUserInfo;
+    Microsoft.Dynamics.AX.Security.MicrosoftGraphHelper.MicrosoftGraphClient graphClient;
+    Microsoft.Graph.Group                                                   graphGroup;
+    System.Object                                                           currentItem;
+    System.Collections.IEnumerator                                          groupsEnumerator;
+    Map                                                                     groupCache;
+    str                                                                     graphDisplayName;
+    str                                                                     graphObjectId;
+    str                                                                     resolvedObjectId;
+    int                                                                     gapCount;
+    int                                                                     resolved;
+    int                                                                     unresolved;
+
+    // Cheap gate: scan once for any ClaimsGroup with a null GUID. If none, do nothing.
+    while select RecId from userInfo
+        where userInfo.accountType        == UserAccountType::ClaimsGroup
+           && userInfo.isMicrosoftAccount == false
+           && userInfo.ObjectId           == emptyGuid()
+    {
+        gapCount++;
+    }
+
+    if (gapCount == 0)
+    {
+        return 0;
+    }
+
+    info(strFmt("@D365FOAdminToolkit:EntraIdGroupBackfillStarting", gapCount));
+
+    // Load the Graph group cache once (display-name -> ObjectId, lower-cased key).
+    groupCache = new Map(Types::String, Types::String);
+
+    try
+    {
+        info("@D365FOAdminToolkit:EntraIdGroupCacheLoading");
+
+        graphClient      = SysUserMSODSImportHelper::getMicrosoftGraphClient();
+        groupsEnumerator = graphClient.ListSecurityGroups().GetEnumerator();
+
+        while (groupsEnumerator.MoveNext())
+        {
+            currentItem = groupsEnumerator.Current;
+
+            if (!currentItem)
+            {
+                continue;
+            }
+
+            // ListSecurityGroups returns Microsoft.Graph.Group items.
+            graphGroup       = currentItem;
+            graphDisplayName = graphGroup.DisplayName;
+            graphObjectId    = graphGroup.Id;
+
+            if (graphDisplayName && graphObjectId)
+            {
+                groupCache.insert(strLwr(graphDisplayName), graphObjectId);
+            }
+        }
+
+        info(strFmt("@D365FOAdminToolkit:EntraIdGroupCacheLoaded", groupCache.elements()));
+    }
+    catch (Exception::CLRError)
+    {
+        System.Exception ex       = CLRInterop::getLastException();
+        System.Exception inner    = ex ? ex.get_InnerException() : null;
+        str              outerMsg = ex ? ex.get_Message() : "unknown";
+        str              innerMsg;
+        str              stackTrace;
+
+        // Walk the inner exception chain to surface the real cause
+        while (inner)
+        {
+            innerMsg += (innerMsg ? " || " : "") + inner.GetType().get_FullName() + ": " + inner.get_Message();
+            inner = inner.get_InnerException();
+        }
+
+        if (ex)
+        {
+            stackTrace = ex.get_StackTrace();
+        }
+
+        SysSecurity::HandleGraphAPIHelperException();
+        error(strFmt("@D365FOAdminToolkit:EntraIdGroupCacheErrorDetailed", outerMsg));
+
+        if (innerMsg)
+        {
+            error(strFmt("@D365FOAdminToolkit:EntraIdGroupCacheInnerError", innerMsg));
+        }
+
+        if (stackTrace)
+        {
+            error(stackTrace);
+        }
+
+        return 0;
+    }
+
+    // Iterate the gaps again and back-fill from the cache.
+    while select userInfo
+        where userInfo.accountType        == UserAccountType::ClaimsGroup
+           && userInfo.isMicrosoftAccount == false
+           && userInfo.ObjectId           == emptyGuid()
+    {
+        resolvedObjectId = '';
+
+        if (userInfo.Name && groupCache.exists(strLwr(userInfo.Name)))
+        {
+            resolvedObjectId = groupCache.lookup(strLwr(userInfo.Name));
+        }
+
+        if (resolvedObjectId)
+        {
+            ttsbegin;
+
+            select forupdate updateUserInfo
+                where updateUserInfo.RecId == userInfo.RecId;
+
+            if (updateUserInfo.RecId)
+            {
+                updateUserInfo.ObjectId = str2Guid(resolvedObjectId);
+                updateUserInfo.update();
+            }
+
+            ttscommit;
+
+            info(strFmt("@D365FOAdminToolkit:EntraIdGroupFoundByName", userInfo.Name, resolvedObjectId));
+            resolved++;
+        }
+        else
+        {
+            unresolved++;
+        }
+    }
+
+    info(strFmt("@D365FOAdminToolkit:EntraIdGroupBackfillSummary", resolved, unresolved, gapCount));
+
+    return resolved;
+}
+]]></Source>
+			</Method>
 		</Methods>
 	</SourceCode>
 </AxClass>

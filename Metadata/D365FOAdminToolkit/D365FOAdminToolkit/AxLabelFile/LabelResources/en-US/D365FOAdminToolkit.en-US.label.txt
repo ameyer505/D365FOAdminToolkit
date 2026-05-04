@@ -52,6 +52,14 @@ EndDate=End Date :
 EnhancedEntraIdGroupIntegrationMaintain=Maintain enhanced Entra ID group integration
 EnhancedEntraIdGroupIntegrationView=View enhanced Entra ID group integration
 EntraIdGroup=Entra ID group
+EntraIdGroupBackfillStarting=Detected %1 Entra ID group(s) with missing ObjectId. Attempting name-based lookup against Microsoft Graph...
+ ;Logged at start of run() when null-GUID ClaimsGroup rows are detected and back-fill is triggered.
+EntraIdGroupBackfillSummary=Entra ID group ObjectId back-fill complete: %1 resolved, %2 unresolved (of %3 total).
+ ;Summary log after the back-fill pass completes.
+EntraIdGroupCacheErrorInner=Entra ID group cache load failed inner exception: %1 (type %2)
+ ;Inner exception detail for Graph cache load failures during back-fill.
+EntraIdGroupCacheInnerError=Entra ID group cache load inner exception: %1
+ ;Inner exception trace.
 EntraIdGroupDynamicRoleAssignment=Entra ID group dynamic role assignment
 EntraIdGroupIdSyncFrequency=Frequency
  ;Interval between subsequent synchronous synchronizations
