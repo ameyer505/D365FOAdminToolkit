@@ -100,6 +100,9 @@
     <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=9.0.0.8, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.9.0.8\lib\net462\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Graph, Version=3.19.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Graph.3.19.0\lib\net45\Microsoft.Graph.dll</HintPath>
+    </Reference>
     <Reference Include="Std.UriTemplate, Version=2.0.5.0, Culture=neutral, PublicKeyToken=c118b0afb4598f9a, processorArchitecture=MSIL">
       <HintPath>..\packages\Std.UriTemplate.2.0.5\lib\netstandard2.0\Std.UriTemplate.dll</HintPath>
     </Reference>
