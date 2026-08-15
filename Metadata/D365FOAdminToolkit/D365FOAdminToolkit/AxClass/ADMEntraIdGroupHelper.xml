@@ -580,8 +580,7 @@ public static int backfillClaimsGroupObjectIds()
     UserInfo                                                                userInfo;
     UserInfo                                                                updateUserInfo;
     Microsoft.Dynamics.AX.Security.MicrosoftGraphHelper.MicrosoftGraphClient graphClient;
-    Microsoft.Graph.Group                                                   graphGroup;
-    System.Object                                                           currentItem;
+    Microsoft.Dynamics.AX.Security.DirectoryHelper.Group                    graphGroup;
     System.Collections.IEnumerator                                          groupsEnumerator;
     Map                                                                     groupCache;
     str                                                                     graphDisplayName;
@@ -619,17 +618,15 @@ public static int backfillClaimsGroupObjectIds()
 
         while (groupsEnumerator.MoveNext())
         {
-            currentItem = groupsEnumerator.Current;
+            graphGroup = groupsEnumerator.Current;
 
-            if (!currentItem)
+            if (!graphGroup)
             {
                 continue;
             }
 
-            // ListSecurityGroups returns Microsoft.Graph.Group items.
-            graphGroup       = currentItem;
             graphDisplayName = graphGroup.DisplayName;
-            graphObjectId    = graphGroup.Id;
+            graphObjectId    = guid2Str(graphGroup.ObjectID);
 
             if (graphDisplayName && graphObjectId)
             {
