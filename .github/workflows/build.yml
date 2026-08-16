@@ -152,7 +152,7 @@ jobs:
           $binDir = "Metadata/D365FOAdminToolkit/bin"
           New-Item -ItemType Directory -Path $binDir -Force | Out-Null
           nuget install Microsoft.Graph -Version 3.19.0 -OutputDirectory "$env:TEMP\nuget_graph" -NonInteractive
-          Copy-Item "$env:TEMP\nuget_graph\Microsoft.Graph.3.19.0\lib\net45\Microsoft.Graph.dll" -Destination $binDir
+          Copy-Item "$env:TEMP\nuget_graph\Microsoft.Graph.3.19.0\lib\netstandard2.0\Microsoft.Graph.dll" -Destination $binDir
           Write-Host "Microsoft.Graph.dll copied to $binDir"
 
       - name: Run pipeline
