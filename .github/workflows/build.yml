@@ -145,8 +145,16 @@ jobs:
       - name: Setup NuGet
         uses: nuget/setup-nuget@v2
         with:
-          nuget-version: 5.10.x    
-          
+          nuget-version: 5.10.x
+
+      - name: Copy Microsoft.Graph dependency for X++ compiler
+        run: |
+          $binDir = "Metadata/D365FOAdminToolkit/bin"
+          New-Item -ItemType Directory -Path $binDir -Force | Out-Null
+          nuget install Microsoft.Graph -Version 3.19.0 -OutputDirectory "$env:TEMP\nuget_graph" -NonInteractive
+          Copy-Item "$env:TEMP\nuget_graph\Microsoft.Graph.3.19.0\lib\net45\Microsoft.Graph.dll" -Destination $binDir
+          Write-Host "Microsoft.Graph.dll copied to $binDir"
+
       - name: Run pipeline
         uses: fscpscollaborative/fscps.gh/RunPipeline@v2.1
         id: runpipeline
