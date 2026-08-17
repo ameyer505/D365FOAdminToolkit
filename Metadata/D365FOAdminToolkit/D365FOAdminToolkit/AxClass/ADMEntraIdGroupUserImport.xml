@@ -15,7 +15,7 @@ public class ADMEntraIdGroupUserImport extends RunBaseBatch implements BatchRetr
 
     // Cache for Entra ID tenant users (lowercase guid string -> DirectoryHelper.User)
     // Loaded once per run via a tenant-wide ListUsers() call so that the per-group
-    // GetMembersOfSecurityGroupsById call (which returns only ObjectId strings) can
+    // GetMembersOfSecurityGroupById call (which returns only ObjectId strings) can
     // be resolved to full User objects without one Graph call per member.
     Map                 tenantUserCache;
     boolean             tenantUserCacheLoaded;
@@ -557,7 +557,7 @@ public void run()
 /// same API that standard <c>SysUserImportService::bulkImportUsers</c> uses for
 /// tenant-wide user enumeration. Returns <c>IEnumerable<DirectoryHelper.User></c>.
 ///
-/// Per-group enumeration via <c>MicrosoftGraphClient.GetMembersOfSecurityGroupsById</c>
+/// Per-group enumeration via <c>MicrosoftGraphClient.GetMembersOfSecurityGroupById</c>
 /// returns only member ObjectId strings (no braces, e.g. <c>6264cda9-287d-...</c>),
 /// while <c>guid2Str</c> in X++ emits braced form (e.g. <c>{6264CDA9-287D-...}</c>).
 /// We normalise BOTH sides through <c>str2Guid</c> → <c>guid2Str</c> → lowercase so
@@ -664,7 +664,7 @@ private void importUsersFromEntraIdGroup(UserInfo _groupUserInfo)
     try
     {
         graphClient = SysUserMSODSImportHelper::getMicrosoftGraphClient();
-        groupMembersEnumerator = graphClient.GetMembersOfSecurityGroupsById(groupObjectId).GetEnumerator();
+        groupMembersEnumerator = graphClient.GetMembersOfSecurityGroupById(groupObjectId).GetEnumerator();
     }
     catch (Exception::CLRError)
     {
