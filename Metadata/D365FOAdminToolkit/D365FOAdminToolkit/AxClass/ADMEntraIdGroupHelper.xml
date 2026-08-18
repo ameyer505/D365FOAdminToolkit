@@ -17,32 +17,73 @@ internal final class ADMEntraIdGroupHelper
 			<Method>
 				<Name>syncEntraIdGroupsforUser</Name>
 				<Source><![CDATA[
+    /// <summary>
+    /// Backward-compatible per-user synchronization that refreshes ADMEntraIdGroupUserMembership
+    /// from Microsoft Graph. Retained for external callers; internally delegates to
+    /// <c>syncEntraIdGroupsforUserWithChangeTracking</c> and discards the change-tracking
+    /// return value. Callers that need to drive end-of-batch
+    /// <c>SysSecurityDynamicRoleAssignment::synchronize</c> must use
+    /// <c>syncEntraIdGroupsforUserWithChangeTracking</c> instead.
+    /// </summary>
+    /// <param name = "_userId">The user to synchronize; defaults to the current user.</param>
     public static void syncEntraIdGroupsforUser(UserId _userId = curUserId())
     {
-        ADMEntraIdGroupUserMembership   entraIdGroupUserMembership;
-        ADMEntraIdGroupUserMembership   entraIdGroupUserMembershipNew;
-        SysActiveDirectoryGroupTmp      entraIdGroups;
-        
-        entraIdGroups = ADMEntraIdGroupHelper::getEntraIdGroupsForUserId(_userId);
+        ADMEntraIdGroupHelper::syncEntraIdGroupsforUserWithChangeTracking(_userId);
+    }
 
-        ttsbegin;
+]]></Source>
+			</Method>
+			<Method>
+				<Name>ensureDynamicRoleAssignmentRulesForOptedInGroups</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Repair / backfill pass: for every Entra ID group whose
+    /// <c>ADMEntraIdGroupDynamicRoleAssignment.AutomaticRoleAssignment = Yes</c>,
+    /// ensures that a <c>SecurityRoleAssignmentRule</c> (and the paired
+    /// <c>ADMEntraIdGroupSecurityRoleAssignmentRule</c> link row) exists for every
+    /// enabled <c>SecurityUserRole</c> assigned to that group.
+    /// </summary>
+    /// <remarks>
+    /// This heals environments where the role-to-group assignment happened before the
+    /// group was opted in for automatic role assignment (the original insert-time
+    /// handler in <c>ADMSecurityUserRole_EventHandlers</c> would have silently skipped
+    /// rule creation). Delegates the actual rule creation to
+    /// <c>createRoleAssignmentRule</c> which already guards against duplicates, so this
+    /// pass is idempotent and safe to run on every batch.
+    /// </remarks>
+    public static void ensureDynamicRoleAssignmentRulesForOptedInGroups()
+    {
+        ADMEntraIdGroupDynamicRoleAssignment        entraIdGroupDynamicRoleAssignment;
+        UserInfo                                    groupUserInfo;
+        SecurityUserRole                            secUserRole;
+        ADMEntraIdGroupSecurityRoleAssignmentRule   entraIdGroupSecRoleAssignmentRule;
 
-        // Add new groups
-        insert_recordset entraIdGroupUserMembershipNew (User, EntraIdGroup)
-            select _userId, AxUserID from entraIdGroups
-                notexists join entraIdGroupUserMembership
-                where entraIdGroupUserMembership.User == _userId
-                   && entraIdGroupUserMembership.EntraIdGroup == entraIdGroups.AxUserID;
-        
-        // Remove obsolete groups
-        delete_from entraIdGroupUserMembership
-            where entraIdGroupUserMembership.User == _userId
-            notexists join entraIdGroups
-                where entraIdGroups.AxUserID == entraIdGroupUserMembership.EntraIdGroup;
+        while select groupUserInfo
+            where groupUserInfo.accountType == UserAccountType::ClaimsGroup
+               && groupUserInfo.isMicrosoftAccount == false
+            exists join entraIdGroupDynamicRoleAssignment
+                where entraIdGroupDynamicRoleAssignment.UserInfo == groupUserInfo.RecId
+                   && entraIdGroupDynamicRoleAssignment.AutomaticRoleAssignment == NoYes::Yes
+        {
+            while select secUserRole
+                where secUserRole.User == groupUserInfo.id
+                   && secUserRole.AssignmentStatus == RoleAssignmentStatus::Enabled
+            {
+                // Skip combinations that already have a rule linked.
+                select firstonly RecId from entraIdGroupSecRoleAssignmentRule
+                    where entraIdGroupSecRoleAssignmentRule.SecurityRole == secUserRole.SecurityRole
+                       && entraIdGroupSecRoleAssignmentRule.UserInfo == groupUserInfo.RecId;
 
-        ADMEntraIdGroupUserLastSync::setLastSync(_userId);
+                if (entraIdGroupSecRoleAssignmentRule.RecId)
+                {
+                    continue;
+                }
 
-        ttscommit;
+                ADMEntraIdGroupHelper::createRoleAssignmentRule(secUserRole, groupUserInfo);
+
+                info(strFmt("@D365FOAdminToolkit:EntraIdGroupRepairBackfillCreated", groupUserInfo.id, secUserRole.SecurityRole));
+            }
+        }
     }
 
 ]]></Source>
@@ -57,57 +98,6 @@ internal final class ADMEntraIdGroupHelper
         select firstonly ObjectId from userInfo where userInfo.id == _userId;
 
         return ADMEntraIdGroupHelper::getEntraIdGroupsForUserObjectId(userInfo.ObjectId, _userId);
-    }
-
-]]></Source>
-			</Method>
-			<Method>
-				<Name>getEntraIdGroupsForUserObjectId</Name>
-				<Source><![CDATA[
-    internal static SysActiveDirectoryGroupTmp getEntraIdGroupsForUserObjectId(guid _objectId, UserId _userId = '')
-    {
-        UserInfo                    groupInfo;
-        SysActiveDirectoryGroupTmp  entraIdGroups;
-
-        entraIdGroups = null;
-
-        try
-        {
-            IDirectoryClient dirClient = DirectoryClientProvider::GetDirectoryClient();
-            System.Collections.IEnumerator enumerator = dirClient.GetSecurityMemberGroupsForUser(guid2Str(_objectId)).GetEnumerator();
-
-            ttsbegin;
-
-            while (enumerator.MoveNext())
-            {
-                select firstonly groupInfo
-                    where groupInfo.sid == enumerator.Current
-                       && groupInfo.accountType == UserAccountType::ClaimsGroup;
-
-                if (groupInfo.RecId)
-                {
-                    entraIdGroups.AxUserID = groupInfo.id;
-                    entraIdGroups.Name = groupInfo.Name;
-                    entraIdGroups.ObjectId = groupInfo.sid;
-                    entraIdGroups.insert();
-                }
-            }
-
-            ttscommit;
-        }
-        catch(Exception::CLRError)
-        {
-            if (_userId)
-            {
-                warning(strFmt("@D365FOAdminToolkit:EntraIdNoGroupsFoundForUser", _userId));
-            }
-            else
-            {
-                error("@ApplicationFoundation:GraphAPIErrorMsg");
-            }
-        }
-
-        return entraIdGroups;
     }
 
 ]]></Source>
@@ -311,6 +301,418 @@ internal final class ADMEntraIdGroupHelper
         return ret;
     }
 
+]]></Source>
+			</Method>
+			<Method>
+				<Name>getEntraIdGroupsForUserObjectId</Name>
+				<Source><![CDATA[
+    internal static SysActiveDirectoryGroupTmp getEntraIdGroupsForUserObjectId(guid _objectId, UserId _userId = '')
+    {
+        UserInfo                    groupInfo;
+        SysActiveDirectoryGroupTmp  entraIdGroups;
+        guid                        graphGroupObjectId;
+
+        entraIdGroups = null;
+
+        try
+        {
+            IDirectoryClient dirClient = DirectoryClientProvider::GetDirectoryClient();
+            System.Collections.IEnumerator enumerator = dirClient.GetSecurityMemberGroupsForUser(guid2Str(_objectId)).GetEnumerator();
+
+            ttsbegin;
+
+            while (enumerator.MoveNext())
+            {
+                // Group identification uses UserInfo.ObjectId (GUID) as the single source of truth.
+                // The Graph API returns ObjectIds as strings; we convert via str2Guid and compare
+                // with groupInfo.ObjectId. UserInfo.sid is NOT used for ClaimsGroup rows.
+                graphGroupObjectId = str2Guid(enumerator.Current);
+
+                select firstonly groupInfo
+                    where groupInfo.ObjectId == graphGroupObjectId
+                       && groupInfo.accountType == UserAccountType::ClaimsGroup;
+
+                if (groupInfo.RecId)
+                {
+                    entraIdGroups.AxUserID = groupInfo.id;
+                    entraIdGroups.Name = groupInfo.Name;
+                    entraIdGroups.ObjectId = guid2Str(groupInfo.ObjectId);
+                    entraIdGroups.insert();
+                }
+            }
+
+            ttscommit;
+        }
+        catch(Exception::CLRError)
+        {
+            if (_userId)
+            {
+                warning(strFmt("@D365FOAdminToolkit:EntraIdNoGroupsFoundForUser", _userId));
+            }
+            else
+            {
+                error("@ApplicationFoundation:GraphAPIErrorMsg");
+            }
+        }
+
+        return entraIdGroups;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>syncEntraIdGroupsforUserWithChangeTracking</Name>
+				<Source><![CDATA[
+/// <summary>
+/// Refreshes the <c>ADMEntraIdGroupUserMembership</c> snapshot for a user and reports
+/// which groups actually changed so the caller can drive
+/// <c>SysSecurityDynamicRoleAssignment::synchronize</c> only for roles whose membership
+/// basis moved.
+/// </summary>
+/// <param name = "_userId">The user to synchronize.</param>
+/// <returns>
+/// A container <c>[boolean success, container packedChangedGroups]</c> where
+/// <c>packedChangedGroups</c> is the result of <c>Set.pack()</c> on a <c>Set(Types::String)</c>
+/// containing the union of groups the user joined and groups the user left. The caller
+/// MUST reconstruct the Set via <c>Set::create(packedChangedGroups)</c>.
+/// <list type="bullet">
+///   <item><c>success = true</c> — Graph refresh succeeded (possibly after retries) and
+///         the membership table was updated. The packed Set may be empty when no change
+///         occurred.</item>
+///   <item><c>success = false</c> — Graph failed after 3 attempts.
+///         <c>ADMEntraIdGroupUserMembership</c> was NOT mutated; the packed Set is empty.</item>
+/// </list>
+/// </returns>
+/// <remarks>
+/// The Graph-result temp buffer is declared LOCALLY here and passed by reference into
+/// <c>tryGetEntraIdGroupsForUser</c>. Previously the helper returned the buffer inside
+/// a container — that round-trip silently lost all rows because
+/// <c>SysActiveDirectoryGroupTmp</c> is a <c>TableType::TempDB</c> table and X++
+/// containers can only preserve <c>TableType::InMemory</c> buffers across method
+/// boundaries. With this change the buffer stays in the caller's scope, so the diff
+/// and <c>insert_recordset</c> below see the matched rows correctly.
+///
+/// Sets cannot be placed directly inside a container in X++ — the 2nd return element
+/// is the packed representation. This method intentionally does NOT call
+/// <c>synchronize()</c> itself; the batch orchestrator
+/// (<c>ADMEntraIDGroupUserSynchronization.run</c>) deduplicates roles across all users
+/// and issues a single <c>synchronize()</c> per role at the end of the run.
+/// </remarks>
+public static container syncEntraIdGroupsforUserWithChangeTracking(UserId _userId)
+{
+    boolean                         success;
+    SysActiveDirectoryGroupTmp      entraIdGroups;
+    ADMEntraIdGroupUserMembership   entraIdGroupUserMembership;
+    ADMEntraIdGroupUserMembership   entraIdGroupUserMembershipExisting;
+    ADMEntraIdGroupUserMembership   entraIdGroupUserMembershipNew;
+    Set                             changedGroups = new Set(Types::String);
+    SysActiveDirectoryGroupTmp      graphGroupsLookup;
+
+    // Keep the temp buffer in local scope — passing it through a container returned
+    // from tryGetEntraIdGroupsForUser silently loses rows for TempDB tmp tables.
+    success = ADMEntraIdGroupHelper::tryGetEntraIdGroupsForUser(_userId, 3, entraIdGroups);
+
+    if (!success)
+    {
+        // Graph refresh failed permanently for this user. Do NOT mutate membership;
+        // that would cause stale-data role stripping downstream.
+        return [false, changedGroups.pack()];
+    }
+
+    ttsbegin;
+
+    // Compute "joined" groups (in Graph result, not yet in membership snapshot).
+    while select AxUserID from entraIdGroups
+    {
+        select firstonly RecId from entraIdGroupUserMembershipExisting
+            where entraIdGroupUserMembershipExisting.User == _userId
+               && entraIdGroupUserMembershipExisting.EntraIdGroup == entraIdGroups.AxUserID;
+
+        if (!entraIdGroupUserMembershipExisting.RecId && entraIdGroups.AxUserID)
+        {
+            changedGroups.add(entraIdGroups.AxUserID);
+        }
+    }
+
+    // Compute "left" groups (in membership snapshot, not in Graph result).
+    while select EntraIdGroup from entraIdGroupUserMembership
+        where entraIdGroupUserMembership.User == _userId
+    {
+        graphGroupsLookup = null;
+
+        select firstonly AxUserID from graphGroupsLookup
+            where graphGroupsLookup.AxUserID == entraIdGroupUserMembership.EntraIdGroup;
+
+        if (!graphGroupsLookup.AxUserID && entraIdGroupUserMembership.EntraIdGroup)
+        {
+            changedGroups.add(entraIdGroupUserMembership.EntraIdGroup);
+        }
+    }
+
+    // Apply diff: add new memberships.
+    insert_recordset entraIdGroupUserMembershipNew (User, EntraIdGroup)
+        select _userId, AxUserID from entraIdGroups
+            notexists join entraIdGroupUserMembershipExisting
+            where entraIdGroupUserMembershipExisting.User == _userId
+               && entraIdGroupUserMembershipExisting.EntraIdGroup == entraIdGroups.AxUserID;
+
+    // Apply diff: remove obsolete memberships.
+    delete_from entraIdGroupUserMembership
+        where entraIdGroupUserMembership.User == _userId
+        notexists join entraIdGroups
+            where entraIdGroups.AxUserID == entraIdGroupUserMembership.EntraIdGroup;
+
+    ADMEntraIdGroupUserLastSync::setLastSync(_userId);
+
+    ttscommit;
+
+    return [true, changedGroups.pack()];
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>tryGetEntraIdGroupsForUser</Name>
+				<Source><![CDATA[
+/// <summary>
+/// Fetches the user's Entra ID group memberships from Microsoft Graph with
+/// retry-on-transient-failure semantics.
+/// </summary>
+/// <param name = "_userId">The user to query.</param>
+/// <param name = "_maxAttempts">Maximum number of attempts; typical value is 3.</param>
+/// <param name = "_tmpGroups">
+/// OUT: temp buffer that receives one row per matched D365 ClaimsGroup. Passed by
+/// reference to avoid the X++ container / TempDB round-trip pitfall
+/// (SysActiveDirectoryGroupTmp is TableType::TempDB).
+/// </param>
+/// <returns><c>true</c> if Graph succeeded; <c>false</c> if Graph failed all attempts.</returns>
+public static boolean tryGetEntraIdGroupsForUser(
+    UserId                      _userId,
+    int                         _maxAttempts,
+    SysActiveDirectoryGroupTmp  _tmpGroups)
+{
+    UserInfo                    userInfo;
+    UserInfo                    groupInfo;
+    guid                        objectId;
+    guid                        graphGroupObjectId;
+    str                         graphResultStr;
+    int                         attempt;
+    boolean                     success = false;
+
+    if (_maxAttempts < 1)
+    {
+        _maxAttempts = 1;
+    }
+
+    select firstonly ObjectId from userInfo where userInfo.id == _userId;
+    objectId = userInfo.ObjectId;
+
+    if (objectId == emptyGuid())
+    {
+        warning(strFmt("@D365FOAdminToolkit:EntraIdUserObjectIdMissing", _userId));
+        return false;
+    }
+
+    for (attempt = 1; attempt <= _maxAttempts; attempt++)
+    {
+        try
+        {
+            delete_from _tmpGroups;
+
+            Microsoft.Dynamics.AX.Security.DirectoryHelper.IDirectoryClient dirClient =
+                Microsoft.Dynamics.AX.Security.DirectoryHelper.DirectoryClientProvider::GetDirectoryClient();
+            System.Collections.IEnumerator enumerator =
+                dirClient.GetSecurityMemberGroupsForUser(guid2Str(objectId)).GetEnumerator();
+
+            while (enumerator.MoveNext())
+            {
+                graphResultStr = enumerator.Current;
+                graphGroupObjectId = str2Guid(graphResultStr);
+
+                if (graphGroupObjectId == emptyGuid())
+                {
+                    continue;
+                }
+
+                select firstonly groupInfo
+                    where groupInfo.ObjectId == graphGroupObjectId
+                       && groupInfo.accountType == UserAccountType::ClaimsGroup;
+
+                if (groupInfo.RecId)
+                {
+                    _tmpGroups.AxUserID = groupInfo.id;
+                    _tmpGroups.Name     = groupInfo.Name;
+                    _tmpGroups.ObjectId = guid2Str(groupInfo.ObjectId);
+                    _tmpGroups.insert();
+                }
+            }
+
+            success = true;
+            break;
+        }
+        catch (Exception::CLRError)
+        {
+            CLRInterop::getLastException();
+
+            if (attempt >= _maxAttempts)
+            {
+                warning(strFmt("@D365FOAdminToolkit:EntraIdGroupGraphFailedForUser", _userId, _maxAttempts));
+                success = false;
+            }
+        }
+    }
+
+    return success;
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>backfillClaimsGroupObjectIds</Name>
+				<Source><![CDATA[
+/// <summary>
+/// One-off repair pass: for every <c>UserInfo</c> row of type <c>ClaimsGroup</c>
+/// whose <c>ObjectId</c> is the empty GUID, looks the group up by display name
+/// against Microsoft Graph and writes the resolved ObjectId back. Safe to call on
+/// every batch run — exits early when no gaps exist.
+/// </summary>
+/// <returns>Number of rows successfully back-filled.</returns>
+public static int backfillClaimsGroupObjectIds()
+{
+    UserInfo                                                                userInfo;
+    UserInfo                                                                updateUserInfo;
+    Microsoft.Dynamics.AX.Security.MicrosoftGraphHelper.MicrosoftGraphClient graphClient;
+    Microsoft.Dynamics.AX.Security.DirectoryHelper.Group                    graphGroup;
+    System.Collections.IEnumerator                                          groupsEnumerator;
+    Map                                                                     groupCache;
+    str                                                                     graphDisplayName;
+    str                                                                     graphObjectId;
+    str                                                                     resolvedObjectId;
+    int                                                                     gapCount;
+    int                                                                     resolved;
+    int                                                                     unresolved;
+
+    // Cheap gate: scan once for any ClaimsGroup with a null GUID. If none, do nothing.
+    while select RecId from userInfo
+        where userInfo.accountType        == UserAccountType::ClaimsGroup
+           && userInfo.isMicrosoftAccount == false
+           && userInfo.ObjectId           == emptyGuid()
+    {
+        gapCount++;
+    }
+
+    if (gapCount == 0)
+    {
+        return 0;
+    }
+
+    info(strFmt("@D365FOAdminToolkit:EntraIdGroupBackfillStarting", gapCount));
+
+    // Load the Graph group cache once (display-name -> ObjectId, lower-cased key).
+    groupCache = new Map(Types::String, Types::String);
+
+    try
+    {
+        info("@D365FOAdminToolkit:EntraIdGroupCacheLoading");
+
+        graphClient      = SysUserMSODSImportHelper::getMicrosoftGraphClient();
+        groupsEnumerator = graphClient.ListSecurityGroups().GetEnumerator();
+
+        while (groupsEnumerator.MoveNext())
+        {
+            graphGroup = groupsEnumerator.Current;
+
+            if (!graphGroup)
+            {
+                continue;
+            }
+
+            graphDisplayName = graphGroup.DisplayName;
+            graphObjectId    = guid2Str(graphGroup.ObjectID);
+
+            if (graphDisplayName && graphObjectId)
+            {
+                groupCache.insert(strLwr(graphDisplayName), graphObjectId);
+            }
+        }
+
+        info(strFmt("@D365FOAdminToolkit:EntraIdGroupCacheLoaded", groupCache.elements()));
+    }
+    catch (Exception::CLRError)
+    {
+        System.Exception ex       = CLRInterop::getLastException();
+        System.Exception inner    = ex ? ex.get_InnerException() : null;
+        str              outerMsg = ex ? ex.get_Message() : "unknown";
+        str              innerMsg;
+        str              stackTrace;
+
+        // Walk the inner exception chain to surface the real cause
+        while (inner)
+        {
+            innerMsg += (innerMsg ? " || " : "") + inner.GetType().get_FullName() + ": " + inner.get_Message();
+            inner = inner.get_InnerException();
+        }
+
+        if (ex)
+        {
+            stackTrace = ex.get_StackTrace();
+        }
+
+        SysSecurity::HandleGraphAPIHelperException();
+        error(strFmt("@D365FOAdminToolkit:EntraIdGroupCacheErrorDetailed", outerMsg));
+
+        if (innerMsg)
+        {
+            error(strFmt("@D365FOAdminToolkit:EntraIdGroupCacheInnerError", innerMsg));
+        }
+
+        if (stackTrace)
+        {
+            error(stackTrace);
+        }
+
+        return 0;
+    }
+
+    // Iterate the gaps again and back-fill from the cache.
+    while select userInfo
+        where userInfo.accountType        == UserAccountType::ClaimsGroup
+           && userInfo.isMicrosoftAccount == false
+           && userInfo.ObjectId           == emptyGuid()
+    {
+        resolvedObjectId = '';
+
+        if (userInfo.Name && groupCache.exists(strLwr(userInfo.Name)))
+        {
+            resolvedObjectId = groupCache.lookup(strLwr(userInfo.Name));
+        }
+
+        if (resolvedObjectId)
+        {
+            ttsbegin;
+
+            select forupdate updateUserInfo
+                where updateUserInfo.RecId == userInfo.RecId;
+
+            if (updateUserInfo.RecId)
+            {
+                updateUserInfo.ObjectId = str2Guid(resolvedObjectId);
+                updateUserInfo.update();
+            }
+
+            ttscommit;
+
+            info(strFmt("@D365FOAdminToolkit:EntraIdGroupFoundByName", userInfo.Name, resolvedObjectId));
+            resolved++;
+        }
+        else
+        {
+            unresolved++;
+        }
+    }
+
+    info(strFmt("@D365FOAdminToolkit:EntraIdGroupBackfillSummary", resolved, unresolved, gapCount));
+
+    return resolved;
+}
 ]]></Source>
 			</Method>
 		</Methods>

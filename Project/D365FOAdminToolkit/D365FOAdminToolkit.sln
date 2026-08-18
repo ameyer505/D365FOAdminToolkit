@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36414.22
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11430.68
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FC65038C-1B2F-41E1-A629-BED71D161FFF}") = "D365FOAdminToolkit (USR) [D365FOAdminToolkit]", "D365FOAdminToolkit\D365FOAdminToolkit.rnrproj", "{AD007C16-7078-4710-BC2E-E0E6D058CE5C}"
 EndProject

@@ -598,6 +598,7 @@
     <Folder Include="Action Menu Items\" />
     <Folder Include="Base Enums\" />
     <Folder Include="Classes\" />
+    <Folder Include="Data Entity Extensions\" />
     <Folder Include="Display Menu Items\" />
     <Folder Include="EDT Extensions\" />
     <Folder Include="EDT Integers\" />
@@ -616,14 +617,14 @@
     <Folder Include="Views\" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="D365FOAdminToolkitNET, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\D365FOAdminToolkitNET\D365FOAdminToolkitNET.csproj">
       <Name>D365FOAdminToolkitNET</Name>
       <Project>{fbae26b1-8c74-4f17-8d75-e14afb8d00c5}</Project>
       <Private>True</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="D365FOAdminToolkitNET, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.Common.targets" />
   <Import Project="$(BuildTasksDirectory)\Microsoft.Dynamics.Framework.Tools.BuildTasks.17.0.targets" />

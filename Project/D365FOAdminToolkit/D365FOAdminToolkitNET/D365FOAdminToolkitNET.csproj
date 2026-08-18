@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -14,7 +14,23 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
+    <!-- 
+      D365FOLocalPackagesPath: Set this property to your local Dynamics 365 PackagesLocalDirectory\bin path.
+      This is useful for local development when not running on a cloud-hosted VM.
+      Example: C:\Users\YourUser\AppData\Local\Microsoft\Dynamics365\10.0.xxxx.xx\PackagesLocalDirectory\bin
+      
+      You can set this:
+      1. As an environment variable: D365FOLocalPackagesPath
+      2. In a Directory.Build.props file in the solution root
+      3. Via command line: msbuild /p:D365FOLocalPackagesPath="C:\path\to\bin"
+      
+      If not set (e.g. in CI/CD), the project will use NuGet-restored packages and the FSC NuGet packages.
+    -->
+    <!-- Determine which bin path to use: local path if set, otherwise ServiceDrive path -->
+    <D365FOBinPath Condition="'$(D365FOLocalPackagesPath)' != ''">$(D365FOLocalPackagesPath)</D365FOBinPath>
+    <D365FOBinPath Condition="'$(D365FOLocalPackagesPath)' == ''">$(ServiceDrive)\AOSService\PackagesLocalDirectory\bin</D365FOBinPath>
+    <D365FOWebRootBinPath Condition="'$(D365FOLocalPackagesPath)' != ''">$(D365FOLocalPackagesPath)</D365FOWebRootBinPath>
+    <D365FOWebRootBinPath Condition="'$(D365FOLocalPackagesPath)' == ''">$(ServiceDrive)\AOSService\WebRoot\bin</D365FOWebRootBinPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,13 +49,37 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup Condition="Exists('..\packages')">
+  <!-- Option 1: NuGet packages (used in CI/CD pipelines) -->
+  <ItemGroup Condition="'$(D365FOLocalPackagesPath)' == ''">
     <Reference Include="..\packages\Microsoft.Dynamics.AX.Platform.CompilerPackage.*\Microsoft.Dynamics.AX.Metadata.dll" />
     <Reference Include="..\packages\Microsoft.Dynamics.AX.Platform.CompilerPackage.*\Microsoft.Dynamics.AX.Metadata.Core.dll" />
     <Reference Include="..\packages\Microsoft.Dynamics.AX.Platform.CompilerPackage.*\Microsoft.Dynamics.AX.Metadata.Modeling.dll" />
     <Reference Include="..\packages\Microsoft.Dynamics.AX.Platform.CompilerPackage.*\Microsoft.Dynamics.AX.Xpp.AxShared.dll" />
     <Reference Include="..\packages\Microsoft.Dynamics.AX.Platform.CompilerPackage.*\Microsoft.Dynamics.AX.Xpp.Support.dll" />
     <Reference Include="..\packages\Microsoft.Dynamics.AX.Platform.DevALM.BuildXpp.*\ref\net40\ApplicationFoundation\bin\Microsoft.Dynamics.AX.Security.Management.dll" />
+  </ItemGroup>
+  <!-- Option 2: Local path or ServiceDrive (used for local development) -->
+  <ItemGroup Condition="'$(D365FOLocalPackagesPath)' != ''">
+    <Reference Include="Microsoft.Dynamics.AX.Metadata, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(D365FOBinPath)\Microsoft.Dynamics.AX.Metadata.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamics.AX.Metadata.Core">
+      <HintPath>$(D365FOWebRootBinPath)\Microsoft.Dynamics.AX.Metadata.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamics.AX.Metadata.Modeling">
+      <HintPath>$(D365FOBinPath)\Microsoft.Dynamics.AX.Metadata.Modeling.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamics.AX.Security.Management">
+      <HintPath>$(D365FOWebRootBinPath)\Microsoft.Dynamics.AX.Security.Management.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamics.AX.Xpp.AxShared, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(D365FOBinPath)\Microsoft.Dynamics.AX.Xpp.AxShared.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamics.AX.Xpp.Support">
+      <HintPath>$(D365FOBinPath)\Microsoft.Dynamics.AX.Xpp.Support.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="CsvHelper, Version=33.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
@@ -54,31 +94,14 @@
     <Reference Include="Microsoft.Bcl.TimeProvider, Version=9.0.0.8, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.TimeProvider.9.0.8\lib\net462\Microsoft.Bcl.TimeProvider.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Dynamics.AX.Metadata, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ServiceDrive)\AOSService\PackagesLocalDirectory\bin\Microsoft.Dynamics.AX.Metadata.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Dynamics.AX.Metadata.Core">
-      <HintPath>$(ServiceDrive)\AOSService\WebRoot\bin\Microsoft.Dynamics.AX.Metadata.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Dynamics.AX.Metadata.Modeling">
-      <HintPath>$(ServiceDrive)\AOSService\PackagesLocalDirectory\bin\Microsoft.Dynamics.AX.Metadata.Modeling.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Dynamics.AX.Security.Management">
-      <HintPath>$(ServiceDrive)\AOSService\WebRoot\bin\Microsoft.Dynamics.AX.Security.Management.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Dynamics.AX.Xpp.AxShared, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ServiceDrive)\AOSService\PackagesLocalDirectory\bin\Microsoft.Dynamics.AX.Xpp.AxShared.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Dynamics.AX.Xpp.Support">
-      <HintPath>$(ServiceDrive)\AOSService\PackagesLocalDirectory\bin\Microsoft.Dynamics.AX.Xpp.Support.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=9.0.0.8, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.9.0.8\lib\net462\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=9.0.0.8, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.9.0.8\lib\net462\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Graph, Version=3.19.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Graph.3.19.0\lib\net45\Microsoft.Graph.dll</HintPath>
     </Reference>
     <Reference Include="Std.UriTemplate, Version=2.0.5.0, Culture=neutral, PublicKeyToken=c118b0afb4598f9a, processorArchitecture=MSIL">
       <HintPath>..\packages\Std.UriTemplate.2.0.5\lib\netstandard2.0\Std.UriTemplate.dll</HintPath>

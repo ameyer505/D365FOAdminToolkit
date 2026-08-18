@@ -6,11 +6,34 @@
 public class ADMEntraIdGroupUserImport extends RunBaseBatch implements BatchRetryable
 {
     SysUserMSODSUserTmp tmp;
-    
+
     UserId              groupId;
 
-    
+    // Cache for Entra ID groups (DisplayName -> ObjectId)
+    Map                 entraIdGroupCache;
+    boolean             groupCacheLoaded;
+
+    // Cache for Entra ID tenant users (lowercase guid string -> DirectoryHelper.User)
+    // Loaded once per run via a tenant-wide ListUsers() call.
+    Map                 tenantUserCache;
+    boolean             tenantUserCacheLoaded;
+
+    // Cache for per-user group memberships (lowercase user objectId -> Container of lowercase group objectIds)
+    // Populated once per run via GetSecurityMemberGroupsForUser for every user in tenantUserCache.
+    // Used by importUsersFromEntraIdGroup to filter group members without a direct group-member API call.
+    Map                 userGroupsCache;
+    boolean             userGroupsCacheLoaded;
+
+    // Run-level telemetry counters (populated across all groups in one run)
+    int totalMembersFetched;
+    int totalUsersCreated;
+    int totalSkippedExisting;
+    int totalSkippedLiveId;
+    int totalSkippedNotInCache;
+    int totalErrors;
+    int groupsProcessed;
 }
+
 ]]></Declaration>
 		<Methods>
 			<Method>
@@ -56,197 +79,58 @@ public class ADMEntraIdGroupUserImport extends RunBaseBatch implements BatchRetr
 ]]></Source>
 			</Method>
 			<Method>
-				<Name>run</Name>
+				<Name>ensureDynamicRoleAssignmentRecords</Name>
 				<Source><![CDATA[
     /// <summary>
-    /// Runs the operation.
+    /// Ensures that ADMEntraIdGroupDynamicRoleAssignment records exist for all Entra ID groups.
+    /// Creates missing records with the default automatic role assignment setting.
     /// </summary>
-    [Microsoft.Dynamics.BusinessPlatform.SharedTypes.InternalUseOnlyAttribute]
-    public void run()
+    private void ensureDynamicRoleAssignmentRecords()
     {
-        SysActiveDirectoryGroupTmp  entraIdGroups;
-        UserInfo                    userInfo;
-
-        List                        selectedUsers = new List(Types::Record);
-        SysUserMSODSImportHelper    helper        = new SysUserMSODSImportHelper();
-
-        this.fillTmpUserList();
-
-        while select tmp
-            notexists join userInfo
-            where userInfo.sid == tmp.UserSid
-        {
-            entraIdGroups = ADMEntraIdGroupHelper::getEntraIdGroupsForUserObjectId(tmp.ObjectId);
-
-            select firstonly AxUserId, RecId from entraIdGroups
-            where (!groupId || entraIdGroups.AxUserID == groupId);
-
-            if (entraIdGroups.RecId)
-            {
-                tmp.AxUserID = helper.generateUserID(tmp.NetworkAlias, selectedUsers);
-                
-                // Create the user
-                this.createUser(tmp, entraIdGroups.AxUserID);
-
-                // Sync the user's groups if synchronous parameter is enabled
-                if (ADMParameters::find().SynchronousUserEntraIDGroupSync)
-                {
-                    ADMEntraIdGroupUserSynchronization::synchronize(tmp.AxUserID);
-    
-                }
-            }
-        }
-    }
-
-]]></Source>
-			</Method>
-			<Method>
-				<Name>fillTmpUserList</Name>
-				<Source><![CDATA[
-    private void fillTmpUserList()
-    {
-        Microsoft.Dynamics.AX.Security.DirectoryHelper.User user;
-
-        System.Collections.IEnumerator directoryUsersEnumerator;
-        xAxaptaUserManager       axaptaUserManager  = new xAxaptaUserManager();
-        RecordInsertList         tmpUserInsertList  = new RecordInsertList(tableNum(SysUserMSODSUserTmp),true,true,true,true,true,tmp);
-
-        try
-        {
-            directoryUsersEnumerator = SysUserMSODSImportHelper::getActiveDirectoryClient().ListUsers().GetEnumerator();
-        }
-        catch(Exception::CLRError)
-        {
-            SysSecurity::HandleGraphAPIHelperException();
-            SysSecurity::DisplayErrorMessage("@ApplicationFoundation:GraphAPIErrorMsg");
-            return;
-        }
-
-        while(directoryUsersEnumerator.MoveNext())
-        {
-            user = directoryUsersEnumerator.Current;
-
-            if (strScan(user.UserPrincipalName, ADMConstants::Ext, 1, strLen(user.UserPrincipalName)) == 0)
-            {
-                tmp.NetworkAlias = user.UserPrincipalName;
-                tmp.NetworkDomain = Microsoft.Dynamics.ApplicationPlatform.Environment.EnvironmentFactory::GetApplicationEnvironment().get_Provisioning().get_AdminIdentityProvider();
-            }
-            else if (user.Mail != '')
-            {
-                // User is external to the Microsoft Entra ID tenant, treat him as a user from different Microsoft Entra ID tenant
-                tmp.NetworkAlias = user.Mail;
-                System.Net.Mail.MailAddress mailAddress = new System.Net.Mail.MailAddress(user.Mail);
-                tmp.NetworkDomain = System.String::Format(
-                    System.Globalization.CultureInfo::InvariantCulture,
-                    Microsoft.Dynamics.ApplicationPlatform.Environment.EnvironmentFactory::GetApplicationEnvironment().Aad.AADIssuerNameFormat,
-                    mailAddress.Host);
-            }
-            else
-            {
-                // LiveId accounts invited to Microsoft Entra ID tenants appear to have #EXT# in upn and no email populated.
-                // Microsoft don't support such users in coding, so we also skip importing them.
-                continue;
-            }
-
-            tmp.DisplayName = user.DisplayName;
-            tmp.EmailAddress = tmp.NetworkAlias;
-            
-            if (SysUserMSODSImportHelper::IsGraphAPI())
-            {
-                tmp.ObjectId = user.ObjectID;
-                tmp.UserSid = axaptaUserManager.getUserSid(tmp.NetworkAlias, tmp.NetworkDomain);
-            }
-            else
-            {
-                tmp.NetworkDomain = System.String::Format(
-                        System.Globalization.CultureInfo::InvariantCulture,
-                        Microsoft.Dynamics.ApplicationPlatform.Environment.EnvironmentFactory::GetApplicationEnvironment().Aad.AADIssuerNameFormat,
-                        Microsoft.Dynamics.ApplicationPlatform.Environment.EnvironmentFactory::GetApplicationEnvironment().Aad.AADTenantId);
-                tmp.UserSid = axaptaUserManager.getUserSid(tmp.NetworkAlias,
-                        Microsoft.Dynamics.ApplicationPlatform.Environment.EnvironmentFactory::GetApplicationEnvironment().get_Provisioning().get_AdminIdentityProvider());
-            }
-            
-            tmpUserInsertList.add(tmp);
-
-        }
-
-        if(tmp.userSid)
-        {
-            tmpUserInsertList.insertDatabase();
-        }
-    }
-
-]]></Source>
-			</Method>
-			<Method>
-				<Name>createUser</Name>
-				<Source><![CDATA[
-    private void createUser(SysUserMSODSUserTmp _userToImport, UserId _groupUserId)
-    {
-        UserInfo            ui, groupRecord;
-        SysUserInfo         sui;
-        int                 len;
-        xAxaptaUserManager  axaptaUserManager = new xAxaptaUserManager();
+        ADMEntraIdGroupDynamicRoleAssignment    entraIdGroupDynamicRoleAssignmentNew;
+        ADMEntraIdGroupDynamicRoleAssignment    entraIdGroupDynamicRoleAssignmentExist;
+        UserInfo                                userInfo;
+        NoYes                                   automaticRoleAssignment = ADMParameters::find().AutomaticRoleAssignment;
 
         ttsbegin;
 
-        // select the admin record
-        select firstonly Id, Company, Language, HelpLanguage from groupRecord where groupRecord.Id == _groupUserId;
-        
-        // Insert a row in the UserInfo table
-        ui.Id           = _userToImport.AxUserID;
-        ui.NetworkAlias = _userToImport.NetworkAlias;
-        ui.NetworkDomain = _userToImport.NetworkDomain;
-        ui.AccountType  = UserAccountType::ClaimsUser;
-        ui.ObjectId     = _userToImport.ObjectId;
+        insert_recordset entraIdGroupDynamicRoleAssignmentNew (UserInfo, AutomaticRoleAssignment)
+            select RecId, automaticRoleAssignment from userInfo
+            where userInfo.accountType == UserAccountType::ClaimsGroup
+               && userInfo.isMicrosoftAccount == false
+               && (!groupId || userInfo.id == groupId)
+                notexists join entraIdGroupDynamicRoleAssignmentExist
+                where entraIdGroupDynamicRoleAssignmentExist.UserInfo == userInfo.RecId;
 
-        ui.Name         = _userToImport.DisplayName;
-        ui.Enable       = true;
-        ui.EnabledOnce  = true;
-        ui.Company      = groupRecord.Company;
-        ui.Language     = groupRecord.Language;
-        ui.Helplanguage = groupRecord.Helplanguage;
-        ui.IdentityProvider = Microsoft.Dynamics.AX.Security.AuthenticationCommon.AadHelper::GetCanonicalIdentityProvider(ui.NetworkDomain);
-        
-
-        if(_userToImport.UserSid != '')
-        {
-            ui.sid = _userToImport.UserSid;
-        }
-        else
-        {
-            try
-            {
-                len = infologLine();
-                ui.Sid = axaptaUserManager.getUserSid(ui.NetworkAlias, ui.IdentityProvider);
-            }
-            catch(Exception::Error)
-            {
-                if(len > 0)
-                {
-                    infolog.clear(len);
-                }
-                ui.Sid = '';
-            }
-        }
-
-        ui.insert();
-
-        // If a row for the user id does not exist in the SysUserInfo, add one
-        select firstonly RecId from sui
-            where sui.Id == ui.Id;
-
-        if(!sui)
-        {
-            sui.initValue(ui.Id);
-            sui.Id = ui.Id;
-            sui.Email = _userToImport.EmailAddress;
-
-            sui.insert();
-        }        
-    
         ttscommit;
+    }
 
+]]></Source>
+			</Method>
+			<Method>
+				<Name>updateGroupObjectId</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Updates the UserInfo record with the Entra ID group ObjectId.
+    /// </summary>
+    /// <param name="_groupUserInfo">The UserInfo record to update.</param>
+    /// <param name="_objectId">The ObjectId to set.</param>
+    private void updateGroupObjectId(UserInfo _groupUserInfo, str _objectId)
+    {
+        UserInfo updateUserInfo;
+
+        ttsbegin;
+
+        select forupdate updateUserInfo
+            where updateUserInfo.RecId == _groupUserInfo.RecId;
+
+        if (updateUserInfo.RecId)
+        {
+            updateUserInfo.ObjectId = str2Guid(_objectId);
+            updateUserInfo.update();
+        }
+
+        ttscommit;
     }
 
 ]]></Source>
@@ -276,10 +160,6 @@ public class ADMEntraIdGroupUserImport extends RunBaseBatch implements BatchRetr
     /// <returns>
     /// Always returns true.
     /// </returns>
-    /// <remarks>
-    /// Your classes that extend this class must override the <c>runsImpersonated</c> method and return
-    /// false if you want those tasks to run on a client.
-    /// </remarks>
     [Microsoft.Dynamics.BusinessPlatform.SharedTypes.InternalUseOnlyAttribute]
     public boolean runsImpersonated()
     {
@@ -292,7 +172,7 @@ public class ADMEntraIdGroupUserImport extends RunBaseBatch implements BatchRetr
 				<Name>construct</Name>
 				<Source><![CDATA[
     /// <summary>
-    ///    Constructs a new class instance.
+    /// Constructs a new class instance.
     /// </summary>
     /// <returns>An instance of the <c>ADMEntraIdGroupUserImport</c> class.</returns>
     [Microsoft.Dynamics.BusinessPlatform.SharedTypes.InternalUseOnlyAttribute]
@@ -306,7 +186,7 @@ public class ADMEntraIdGroupUserImport extends RunBaseBatch implements BatchRetr
 			<Method>
 				<Name>description</Name>
 				<Source><![CDATA[
-    private static ClassDescription  description()
+    private static ClassDescription description()
     {
         return "@D365FOAdminToolkit:ImportUsersEntraIdGroupMembership";
     }
@@ -317,7 +197,7 @@ public class ADMEntraIdGroupUserImport extends RunBaseBatch implements BatchRetr
 				<Name>main</Name>
 				<Source><![CDATA[
     /// <summary>
-    ///    Microsoft internal use only.
+    /// Microsoft internal use only.
     /// </summary>
     /// <param name="_args">An instance of the <c>Args</c> class.</param>
     [Microsoft.Dynamics.BusinessPlatform.SharedTypes.InternalUseOnlyAttribute]
@@ -377,6 +257,604 @@ public class ADMEntraIdGroupUserImport extends RunBaseBatch implements BatchRetr
         return true;
     }
 
+]]></Source>
+			</Method>
+			<Method>
+				<Name>populateTmpUserFromGraphUser</Name>
+				<Source><![CDATA[
+/// <summary>
+/// Populates the temporary user record from a Graph API user object.
+/// </summary>
+/// <param name="_graphUser">The Graph API user object.</param>
+/// <param name="_axaptaUserManager">The user manager instance.</param>
+/// <returns>
+/// true if the temporary record was populated and the user is a candidate for import;
+/// false if the user is a LiveId / non-resolvable account and should be skipped.
+/// </returns>
+private boolean populateTmpUserFromGraphUser(
+    Microsoft.Dynamics.AX.Security.DirectoryHelper.User _graphUser,
+    xAxaptaUserManager _axaptaUserManager)
+{
+    tmp.clear();
+
+    // Check if user is external (has #EXT# in UPN)
+    if (strScan(_graphUser.UserPrincipalName, ADMConstants::Ext, 1, strLen(_graphUser.UserPrincipalName)) == 0)
+    {
+        // Internal user
+        tmp.NetworkAlias = _graphUser.UserPrincipalName;
+        tmp.NetworkDomain = Microsoft.Dynamics.ApplicationPlatform.Environment.EnvironmentFactory::GetApplicationEnvironment().get_Provisioning().get_AdminIdentityProvider();
+    }
+    else if (_graphUser.Mail != '')
+    {
+        // External user from different Entra ID tenant
+        tmp.NetworkAlias = _graphUser.Mail;
+        System.Net.Mail.MailAddress mailAddress = new System.Net.Mail.MailAddress(_graphUser.Mail);
+        tmp.NetworkDomain = System.String::Format(
+            System.Globalization.CultureInfo::InvariantCulture,
+            Microsoft.Dynamics.ApplicationPlatform.Environment.EnvironmentFactory::GetApplicationEnvironment().Aad.AADIssuerNameFormat,
+            mailAddress.Host);
+    }
+    else
+    {
+        // LiveId accounts or external users with no mail - cannot be imported
+        warning(strFmt("@D365FOAdminToolkit:EntraIdUserLiveIdSkipped", _graphUser.UserPrincipalName));
+        return false;
+    }
+
+    tmp.DisplayName = _graphUser.DisplayName;
+    tmp.EmailAddress = tmp.NetworkAlias;
+    tmp.ObjectId = _graphUser.ObjectID;
+    tmp.UserSid = _axaptaUserManager.getUserSid(tmp.NetworkAlias, tmp.NetworkDomain);
+
+    return true;
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>ensureGroupCacheLoaded</Name>
+				<Source><![CDATA[
+/// <summary>
+/// Loads all Entra ID security groups into a cache (called only once per run).
+/// </summary>
+private void ensureGroupCacheLoaded()
+{
+    Microsoft.Dynamics.AX.Security.MicrosoftGraphHelper.MicrosoftGraphClient graphClient;
+    Microsoft.Dynamics.AX.Security.DirectoryHelper.Group graphGroup;
+    System.Collections.IEnumerator groupsEnumerator;
+
+    if (groupCacheLoaded)
+    {
+        return;
+    }
+
+    entraIdGroupCache = new Map(Types::String, Types::String);
+
+    try
+    {
+        info("@D365FOAdminToolkit:EntraIdGroupCacheLoading");
+
+        graphClient = SysUserMSODSImportHelper::getMicrosoftGraphClient();
+        groupsEnumerator = graphClient.ListSecurityGroups().GetEnumerator();
+
+        while (groupsEnumerator.MoveNext())
+        {
+            graphGroup = groupsEnumerator.Current;
+
+            // Store with lowercase key for case-insensitive lookup
+            // Note: Group class uses ObjectID (field) not ObjectId (property)
+            if (graphGroup.DisplayName && graphGroup.ObjectID != emptyGuid())
+            {
+                entraIdGroupCache.insert(strLwr(graphGroup.DisplayName), guid2Str(graphGroup.ObjectID));
+            }
+        }
+
+        info(strFmt("@D365FOAdminToolkit:EntraIdGroupCacheLoaded", entraIdGroupCache.elements()));
+    }
+    catch (Exception::CLRError)
+    {
+        System.Exception ex  = CLRInterop::getLastException();
+        str              exMsg = ex ? ex.get_Message() : "unknown";
+
+        SysSecurity::HandleGraphAPIHelperException();
+        error(strFmt("@D365FOAdminToolkit:EntraIdGroupCacheErrorDetailed", exMsg));
+    }
+
+    groupCacheLoaded = true;
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>lookupGroupObjectIdByName</Name>
+				<Source><![CDATA[
+/// <summary>
+/// Looks up the Entra ID group ObjectId by the group name using cached data.
+/// </summary>
+/// <param name="_groupName">The name of the group to look up.</param>
+/// <returns>The ObjectId of the group, or empty string if not found.</returns>
+private str lookupGroupObjectIdByName(str _groupName)
+{
+    str             foundObjectId = '';
+    MapEnumerator   mapEnum;
+    int             sampleCount;
+    str             sampleKeys;
+
+    if (!_groupName)
+    {
+        return foundObjectId;
+    }
+
+    // Ensure the cache is loaded (only loads once)
+    this.ensureGroupCacheLoaded();
+
+    // Lookup using lowercase key
+    if (entraIdGroupCache && entraIdGroupCache.exists(strLwr(_groupName)))
+    {
+        foundObjectId = entraIdGroupCache.lookup(strLwr(_groupName));
+        info(strFmt("@D365FOAdminToolkit:EntraIdGroupFoundByName", _groupName, foundObjectId));
+    }
+    else
+    {
+        // Cache miss — log up to 3 sample keys so operators can spot name-format drift
+        if (entraIdGroupCache)
+        {
+            mapEnum = entraIdGroupCache.getEnumerator();
+
+            while (mapEnum.moveNext() && sampleCount < 3)
+            {
+                sampleKeys += (sampleKeys ? ", " : "") + mapEnum.currentKey();
+                sampleCount++;
+            }
+
+            warning(strFmt("@D365FOAdminToolkit:EntraIdGroupNameNotFound",
+                _groupName,
+                entraIdGroupCache.elements(),
+                sampleKeys));
+        }
+        else
+        {
+            warning(strFmt("@D365FOAdminToolkit:EntraIdGroupNameNotFound", _groupName, 0, ''));
+        }
+    }
+
+    return foundObjectId;
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createUser</Name>
+				<Source><![CDATA[
+private void createUser(SysUserMSODSUserTmp _userToImport, UserId _groupUserId)
+{
+    UserInfo            ui, groupRecord;
+    SysUserInfo         sui;
+    str                 lastInfoLog;
+    xAxaptaUserManager  axaptaUserManager = new xAxaptaUserManager();
+
+    ttsbegin;
+
+    // Select the group record for default settings
+    select firstonly Id, Company, Language, HelpLanguage from groupRecord
+        where groupRecord.Id == _groupUserId;
+
+    // Insert a row in the UserInfo table
+    ui.Id           = _userToImport.AxUserID;
+    ui.NetworkAlias = _userToImport.NetworkAlias;
+    ui.NetworkDomain = _userToImport.NetworkDomain;
+    ui.AccountType  = UserAccountType::ClaimsUser;
+    ui.ObjectId     = _userToImport.ObjectId;
+    ui.Name         = _userToImport.DisplayName;
+    ui.Enable       = true;
+    ui.EnabledOnce  = true;
+    ui.Company      = groupRecord.Company;
+    ui.Language     = groupRecord.Language;
+    ui.Helplanguage = groupRecord.Helplanguage;
+    ui.IdentityProvider = Microsoft.Dynamics.AX.Security.AuthenticationCommon.AadHelper::GetCanonicalIdentityProvider(ui.NetworkDomain);
+
+    if (_userToImport.UserSid != '')
+    {
+        ui.sid = _userToImport.UserSid;
+    }
+    else
+    {
+        try
+        {
+            ui.Sid = axaptaUserManager.getUserSid(ui.NetworkAlias, ui.IdentityProvider);
+        }
+        catch (Exception::Error)
+        {
+            ui.Sid = '';
+            warning(strFmt("@D365FOAdminToolkit:EntraIdUserSidLookupFailed", ui.NetworkAlias));
+        }
+    }
+
+    try
+    {
+        ui.insert();
+    }
+    catch (Exception::Error)
+    {
+        lastInfoLog = infolog.text();
+        throw error(strFmt("@D365FOAdminToolkit:EntraIdUserInsertFailed", ui.NetworkAlias, lastInfoLog));
+    }
+
+    // If a row for the user id does not exist in the SysUserInfo, add one
+    select firstonly RecId from sui
+        where sui.Id == ui.Id;
+
+    if (!sui)
+    {
+        sui.initValue(ui.Id);
+        sui.Id = ui.Id;
+        sui.Email = _userToImport.EmailAddress;
+        sui.insert();
+    }
+
+    ttscommit;
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>run</Name>
+				<Source><![CDATA[
+/// <summary>
+/// Runs the operation.
+/// </summary>
+[Microsoft.Dynamics.BusinessPlatform.SharedTypes.InternalUseOnlyAttribute]
+public void run()
+{
+    UserInfo    groupUserInfo;
+    UserInfo    countInfo;
+    int         qualifyingGroups;
+
+    // Ensure ADMEntraIdGroupDynamicRoleAssignment records exist for all groups being processed
+    this.ensureDynamicRoleAssignmentRecords();
+
+    // Reset run-level counters
+    totalMembersFetched    = 0;
+    totalUsersCreated      = 0;
+    totalSkippedExisting   = 0;
+    totalSkippedLiveId     = 0;
+    totalSkippedNotInCache = 0;
+    totalErrors            = 0;
+    groupsProcessed        = 0;
+
+    // Count qualifying groups up-front so we can log an accurate starting line
+    select count(RecId) from countInfo
+        where countInfo.accountType == UserAccountType::ClaimsGroup
+           && countInfo.isMicrosoftAccount == false
+           && (!groupId || countInfo.id == groupId);
+
+    qualifyingGroups = int642int(countInfo.RecId);
+
+    info(strFmt("@D365FOAdminToolkit:EntraIdImportStarting", qualifyingGroups));
+
+    // Iterate through all Entra ID groups (or a specific group if groupId is set)
+    while select groupUserInfo
+        where groupUserInfo.accountType == UserAccountType::ClaimsGroup
+           && groupUserInfo.isMicrosoftAccount == false
+           && (!groupId || groupUserInfo.id == groupId)
+    {
+        this.importUsersFromEntraIdGroup(groupUserInfo);
+        groupsProcessed++;
+    }
+
+    info(strFmt("@D365FOAdminToolkit:EntraIdImportCompleted",
+        groupsProcessed,
+        totalMembersFetched,
+        totalUsersCreated,
+        totalSkippedExisting,
+        totalSkippedLiveId,
+        totalErrors,
+        totalSkippedNotInCache));
+}
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>ensureTenantUserCacheLoaded</Name>
+				<Source><![CDATA[
+/// <summary>
+/// Loads all Entra ID tenant users into a cache (called only once per run).
+/// </summary>
+/// <remarks>
+/// Uses <c>SysUserMSODSImportHelper::getActiveDirectoryClient().ListUsers()</c> — the
+/// same API that standard <c>SysUserImportService::bulkImportUsers</c> uses for
+/// tenant-wide user enumeration. Returns <c>IEnumerable&lt;DirectoryHelper.User&gt;</c>.
+///
+/// Keys are stored as lowercase guid strings (via <c>str2Guid</c> → <c>guid2Str</c> → <c>strLwr</c>)
+/// so they compare cleanly regardless of input format.
+///
+/// On Graph failure we still set <c>tenantUserCacheLoaded = true</c> with an empty
+/// map so we don't re-try the (potentially slow) ListUsers call for every group in
+/// the same run.
+/// </remarks>
+private void ensureTenantUserCacheLoaded()
+{
+    Microsoft.Dynamics.AX.Security.DirectoryHelper.User user;
+    System.Collections.IEnumerator usersEnumerator;
+
+    if (tenantUserCacheLoaded)
+    {
+        return;
+    }
+
+    tenantUserCache = new Map(Types::String, Types::Class);
+
+    try
+    {
+        info("@D365FOAdminToolkit:EntraIdTenantCacheLoading");
+
+        usersEnumerator = SysUserMSODSImportHelper::getActiveDirectoryClient().ListUsers().GetEnumerator();
+
+        while (usersEnumerator.MoveNext())
+        {
+            user = usersEnumerator.Current;
+
+            if (user && user.ObjectID != emptyGuid())
+            {
+                // Canonicalise the key: guid2Str always emits braced form, strLwr normalises case.
+                tenantUserCache.insert(strLwr(guid2Str(user.ObjectID)), user);
+            }
+        }
+
+        info(strFmt("@D365FOAdminToolkit:EntraIdTenantCacheLoaded", tenantUserCache.elements()));
+    }
+    catch (Exception::CLRError)
+    {
+        System.Exception ex    = CLRInterop::getLastException();
+        str              exMsg = ex ? ex.get_Message() : "unknown";
+
+        SysSecurity::HandleGraphAPIHelperException();
+        error(strFmt("@D365FOAdminToolkit:EntraIdTenantCacheError", exMsg));
+    }
+
+    // Set loaded=true even on failure so we don't re-attempt for every group.
+    tenantUserCacheLoaded = true;
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>ensureUserGroupsCacheLoaded</Name>
+				<Source><![CDATA[
+/// <summary>
+/// Builds a per-user group-membership cache by calling
+/// <c>IDirectoryClient.GetSecurityMemberGroupsForUser</c> for every user
+/// in <c>tenantUserCache</c>. Called at most once per run; no-op on subsequent calls.
+/// </summary>
+/// <remarks>
+/// The resulting <c>userGroupsCache</c> maps the lowercase user ObjectId string
+/// to a <c>Container</c> of lowercase group ObjectId strings.  This lets
+/// <c>importUsersFromEntraIdGroup</c> determine group membership without calling
+/// a non-existent <c>GetMembersOfSecurityGroup</c> API that is unavailable in
+/// the current platform version.
+/// </remarks>
+private void ensureUserGroupsCacheLoaded()
+{
+    Microsoft.Dynamics.AX.Security.DirectoryHelper.IDirectoryClient   dirClient;
+    Microsoft.Dynamics.AX.Security.DirectoryHelper.User               cachedUser;
+    System.Collections.IEnumerator                                     userGroupsEnumerator;
+    MapEnumerator                                                      tenantCacheEnum;
+    UserInfo                                                           existingUser;
+    Set                                                                existingObjectIds;
+    str                                                                userObjectId;
+    Container                                                          groupIds;
+
+    if (userGroupsCacheLoaded)
+    {
+        return;
+    }
+
+    userGroupsCache = new Map(Types::String, Types::Container);
+
+    // Build a set of ObjectIds already in D365FO so we can skip Graph calls
+    // for users who will be discarded as skippedExisting during import anyway.
+    existingObjectIds = new Set(Types::Guid);
+    while select ObjectId from existingUser
+        where existingUser.ObjectId != emptyGuid()
+    {
+        existingObjectIds.add(existingUser.ObjectId);
+    }
+
+    try
+    {
+        dirClient = Microsoft.Dynamics.AX.Security.DirectoryHelper.DirectoryClientProvider::GetDirectoryClient();
+
+        tenantCacheEnum = tenantUserCache.getEnumerator();
+
+        while (tenantCacheEnum.moveNext())
+        {
+            userObjectId = tenantCacheEnum.currentKey();
+            cachedUser   = tenantCacheEnum.currentValue();
+            groupIds     = conNull();
+
+            if (existingObjectIds.in(cachedUser.ObjectID))
+            {
+                // User already exists in D365FO; skip the Graph call.
+                userGroupsCache.insert(userObjectId, groupIds);
+                continue;
+            }
+
+            try
+            {
+                userGroupsEnumerator = dirClient.GetSecurityMemberGroupsForUser(userObjectId).GetEnumerator();
+
+                while (userGroupsEnumerator.MoveNext())
+                {
+                    groupIds += strLwr(userGroupsEnumerator.Current);
+                }
+            }
+            catch (Exception::CLRError)
+            {
+                CLRInterop::getLastException();
+                // Skip this user; they will be treated as a member of no groups.
+            }
+
+            userGroupsCache.insert(userObjectId, groupIds);
+        }
+    }
+    catch (Exception::CLRError)
+    {
+        System.Exception ex    = CLRInterop::getLastException();
+        str              exMsg = ex ? ex.get_Message() : "unknown";
+        error(strFmt("@D365FOAdminToolkit:EntraIdTenantCacheError", exMsg));
+    }
+
+    userGroupsCacheLoaded = true;
+}
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>importUsersFromEntraIdGroup</Name>
+				<Source><![CDATA[
+/// <summary>
+/// Imports users from a specific Entra ID group. Per-group logging is intentionally
+/// suppressed; run-level counters are rolled into the summary emitted by <c>run()</c>.
+/// </summary>
+/// <param name="_groupUserInfo">The UserInfo record representing the Entra ID group.</param>
+private void importUsersFromEntraIdGroup(UserInfo _groupUserInfo)
+{
+    Microsoft.Dynamics.AX.Security.DirectoryHelper.User graphUser;
+    SysUserMSODSImportHelper helper = new SysUserMSODSImportHelper();
+    List selectedUsers = new List(Types::Record);
+    UserInfo existingUser;
+    xAxaptaUserManager axaptaUserManager = new xAxaptaUserManager();
+    MapEnumerator   tenantCacheEnum;
+    str     groupObjectId;
+    str     groupObjectIdNorm;
+    str     memberObjectIdKey;
+    Container memberGroupIds;
+    int     i;
+    boolean inGroup;
+    int     membersFetched;
+    int     created;
+    int     skippedExisting;
+    int     skippedLiveId;
+    int     skippedNotInCache;
+    int     errors;
+
+    groupObjectId = guid2Str(_groupUserInfo.ObjectId);
+
+    if (!groupObjectId || groupObjectId == guid2Str(emptyGuid()))
+    {
+        groupObjectId = this.lookupGroupObjectIdByName(_groupUserInfo.Name);
+
+        if (groupObjectId)
+        {
+            this.updateGroupObjectId(_groupUserInfo, groupObjectId);
+        }
+    }
+
+    if (!groupObjectId || groupObjectId == guid2Str(emptyGuid()))
+    {
+        warning(strFmt("@D365FOAdminToolkit:EntraIdGroupObjectIdMissing", _groupUserInfo.id));
+        totalErrors++;
+        return;
+    }
+
+    // Normalise the target group ObjectId to lowercase for cache key comparison.
+    groupObjectIdNorm = strLwr(groupObjectId);
+
+    this.ensureTenantUserCacheLoaded();
+    this.ensureUserGroupsCacheLoaded();
+
+    tenantCacheEnum = tenantUserCache.getEnumerator();
+
+    while (tenantCacheEnum.moveNext())
+    {
+        memberObjectIdKey = tenantCacheEnum.currentKey();
+
+        if (!userGroupsCache || !userGroupsCache.exists(memberObjectIdKey))
+        {
+            skippedNotInCache++;
+            continue;
+        }
+
+        memberGroupIds = userGroupsCache.lookup(memberObjectIdKey);
+        inGroup = false;
+
+        for (i = 1; i <= conLen(memberGroupIds); i++)
+        {
+            if (conPeek(memberGroupIds, i) == groupObjectIdNorm)
+            {
+                inGroup = true;
+                break;
+            }
+        }
+
+        if (!inGroup)
+        {
+            continue;
+        }
+
+        membersFetched++;
+
+        try
+        {
+            graphUser = tenantCacheEnum.currentValue();
+
+            select firstonly RecId from existingUser
+                where existingUser.ObjectId == graphUser.ObjectID;
+
+            if (existingUser.RecId)
+            {
+                skippedExisting++;
+                continue;
+            }
+
+            str userSid = axaptaUserManager.getUserSid(
+                graphUser.UserPrincipalName,
+                Microsoft.Dynamics.ApplicationPlatform.Environment.EnvironmentFactory::GetApplicationEnvironment().get_Provisioning().get_AdminIdentityProvider());
+
+            if (userSid)
+            {
+                select firstonly RecId from existingUser
+                    where existingUser.sid == userSid;
+
+                if (existingUser.RecId)
+                {
+                    skippedExisting++;
+                    continue;
+                }
+            }
+
+            if (!this.populateTmpUserFromGraphUser(graphUser, axaptaUserManager))
+            {
+                skippedLiveId++;
+                continue;
+            }
+
+            if (!tmp.NetworkAlias)
+            {
+                skippedLiveId++;
+                continue;
+            }
+
+            tmp.AxUserID = helper.generateUserID(tmp.NetworkAlias, selectedUsers);
+            this.createUser(tmp, _groupUserInfo.id);
+            created++;
+
+            if (ADMParameters::find().SynchronousUserEntraIDGroupSync)
+            {
+                ADMEntraIdGroupUserSynchronization::synchronize(tmp.AxUserID);
+            }
+        }
+        catch (Exception::Error)
+        {
+            errors++;
+            warning(strFmt("@D365FOAdminToolkit:EntraIdUserImportFailed",
+                memberObjectIdKey,
+                _groupUserInfo.id));
+        }
+    }
+
+    totalMembersFetched    += membersFetched;
+    totalUsersCreated      += created;
+    totalSkippedExisting   += skippedExisting;
+    totalSkippedLiveId     += skippedLiveId;
+    totalSkippedNotInCache += skippedNotInCache;
+    totalErrors            += errors;
+}
 ]]></Source>
 			</Method>
 		</Methods>
