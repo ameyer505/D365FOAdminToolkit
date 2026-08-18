@@ -14,11 +14,15 @@ public class ADMEntraIdGroupUserImport extends RunBaseBatch implements BatchRetr
     boolean             groupCacheLoaded;
 
     // Cache for Entra ID tenant users (lowercase guid string -> DirectoryHelper.User)
-    // Loaded once per run via a tenant-wide ListUsers() call so that the per-group
-    // GetMembersOfSecurityGroup call (which returns only ObjectId strings) can
-    // be resolved to full User objects without one Graph call per member.
+    // Loaded once per run via a tenant-wide ListUsers() call.
     Map                 tenantUserCache;
     boolean             tenantUserCacheLoaded;
+
+    // Cache for per-user group memberships (lowercase user objectId -> Container of lowercase group objectIds)
+    // Populated once per run via GetSecurityMemberGroupsForUser for every user in tenantUserCache.
+    // Used by importUsersFromEntraIdGroup to filter group members without a direct group-member API call.
+    Map                 userGroupsCache;
+    boolean             userGroupsCacheLoaded;
 
     // Run-level telemetry counters (populated across all groups in one run)
     int totalMembersFetched;
@@ -555,13 +559,10 @@ public void run()
 /// <remarks>
 /// Uses <c>SysUserMSODSImportHelper::getActiveDirectoryClient().ListUsers()</c> — the
 /// same API that standard <c>SysUserImportService::bulkImportUsers</c> uses for
-/// tenant-wide user enumeration. Returns <c>IEnumerable<DirectoryHelper.User></c>.
+/// tenant-wide user enumeration. Returns <c>IEnumerable&lt;DirectoryHelper.User&gt;</c>.
 ///
-/// Per-group enumeration via <c>IDirectoryClient.GetMembersOfSecurityGroup</c>
-/// returns only member ObjectId strings (no braces, e.g. <c>6264cda9-287d-...</c>),
-/// while <c>guid2Str</c> in X++ emits braced form (e.g. <c>{6264CDA9-287D-...}</c>).
-/// We normalise BOTH sides through <c>str2Guid</c> → <c>guid2Str</c> → lowercase so
-/// keys compare cleanly regardless of input format.
+/// Keys are stored as lowercase guid strings (via <c>str2Guid</c> → <c>guid2Str</c> → <c>strLwr</c>)
+/// so they compare cleanly regardless of input format.
 ///
 /// On Graph failure we still set <c>tenantUserCacheLoaded = true</c> with an empty
 /// map so we don't re-try the (potentially slow) ListUsers call for every group in
@@ -613,6 +614,97 @@ private void ensureTenantUserCacheLoaded()
 ]]></Source>
 			</Method>
 			<Method>
+				<Name>ensureUserGroupsCacheLoaded</Name>
+				<Source><![CDATA[
+/// <summary>
+/// Builds a per-user group-membership cache by calling
+/// <c>IDirectoryClient.GetSecurityMemberGroupsForUser</c> for every user
+/// in <c>tenantUserCache</c>. Called at most once per run; no-op on subsequent calls.
+/// </summary>
+/// <remarks>
+/// The resulting <c>userGroupsCache</c> maps the lowercase user ObjectId string
+/// to a <c>Container</c> of lowercase group ObjectId strings.  This lets
+/// <c>importUsersFromEntraIdGroup</c> determine group membership without calling
+/// a non-existent <c>GetMembersOfSecurityGroup</c> API that is unavailable in
+/// the current platform version.
+/// </remarks>
+private void ensureUserGroupsCacheLoaded()
+{
+    Microsoft.Dynamics.AX.Security.DirectoryHelper.IDirectoryClient   dirClient;
+    Microsoft.Dynamics.AX.Security.DirectoryHelper.User               cachedUser;
+    System.Collections.IEnumerator                                     userGroupsEnumerator;
+    MapEnumerator                                                      tenantCacheEnum;
+    UserInfo                                                           existingUser;
+    Set                                                                existingObjectIds;
+    str                                                                userObjectId;
+    Container                                                          groupIds;
+
+    if (userGroupsCacheLoaded)
+    {
+        return;
+    }
+
+    userGroupsCache = new Map(Types::String, Types::Container);
+
+    // Build a set of ObjectIds already in D365FO so we can skip Graph calls
+    // for users who will be discarded as skippedExisting during import anyway.
+    existingObjectIds = new Set(Types::Guid);
+    while select ObjectId from existingUser
+        where existingUser.ObjectId != emptyGuid()
+    {
+        existingObjectIds.add(existingUser.ObjectId);
+    }
+
+    try
+    {
+        dirClient = Microsoft.Dynamics.AX.Security.DirectoryHelper.DirectoryClientProvider::GetDirectoryClient();
+
+        tenantCacheEnum = tenantUserCache.getEnumerator();
+
+        while (tenantCacheEnum.moveNext())
+        {
+            userObjectId = tenantCacheEnum.currentKey();
+            cachedUser   = tenantCacheEnum.currentValue();
+            groupIds     = conNull();
+
+            if (existingObjectIds.in(cachedUser.ObjectID))
+            {
+                // User already exists in D365FO; skip the Graph call.
+                userGroupsCache.insert(userObjectId, groupIds);
+                continue;
+            }
+
+            try
+            {
+                userGroupsEnumerator = dirClient.GetSecurityMemberGroupsForUser(userObjectId).GetEnumerator();
+
+                while (userGroupsEnumerator.MoveNext())
+                {
+                    groupIds += strLwr(userGroupsEnumerator.Current);
+                }
+            }
+            catch (Exception::CLRError)
+            {
+                CLRInterop::getLastException();
+                // Skip this user; they will be treated as a member of no groups.
+            }
+
+            userGroupsCache.insert(userObjectId, groupIds);
+        }
+    }
+    catch (Exception::CLRError)
+    {
+        System.Exception ex    = CLRInterop::getLastException();
+        str              exMsg = ex ? ex.get_Message() : "unknown";
+        error(strFmt("@D365FOAdminToolkit:EntraIdTenantCacheError", exMsg));
+    }
+
+    userGroupsCacheLoaded = true;
+}
+
+]]></Source>
+			</Method>
+			<Method>
 				<Name>importUsersFromEntraIdGroup</Name>
 				<Source><![CDATA[
 /// <summary>
@@ -623,15 +715,17 @@ private void ensureTenantUserCacheLoaded()
 private void importUsersFromEntraIdGroup(UserInfo _groupUserInfo)
 {
     Microsoft.Dynamics.AX.Security.DirectoryHelper.User graphUser;
-    System.Collections.IEnumerator groupMembersEnumerator;
     SysUserMSODSImportHelper helper = new SysUserMSODSImportHelper();
     List selectedUsers = new List(Types::Record);
     UserInfo existingUser;
     xAxaptaUserManager axaptaUserManager = new xAxaptaUserManager();
+    MapEnumerator   tenantCacheEnum;
     str     groupObjectId;
-    str     memberObjectIdStr;
+    str     groupObjectIdNorm;
     str     memberObjectIdKey;
-    guid    memberObjectIdGuid;
+    Container memberGroupIds;
+    int     i;
+    boolean inGroup;
     int     membersFetched;
     int     created;
     int     skippedExisting;
@@ -658,52 +752,46 @@ private void importUsersFromEntraIdGroup(UserInfo _groupUserInfo)
         return;
     }
 
+    // Normalise the target group ObjectId to lowercase for cache key comparison.
+    groupObjectIdNorm = strLwr(groupObjectId);
+
     this.ensureTenantUserCacheLoaded();
+    this.ensureUserGroupsCacheLoaded();
 
-    try
-    {
-        Microsoft.Dynamics.AX.Security.DirectoryHelper.IDirectoryClient dirClient =
-            Microsoft.Dynamics.AX.Security.DirectoryHelper.DirectoryClientProvider::GetDirectoryClient();
-        groupMembersEnumerator = dirClient.GetMembersOfSecurityGroup(groupObjectId).GetEnumerator();
-    }
-    catch (Exception::CLRError)
-    {
-        SysSecurity::HandleGraphAPIHelperException();
-        warning(strFmt("@D365FOAdminToolkit:EntraIdGroupMembersError", _groupUserInfo.id));
-        totalErrors++;
-        return;
-    }
+    tenantCacheEnum = tenantUserCache.getEnumerator();
 
-    while (groupMembersEnumerator.MoveNext())
+    while (tenantCacheEnum.moveNext())
     {
-        memberObjectIdStr = groupMembersEnumerator.Current;
+        memberObjectIdKey = tenantCacheEnum.currentKey();
+
+        if (!userGroupsCache || !userGroupsCache.exists(memberObjectIdKey))
+        {
+            skippedNotInCache++;
+            continue;
+        }
+
+        memberGroupIds = userGroupsCache.lookup(memberObjectIdKey);
+        inGroup = false;
+
+        for (i = 1; i <= conLen(memberGroupIds); i++)
+        {
+            if (conPeek(memberGroupIds, i) == groupObjectIdNorm)
+            {
+                inGroup = true;
+                break;
+            }
+        }
+
+        if (!inGroup)
+        {
+            continue;
+        }
+
         membersFetched++;
 
         try
         {
-            if (!memberObjectIdStr)
-            {
-                skippedNotInCache++;
-                continue;
-            }
-
-            memberObjectIdGuid = str2Guid(memberObjectIdStr);
-
-            if (memberObjectIdGuid == emptyGuid())
-            {
-                skippedNotInCache++;
-                continue;
-            }
-
-            memberObjectIdKey = strLwr(guid2Str(memberObjectIdGuid));
-
-            if (!tenantUserCache || !tenantUserCache.exists(memberObjectIdKey))
-            {
-                skippedNotInCache++;
-                continue;
-            }
-
-            graphUser = tenantUserCache.lookup(memberObjectIdKey);
+            graphUser = tenantCacheEnum.currentValue();
 
             select firstonly RecId from existingUser
                 where existingUser.ObjectId == graphUser.ObjectID;
@@ -755,7 +843,7 @@ private void importUsersFromEntraIdGroup(UserInfo _groupUserInfo)
         {
             errors++;
             warning(strFmt("@D365FOAdminToolkit:EntraIdUserImportFailed",
-                memberObjectIdStr,
+                memberObjectIdKey,
                 _groupUserInfo.id));
         }
     }
