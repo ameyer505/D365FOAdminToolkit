@@ -1,0 +1,168 @@
+﻿Action=Aktion
+AddRemoveSelectedUsers=Ausgewählte Benutzer hinzufügen/entfernen
+AddRevokeSysAdmin=SysAdmin zuweisen/entziehen
+ADMConfig=D365FO Admin Toolkit Konfiguration
+ADMDisableUsersJob=D365FO Admin Toolkit Inaktive Benutzer automatisch deaktivieren
+ADMEntraIdGroupDynamicRoleAssignmentDeveloper=Die Tabelle ADMEntraIdGroupDynamicRoleAssignment enthält Informationen darüber, ob Regeln für die automatische Rollenzuweisung zu Entra ID-Sicherheitsgruppen gepflegt werden müssen.
+ ;Developer documentation
+ADMEntraIdGroupSecurityRoleAssignmentRuleDeveloper=Die Tabelle ADMEntraIdGroupDynamicRoleAssignment enthält Informationen darüber, welche Regeln für die automatische Rollenzuweisung für welche Entra ID-Gruppen erstellt wurden.
+ ;Developer documentation
+ADMEntraIDGroupUserMembershipDeveloper=Die Tabelle ADMEntraIDGroupUserMembership enthält Informationen über die Mitgliedschaft von Benutzern in Entra ID-Gruppen.
+ ;Developer documentation
+ADMEntraIdGroupUserView=Benutzermitgliedschaften in Entra ID-Gruppen
+ADMExportRoleAccess=D365FO Admin Toolkit Rollenzugriffe exportieren
+ADMMaintain=D365FO Admin Toolkit verwalten
+ADMParametersDeveloper=Die Tabelle ADMParameters enthält die Grundeinstellungen des D365FO Admin Toolkit-Moduls.
+ ;Developer documentation
+ADMSysAdmAssignment=D365FO Admin Toolkit SysAdmin-Zuweisungen
+ADMUserEntraIdGroup=Entra ID-Sicherheitsgruppen des Benutzers
+ ;Table name
+ADMUserEntraIdGroupLastSync=Letzte Synchronisierung der Entra ID-Sicherheitsgruppen
+ ;Table name
+ADMUserEntraIdGroupLastSyncDeveloper=Die Tabelle ADMUserEntraIdGroupLastSync enthält Informationen darüber, wann die letzte Synchronisierung der Benutzer mit Entra ID-Sicherheitsgruppen erfolgt ist.
+ ;Developer documentation
+ADMView=D365FO Admin Toolkit einsehen
+ADMViewDisabledUsersReport=D365FO Admin Toolkit Bericht zu deaktivierten Benutzern anzeigen
+ADMViewReport=D365FO Admin Toolkit SysAdmin-Bericht anzeigen
+Assigned=Zugewiesen
+AssignmentReason=Grund für die Zuweisung
+AssingSysAdmin=SysAdmin zuweisen
+ASTSysAdminChange=Admin Security Toolkit - SysAdmin-Änderung
+AutomaticRoleAssignment=Automatische Rollenzuweisung
+BatchJobMerge=Stapelverarbeitungsaufträge zusammenführen
+BatchJobMergeCanMergeHelp=Der markierte Stapelverarbeitungsauftrag kann zusammengeführt werden
+BatchJobMergeCanMergeLabel=Kann zusammengeführt werden
+BatchJobMergeError=Stapelverarbeitungsaufträge konnten nicht zusammengeführt werden
+BatchJobMergeFinished=Zusammenführen der Stapelverarbeitungsaufträge abgeschlossen
+BatchJobMergeHelp=Führt die ausgewählten Stapelverarbeitungsaufträge zu einem neuen Stapelverarbeitungsauftrag zusammen
+BatchJobMergeMerging=Stapelverarbeitungsauftrag %1 wird in %2 zusammengeführt
+BatchJobMergeUnableToMerge=Stapelverarbeitungsauftrag %1 kann nicht in %2 zusammengeführt werden. Prüfen Sie den Status des Auftrags und versuchen Sie es erneut.
+Cancel=Abbrechen
+ChangeReason=Grund für die Änderung der SysAdmin-Zuweisung:
+ConfigurationSetup=Konfiguration
+D365FOAdminToolkit=D365FO Admin Toolkit
+DateTime=Datum/Uhrzeit
+DefaultNumDaysReport=Standardanzahl Tage für Berichte
+DisableSysAdminBatchJobHelp=Entfernt abgelaufene SysAdmin-Zuweisungen
+DisableSysAdminBatchJobLabel=Abgelaufene SysAdmin-Zuweisungen entfernen
+DisableUserJob=Inaktive Benutzer automatisch deaktivieren
+DisableUserNumDays=Anzahl Tage bis zur Deaktivierung
+EmptyReason=Der Grund zur SysAdmin-Zuweisung ist ein Pflichtfeld.
+EndDate=Enddatum:
+EnhancedEntraIdGroupIntegrationMaintain=Erweiterte Entra ID-Gruppenintegration verwalten
+EnhancedEntraIdGroupIntegrationView=Erweiterte Entra ID-Gruppenintegration einsehen
+EntraIdGroup=Entra ID-Gruppe
+EntraIdGroupBackfillStarting=%1 Entra ID-Gruppe(n) ohne ObjectId gefunden. Starte namensbasierte Suche über Microsoft Graph...
+EntraIdGroupBackfillSummary=ObjectId-Nachpflege für Entra ID-Gruppen abgeschlossen: %1 aufgelöst, %2 nicht aufgelöst (von insgesamt %3).
+EntraIdGroupCacheErrorInner=Fehler beim Laden des Entra ID-Gruppen-Caches (innere Ausnahme): %1 (Typ %2)
+EntraIdGroupCacheInnerError=Innere Ausnahme beim Laden des Entra ID-Gruppen-Caches: %1
+EntraIdGroupDynamicRoleAssignment=Dynamische Rollenzuweisung für Entra ID-Gruppen
+EntraIdGroupIdSyncFrequency=Häufigkeit
+ ;Interval between subsequent synchronous synchronizations
+EntraIdGroupsForUser=Entra ID-Gruppen des Benutzers
+EntraIdGroupSynchronization=Entra ID-Gruppensynchronisierung
+EntraIdGroupSyncPattern=Muster
+EntraIdGroupUserMembershipSync=Synchronisierung der Entra ID-Gruppenmitgliedschaften
+EntraIdGroupGraphFailedForUser=Graph API-Aufruf für Benutzer '%1' nach %2 Versuch(en) fehlgeschlagen; Benutzer wurde für diesen Lauf übersprungen.
+EntraIdGroupSyncFailedUsers=Bei %1 Benutzer(n) ist die Aktualisierung der Entra ID-Gruppen fehlgeschlagen; Rollen wurden für diese Benutzer nicht geändert und deren Gruppen wurden von diesem Lauf ausgeschlossen.
+EntraIdGroupRoleSyncCompleted=%1 Sicherheitsrolle(n) über %2 geänderte Entra ID-Gruppe(n) synchronisiert.
+EntraIdGroupRepairBackfillCreated=Fehlende Rollenzuweisungsregel für Gruppe '%1', Rolle '%2' automatisch ergänzt.
+EntraIdGroupCacheLoading=Lade Cache für Entra ID-Sicherheitsgruppen...
+EntraIdGroupCacheLoaded=Cache für Entra ID-Sicherheitsgruppen geladen (%1 Einträge).
+EntraIdGroupCacheError=Fehler beim Laden des Entra ID-Gruppen-Caches über die Graph API.
+EntraIdGroupCacheErrorDetailed=Fehler beim Laden des Entra ID-Gruppen-Caches: %1
+EntraIdGroupFoundByName=Gruppe '%1' wurde per Namenssuche zu ObjectId %2 aufgelöst.
+EntraIdGroupNameNotFound=Gruppenname '%1' wurde im Entra-Cache nicht gefunden (Cache enthält %2 Einträge, Beispielschlüssel: %3).
+EntraIdGroupObjectIdMissing=UserInfo-Eintrag für Gruppe '%1' enthält keine ObjectId und die Namenssuche ist fehlgeschlagen – Gruppe wurde übersprungen.
+EntraIdGroupMembersError=Mitglieder der Entra ID-Gruppe '%1' konnten über die Graph API nicht ermittelt werden – Gruppe wurde übersprungen.
+EntraIdGroupImportStart=[Gruppe %1] ObjectId=%2 – Import wird gestartet
+EntraIdGroupImportSummary=[Gruppe %1] Mitglieder gelesen: %2, erstellt: %3, übersprungen (vorhanden): %4, übersprungen (LiveId): %5, nicht im Cache: %6
+ ;Per-group summary line. %1=group UserId, %2=fetched, %3=created, %4=skipped-existing, %5=skipped-liveid, %6=not-in-cache.
+EntraIdImportStarting=Starte Entra ID-Benutzerimport – %1 Gruppen zu verarbeiten
+EntraIdImportCompleted=Entra ID-Benutzerimport abgeschlossen – Gruppen verarbeitet: %1, Mitglieder gelesen: %2, Benutzer erstellt: %3, vorhandene übersprungen: %4, LiveId/Externe übersprungen: %5, Fehler: %6, nicht im Cache: %7
+ ;Run-level summary. %1=groups, %2=fetched, %3=created, %4=skipped-existing, %5=skipped-liveid, %6=errors, %7=not-in-cache.
+EntraIdSyncGroupNotInUserInfo=[Benutzer %1] Graph lieferte Gruppen-ObjectId '%2', aber kein ClaimsGroup-Eintrag in UserInfo wurde gefunden – ADMEntraIdGroupUserImport ausführen oder Gruppe manuell anlegen.
+ ;Sync: group from Graph not yet imported into D365 as ClaimsGroup.
+EntraIdSyncGroupParseFailed=[Benutzer %1] Graph lieferte eine nicht lesbare Gruppen-ObjectId '%2' – wird übersprungen.
+ ;Sync: str2Guid failed to parse Graph's group ObjectId string.
+EntraIdSyncRunSummary=Entra ID-Synchronisierung: %1 Benutzer verarbeitet, %2 erfolgreich, %3 fehlgeschlagen, %4 Benutzer mit Mitgliedschaftsänderungen, %5 geänderte Gruppen.
+ ;End-of-run summary for ADMEntraIDGroupUserSynchronization. Placeholders: users processed, succeeded, failed, users-with-changes, distinct changed groups.
+EntraIdSyncUserGraphResult=[Benutzer %1] Graph lieferte %2 Gruppen – erfolgreich verarbeitet: %3, ClaimsGroup-Treffer in UserInfo: %4, ohne Zuordnung: %5.
+ ;Sync: per-user Graph result summary for diagnostics.
+EntraIdSyncUserIdCaption=Zu synchronisierender Benutzer
+ ;Caption for the UserId dialog field on the Entra ID group user synchronization batch dialog.
+EntraIdSyncUserIdHelp=Optional. Geben Sie eine Benutzer-ID an, um nur die Entra ID-Gruppenmitgliedschaften dieses Benutzers zu synchronisieren. Leer lassen, um alle aktiven Benutzer zu verarbeiten.
+ ;Help text for the optional User ID field on the sync batch dialog.
+EntraIdTenantCacheError=Fehler beim Laden des Benutzer-Caches des Tenants: %1
+ ;Logged when tenant user cache failed to load. %1=exception message.
+EntraIdTenantCacheLoaded=Benutzer-Cache des Tenants geladen – %1 Benutzer.
+ ;Logged when tenant user cache finished loading. %1=user count.
+EntraIdTenantCacheLoading=Lade Benutzer-Cache des Tenants aus Entra...
+ ;Logged when tenant-wide Entra user cache begins loading.
+EntraIdUserNotInCache=Mitglieds-ObjectId %1 (Gruppe %2) wurde nicht im Benutzer-Cache des Tenants gefunden – wird übersprungen.
+ ;Warning when a Graph group member ObjectId is missing from the tenant user cache. %1=member ObjectId, %2=group UserId.
+EntraIdUserObjectIdMissing=Aktualisierung der Entra ID-Gruppen für Benutzer %1 übersprungen – UserInfo.ObjectId ist leer. Bitte aus Entra übernehmen und erneut ausführen.
+ ;Warning: user cannot be Graph-synced because ObjectId is missing.
+EntraIdUserSidLookupFailed=SID für Benutzer %1 konnte nicht ermittelt werden – SID bleibt leer.
+EntraIdUserLiveIdSkipped=LiveId-/nicht auflösbarer Benutzer %1 wurde übersprungen – keine passende UPN-/Mail-Zuordnung gefunden.
+EntraIdUserImportFailed=Import von Benutzer %1 aus Gruppe %2 fehlgeschlagen – siehe vorherige Infolog-Einträge.
+EntraIdUserInsertFailed=UserInfo-Eintrag für Benutzer '%1' konnte nicht erstellt werden – letzter Infolog-Eintrag: %2
+EntraIdNoGroupsFoundForUser=Für Benutzer '%1' wurden keine Entra ID-Gruppen gefunden.
+EnvConfigFileGenerated=Umgebungskonfigurationsdatei wurde erfolgreich erstellt.
+Environment=Umgebung
+ExcludedUserList=Liste zu ignorierender Benutzer
+ExcludedUsers=Zu ignorierende Benutzer
+ExportRoleAccess=Rollenzugriffe exportieren
+ExportSysConfig=Systemkonfiguration exportieren
+General=Allgemein
+GroupId=Gruppen-ID
+ImportUsersEntraIdGroupMembership=Benutzer aus Entra ID-Gruppen importieren
+InquiriesReports=Abfragen und Berichte
+LastLogin=Letzte Anmeldung
+MergeBatchJobDestinationHelp=Ziel-Stapelverarbeitungsauftrag für die Zusammenführung
+MergeBatchJobDestinationLabel=Ziel-Stapelverarbeitungsauftrag
+MergeBatchJobDestIsSource=Der Ziel-Stapelverarbeitungsauftrag darf nicht einer der ausgewählten Quell-Stapelverarbeitungsaufträge sein.
+MergeBatchJobDestNotExist=Stapelverarbeitungsauftrag mit der RecId %1 existiert nicht.
+MergeBatchJobDestWrongStatus=Stapelverarbeitungsauftrag %1 befindet sich nicht im Status „Zurückhalten“.
+MergeBatchJobMaintain=Zusammenführung von Stapelverarbeitungsaufträgen verwalten
+MergeBatchJobMaintainDescription=Ermöglicht das Zusammenführen von Stapelverarbeitungsaufträgen
+MergeBatchJobSelectedBatchJobs=Ausgewählte Stapelverarbeitungsaufträge
+ModifiedBy=Geändert von
+NumDaysLastLogin=Tage seit der letzten Anmeldung:
+Parameters=D365FO Admin Toolkit Parameter
+PeriodicTasks=Periodische Aufgaben
+PopulateExcludedUserList=Liste zu ignorierender Benutzer mit Service Accounts befüllt.
+PopulateExcludedUsers=Zu ignorierende Benutzer initialisieren
+Reason=Grund
+Revoked=Entzogen
+RevokeSysAdmin=SysAdmin entziehen
+RoleAccessFileGenerated=Datei mit Rollenzugriffen wurde erfolgreich erstellt.
+SendTelemetrySysAdminLogHelp=Sendet Telemetriedaten an Application Insights, wenn ein Eintrag im SysAdminLog erstellt wird.
+SendTelemetrySysAdminLogLabel=SysAdminLog
+Setup=Einrichtung
+SetUpInfoEntraIdSecGrpSync=Einrichtung der Entra ID-Sicherheitsgruppen-Synchronisierung
+ShowReasonDialog=Dialog zur Eingabe eines Grundes für SysAdmin anzeigen
+ShowSysAdminExpiryDateDialog=Ablaufdatum für SysAdmin aktivieren
+EntraIdUserCreatedFromGroup=Benutzer '%1' wurde aus der Entra ID-Gruppe '%2' erstellt.
+StartDate=Startdatum:
+Submit=Übermitteln
+SynchronousSynchronization=Synchroner Abgleich
+SysAdmin=System Administrator
+SysAdminAssigned=SYSADMIN-Rolle wurde %1 zugewiesen.
+SysAdminAssignReport=SysAdmin-Zuweisungsbericht
+SysAdminExpiryDateDefaultHours=Standardablaufzeit in Stunden
+SysAdminNotAssigned=SYSADMIN-Rolle wurde %1 nicht zugewiesen.
+SysAdminReport=SysAdmin-Bericht
+SysAdminRevoked=SYSADMIN-Rolle wurde %1 entzogen.
+TmpBatchJobMergeDevDoc=Diese Tabelle enthält Stapelverarbeitungsaufträge, die mit einem vorhandenen Stapelverarbeitungsauftrag zusammengeführt werden sollen.
+ ;Locked
+User=Benutzer
+UserDisableMessage=Benutzer werden deaktiviert, wenn keine Anmeldung innerhalb von %1 Tagen erfolgt ist.
+UserDisableReport=Bericht über deaktivierte Benutzer
+UserDisableTitle=Deaktivierung inaktiver Benutzer abgeschlossen
+UserId=Benutzer-ID
+UserList=Benutzerliste
+UserName=Benutzername
+UsersForEntraIdGroup=Benutzer der Entra ID-Gruppe
+UsersForGroup=Benutzer der Gruppe
+ViewQuery=Abfrage anzeigen
